@@ -5,6 +5,8 @@
     'location',
     'imageClass' => 'from-cimuning-soft to-white',
     'verified' => true,
+    'slug' => null,
+    'whatsappUrl' => null,
 ])
 
 <article {{ $attributes->merge(['class' => 'group overflow-hidden rounded-card border border-cimuning-border bg-white shadow-card transition duration-200 hover:-translate-y-0.5 hover:shadow-card-hover']) }}>
@@ -26,8 +28,8 @@
         </div>
         <p class="text-sm font-medium text-cimuning-slate">{{ $location }}</p>
         <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            <x-secondary-button href="{{ route('umkm.index') }}" class="w-full">Lihat Detail</x-secondary-button>
-            <x-whatsapp-button href="https://wa.me/6281234567890" class="w-full">Chat WhatsApp</x-whatsapp-button>
+            <x-secondary-button href="{{ $slug ? route('umkm.show', $slug) : route('umkm.index') }}" class="w-full">Lihat Detail</x-secondary-button>
+            <x-whatsapp-button href="{{ $whatsappUrl ?? 'https://wa.me/6281234567890' }}" class="w-full">Chat WhatsApp</x-whatsapp-button>
         </div>
     </div>
 </article>

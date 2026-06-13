@@ -1,36 +1,48 @@
 @php
-    $categories = [
-        ['name' => 'Kuliner', 'count' => '24 usaha'],
-        ['name' => 'Fashion', 'count' => '12 usaha'],
-        ['name' => 'Jasa', 'count' => '18 usaha'],
-        ['name' => 'Toko Harian', 'count' => '15 usaha'],
-        ['name' => 'Kecantikan', 'count' => '9 usaha'],
-        ['name' => 'Digital', 'count' => '7 usaha'],
-    ];
+    $fallbackCategories = collect([
+        (object) ['name' => 'Kuliner', 'slug' => 'kuliner', 'umkms_count' => 24],
+        (object) ['name' => 'Fashion', 'slug' => 'fashion', 'umkms_count' => 12],
+        (object) ['name' => 'Jasa', 'slug' => 'jasa', 'umkms_count' => 18],
+        (object) ['name' => 'Toko Harian', 'slug' => 'toko-harian', 'umkms_count' => 15],
+        (object) ['name' => 'Kecantikan', 'slug' => 'kecantikan', 'umkms_count' => 9],
+        (object) ['name' => 'Digital', 'slug' => 'digital', 'umkms_count' => 7],
+    ]);
 
-    $featuredUmkms = [
-        [
+    $fallbackFeaturedUmkms = collect([
+        (object) [
             'name' => 'Dapur Ibu Sari',
-            'category' => 'Kuliner',
+            'category' => (object) ['name' => 'Kuliner'],
             'description' => 'Aneka nasi box, kue basah, dan pesanan harian untuk warga sekitar Cimuning.',
-            'location' => 'Cimuning RW 03',
+            'rw' => 'RW 03',
             'imageClass' => 'from-cimuning-soft via-white to-orange-50',
+            'slug' => null,
+            'is_verified' => true,
+            'whatsapp_url' => null,
         ],
-        [
+        (object) [
             'name' => 'Bengkel Berkah Motor',
-            'category' => 'Otomotif',
+            'category' => (object) ['name' => 'Otomotif'],
             'description' => 'Servis ringan, ganti oli, dan perawatan motor dengan layanan cepat dan ramah.',
-            'location' => 'Cimuning RW 06',
+            'rw' => 'RW 06',
             'imageClass' => 'from-blue-50 via-white to-cimuning-section',
+            'slug' => null,
+            'is_verified' => true,
+            'whatsapp_url' => null,
         ],
-        [
+        (object) [
             'name' => 'Kriya Cimuning',
-            'category' => 'Produk Kreatif',
+            'category' => (object) ['name' => 'Produk Kreatif'],
             'description' => 'Kerajinan lokal, souvenir custom, dan hampers untuk acara keluarga maupun komunitas.',
-            'location' => 'Cimuning RW 01',
+            'rw' => 'RW 01',
             'imageClass' => 'from-green-50 via-white to-cimuning-soft',
+            'slug' => null,
+            'is_verified' => true,
+            'whatsapp_url' => null,
         ],
-    ];
+    ]);
+
+    $categories = ($categories ?? collect())->isNotEmpty() ? $categories : $fallbackCategories;
+    $featuredUmkms = ($featuredUmkms ?? collect())->isNotEmpty() ? $featuredUmkms : $fallbackFeaturedUmkms;
 @endphp
 
 <x-public-layout title="Beranda">
@@ -102,9 +114,9 @@
 
             <div class="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($categories as $category)
-                    <a href="{{ route('umkm.index', ['category' => $category['name']]) }}" class="rounded-card border border-cimuning-border bg-cimuning-white p-5 shadow-card transition hover:-translate-y-0.5 hover:shadow-card-hover">
-                        <span class="text-lg font-bold text-cimuning-charcoal">{{ $category['name'] }}</span>
-                        <span class="mt-2 block text-sm text-cimuning-slate">{{ $category['count'] }}</span>
+                    <a href="{{ route('umkm.index', ['category' => $category->slug]) }}" class="rounded-card border border-cimuning-border bg-cimuning-white p-5 shadow-card transition hover:-translate-y-0.5 hover:shadow-card-hover">
+                        <span class="text-lg font-bold text-cimuning-charcoal">{{ $category->name }}</span>
+                        <span class="mt-2 block text-sm text-cimuning-slate">{{ $category->umkms_count ?? 0 }} usaha</span>
                     </a>
                 @endforeach
             </div>
@@ -120,7 +132,16 @@
 
             <div class="mt-7 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                 @foreach ($featuredUmkms as $umkm)
-                    <x-umkm-card :name="$umkm['name']" :category="$umkm['category']" :description="$umkm['description']" :location="$umkm['location']" :image-class="$umkm['imageClass']" />
+                    <x-umkm-card
+                        :name="$umkm->name"
+                        :category="$umkm->category?->name ?? 'UMKM'"
+                        :description="$umkm->description"
+                        :location="$umkm->rw ?? 'Cimuning'"
+                        :image-class="$umkm->imageClass ?? 'from-cimuning-soft to-white'"
+                        :verified="$umkm->is_verified ?? true"
+                        :slug="$umkm->slug"
+                        :whatsapp-url="$umkm->whatsapp_url"
+                    />
                 @endforeach
             </div>
         </div>

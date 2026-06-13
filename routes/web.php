@@ -1,22 +1,145 @@
 <?php
 
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\Umkm;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 
-Route::get('/', function () {
-    return view('home');
+$hasTables = static function (array $tables): bool {
+    try {
+        foreach ($tables as $table) {
+            if (! Schema::hasTable($table)) {
+                return false;
+            }
+        }
+
+        return true;
+    } catch (Throwable) {
+        return false;
+    }
+};
+
+Route::get('/', function () use ($hasTables) {
+    $categories = collect();
+    $featuredUmkms = collect();
+
+    if ($hasTables(['categories', 'umkms'])) {
+        $categories = Category::query()
+            ->where('is_active', true)
+            ->withCount(['umkms' => fn ($query) => $query->where('is_active', true)->where('status', 'verified')])
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->limit(6)
+            ->get();
+
+        $featuredUmkms = Umkm::query()
+            ->with('category')
+            ->where('is_active', true)
+            ->where('status', 'verified')
+            ->where('is_featured', true)
+            ->latest()
+            ->limit(3)
+            ->get();
+    }
+
+    return view('home', compact('categories', 'featuredUmkms'));
 })->name('home');
 
-Route::view('/umkm', 'pages.placeholder', [
-    'title' => 'Direktori UMKM',
-    'heading' => 'Direktori UMKM Cimuning',
-    'description' => 'Halaman listing UMKM dengan search, filter, dan pagination Livewire akan dibangun pada tahap berikutnya.',
-])->name('umkm.index');
+Route::get('/umkm', function () use ($hasTables) {
+    $search = request('search');
+    $category = request('category');
+    $umkms = collect();
+    $categories = collect();
 
-Route::view('/produk', 'pages.placeholder', [
-    'title' => 'Produk dan Jasa',
-    'heading' => 'Produk dan Jasa UMKM',
-    'description' => 'Halaman katalog produk dan jasa akan tersambung dengan data UMKM setelah model dan migration dibuat.',
-])->name('products.index');
+    if ($hasTables(['categories', 'umkms', 'products'])) {
+        $categories = Category::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
+
+        $umkms = Umkm::query()
+            ->with('category')
+            ->where('is_active', true)
+            ->where('status', 'verified')
+            ->when($category, fn ($query) => $query->whereHas('category', fn ($categoryQuery) => $categoryQuery->where('slug', $category)->orWhere('name', $category)))
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($nested) use ($search) {
+                    $nested->where('name', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%")
+                        ->orWhere('rw', 'like', "%{$search}%")
+                        ->orWhereHas('category', fn ($categoryQuery) => $categoryQuery->where('name', 'like', "%{$search}%"))
+                        ->orWhereHas('products', fn ($productQuery) => $productQuery->where('name', 'like', "%{$search}%")->orWhere('description', 'like', "%{$search}%"));
+                });
+            })
+            ->latest()
+            ->get();
+    }
+
+    return view('umkm.index', compact('umkms', 'categories', 'search', 'category'));
+})->name('umkm.index');
+
+Route::get('/produk', function () use ($hasTables) {
+    $search = request('search');
+    $products = collect();
+
+    if ($hasTables(['products', 'umkms', 'categories'])) {
+        $products = Product::query()
+            ->with(['umkm', 'category'])
+            ->where('is_active', true)
+            ->whereHas('umkm', fn ($query) => $query->where('is_active', true)->where('status', 'verified'))
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($nested) use ($search) {
+                    $nested->where('name', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%")
+                        ->orWhereHas('umkm', fn ($umkmQuery) => $umkmQuery->where('name', 'like', "%{$search}%"))
+                        ->orWhereHas('category', fn ($categoryQuery) => $categoryQuery->where('name', 'like', "%{$search}%"));
+                });
+            })
+            ->latest()
+            ->get();
+    }
+
+    return view('products.index', compact('products', 'search'));
+})->name('products.index');
+
+Route::get('/kategori/{slug}', function (string $slug) use ($hasTables) {
+    if (! $hasTables(['categories', 'umkms'])) {
+        abort(404);
+    }
+
+    $category = Category::query()->where('slug', $slug)->where('is_active', true)->firstOrFail();
+    $umkms = $category->umkms()
+        ->with('category')
+        ->where('is_active', true)
+        ->where('status', 'verified')
+        ->latest()
+        ->get();
+
+    return view('umkm.index', [
+        'umkms' => $umkms,
+        'categories' => Category::query()->where('is_active', true)->orderBy('sort_order')->get(),
+        'search' => null,
+        'category' => $category->slug,
+        'pageTitle' => "Kategori {$category->name}",
+    ]);
+})->name('categories.show');
+
+Route::get('/umkm/{slug}', function (string $slug) use ($hasTables) {
+    if (! $hasTables(['umkms', 'products', 'categories'])) {
+        abort(404);
+    }
+
+    $umkm = Umkm::query()
+        ->with(['category', 'products' => fn ($query) => $query->where('is_active', true)->latest(), 'contacts', 'socialLinks'])
+        ->where('is_active', true)
+        ->where('status', 'verified')
+        ->where('slug', $slug)
+        ->firstOrFail();
+
+    return view('umkm.show', compact('umkm'));
+})->name('umkm.show');
 
 Route::view('/daftar-umkm', 'pages.placeholder', [
     'title' => 'Daftarkan UMKM',

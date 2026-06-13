@@ -20,7 +20,9 @@ Project ini adalah Cimuning UMKM Online Directory, sebuah katalog online UMKM Ci
 - Tailwind v4 digunakan melalui Vite dan token warna didefinisikan di `resources/css/app.css`.
 - Alpine.js dipakai untuk UI ringan seperti mobile drawer.
 - Livewire disiapkan sebagai dependency untuk fase search/filter/form, namun komponen Livewire database belum dibuat pada tahap pertama.
-- Homepage saat ini memakai data dummy statis.
+- Core Eloquent models sudah dibuat: `Category`, `Umkm`, `Product`, `ProductImage`, `UmkmContact`, dan `UmkmSocialLink`.
+- Homepage, listing UMKM, listing produk, kategori, dan detail UMKM sudah membaca database jika tabel tersedia.
+- View publik tetap memiliki fallback aman ketika database belum dimigrasi atau MySQL belum aktif.
 
 ## Keputusan Desain
 
@@ -46,12 +48,15 @@ Project ini adalah Cimuning UMKM Online Directory, sebuah katalog online UMKM Ci
 - Laravel scaffold dibuat di root project.
 - Dokumentasi awal dibuat di folder `docs/`.
 - Public layout, navbar, footer, button components, badges, UMKM card, homepage, dan placeholder pages dibuat.
-- Route publik awal tersedia untuk `/`, `/umkm`, `/produk`, `/daftar-umkm`, `/tentang`, dan `/kontak`.
+- Route publik tersedia untuk `/`, `/umkm`, `/umkm/{slug}`, `/produk`, `/kategori/{slug}`, `/daftar-umkm`, `/tentang`, dan `/kontak`.
+- Migration inti, relationship model, dan seeder dummy sudah dibuat.
+- Seeder membuat admin `admin@cimuning.test` dan owner dummy dengan password `password`.
+- MySQL lokal belum dimigrasi karena service di `127.0.0.1:3306` menolak koneksi. Migration dan seeder sudah lolos verifikasi dengan SQLite in-memory.
 
 ## Next Steps
 
-1. Pastikan dependency Composer dan npm terinstall.
-2. Buat migration dan model inti untuk categories, umkms, products, images, contacts, dan social links.
-3. Buat seeder dummy agar homepage dan listing tidak lagi memakai array statis.
-4. Buat Livewire component untuk UMKM search dengan query string, filter, pagination, loading state, dan empty state.
-5. Bangun detail UMKM dengan CTA WhatsApp/maps dan sticky mobile CTA.
+1. Jalankan MySQL lokal, buat database `cimuning_umkm`, lalu jalankan `php artisan migrate --seed`.
+2. Buat Livewire component untuk UMKM search dengan query string, filter kategori/RW/verified/layanan, pagination, loading state, dan empty state.
+3. Tambahkan pagination pada listing `/umkm` dan `/produk`.
+4. Polish detail UMKM dengan sticky CTA mobile dan galeri produk.
+5. Mulai setup auth dan dashboard dasar setelah public discovery stabil.
