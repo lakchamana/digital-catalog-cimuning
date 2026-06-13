@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Umkms\Tables;
 
 use App\Models\Umkm;
+use App\Support\UmkmVerificationWorkflow;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -132,21 +133,21 @@ class UmkmsTable
                     ->color('success')
                     ->requiresConfirmation()
                     ->visible(fn (Umkm $record): bool => Filament::auth()->user()?->isAdmin() && $record->status !== 'verified')
-                    ->action(fn (Umkm $record) => $record->update(['status' => 'verified', 'is_active' => true])),
+                    ->action(fn (Umkm $record) => UmkmVerificationWorkflow::verify($record)),
                 Action::make('requestRevision')
                     ->label('Minta revisi')
                     ->icon('heroicon-o-exclamation-triangle')
                     ->color('warning')
                     ->requiresConfirmation()
                     ->visible(fn (Umkm $record): bool => Filament::auth()->user()?->isAdmin() && $record->status !== 'need_revision')
-                    ->action(fn (Umkm $record) => $record->update(['status' => 'need_revision', 'is_active' => false])),
+                    ->action(fn (Umkm $record) => UmkmVerificationWorkflow::requestRevision($record)),
                 Action::make('reject')
                     ->label('Tolak')
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->requiresConfirmation()
                     ->visible(fn (Umkm $record): bool => Filament::auth()->user()?->isAdmin() && $record->status !== 'rejected')
-                    ->action(fn (Umkm $record) => $record->update(['status' => 'rejected', 'is_active' => false])),
+                    ->action(fn (Umkm $record) => UmkmVerificationWorkflow::reject($record)),
                 EditAction::make(),
             ])
             ->toolbarActions([

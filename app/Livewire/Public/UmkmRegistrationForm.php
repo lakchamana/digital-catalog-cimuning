@@ -4,6 +4,7 @@ namespace App\Livewire\Public;
 
 use App\Models\Category;
 use App\Models\Umkm;
+use App\Support\UmkmVerificationWorkflow;
 use App\Support\UniqueSlug;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
@@ -72,7 +73,7 @@ class UmkmRegistrationForm extends Component
         $logoPath = $this->logo?->store('umkms/logos', 'public');
         $coverPath = $this->cover?->store('umkms/covers', 'public');
 
-        Umkm::query()->create([
+        $umkm = Umkm::query()->create([
             'category_id' => (int) $validated['category_id'],
             'name' => $validated['name'],
             'slug' => UniqueSlug::make($validated['name'], Umkm::class),
@@ -94,6 +95,8 @@ class UmkmRegistrationForm extends Component
             'has_physical_store' => $validated['has_physical_store'],
             'view_count' => 0,
         ]);
+
+        UmkmVerificationWorkflow::notifyAdminsOfRegistration($umkm);
 
         $this->submitted = true;
         $this->submittedName = $validated['name'];

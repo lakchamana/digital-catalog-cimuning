@@ -33,6 +33,14 @@
 - Public UMKM registration form at `/daftar-umkm` with validation, optional logo/cover uploads, and pending review status.
 - Reusable unique slug helper for UMKM, category, and product records.
 - Feature tests for public UMKM registration, unique slug generation, invalid uploads, and pending visibility protection.
+- Database notifications table for dashboard notifications.
+- Filament notification bell with 30-second polling in the `/admin` panel.
+- Central UMKM verification workflow for verified, need revision, and rejected status changes.
+- Admin notification when a public UMKM registration is submitted.
+- Owner notification when an assigned UMKM is verified, marked need revision, or rejected.
+- Admin dashboard widget for UMKM that need review.
+- Owner dashboard widget for assigned UMKM status.
+- Feature tests for dashboard notifications and UMKM verification status changes.
 
 ### Changed
 - Replaced default Laravel welcome route with Cimuning UMKM homepage.
@@ -49,6 +57,8 @@
 - `/daftar-umkm` now renders the Livewire registration form instead of the MVP placeholder page.
 - Filament category, UMKM, and product forms now auto-fill slugs from names while keeping slugs editable.
 - UMKM admin verification workflow now includes a reject action and deactivates rejected/revision records.
+- Public UMKM registration now notifies admin users after a pending submission is created.
+- Filament UMKM verification table actions now use a shared workflow service and notify owners when an owner account is assigned.
 
 ### Fixed
 - PHPUnit dev dependency is now installed successfully after PHP `zip` became available, so `php artisan test` can run.
@@ -59,3 +69,4 @@
 - Local PHP CLI has required extensions for Filament install: `intl`, `zip`, `fileinfo`, `mbstring`, `openssl`, and `pdo_mysql`.
 - Google Maps on public detail pages uses public Maps links/embed without an API key; click tracking is deferred.
 - Public UMKM registrations do not create owner accounts automatically; admin can assign an owner later from Filament.
+- Dashboard notifications are database-only for this MVP; email, WhatsApp, and realtime broadcast notifications are deferred.

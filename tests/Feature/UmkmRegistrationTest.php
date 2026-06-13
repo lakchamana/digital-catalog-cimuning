@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Livewire\Public\UmkmRegistrationForm;
 use App\Models\Category;
 use App\Models\Umkm;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -64,6 +65,39 @@ class UmkmRegistrationTest extends TestCase
         $this->assertSame('dapur-uji-cimuning', $umkm->slug);
         $this->assertNotNull($umkm->logo_image);
         Storage::disk('public')->assertExists($umkm->logo_image);
+    }
+
+    public function test_public_registration_notifies_admin_users(): void
+    {
+        $admin = User::query()->create([
+            'name' => 'Admin Cimuning',
+            'email' => 'admin-registration@example.test',
+            'password' => 'password',
+            'role' => 'admin',
+        ]);
+
+        $category = Category::query()->create([
+            'name' => 'Kuliner',
+            'slug' => 'kuliner',
+            'is_active' => true,
+            'sort_order' => 1,
+        ]);
+
+        Livewire::test(UmkmRegistrationForm::class)
+            ->set('name', 'Dapur Notifikasi')
+            ->set('category_id', (string) $category->id)
+            ->set('description', 'Menyediakan makanan rumahan untuk warga Cimuning dan sekitarnya.')
+            ->set('owner_name', 'Ibu Notifikasi')
+            ->set('whatsapp', '081234567893')
+            ->set('address', 'Jl. Cimuning Raya')
+            ->call('submit')
+            ->assertHasNoErrors();
+
+        $notification = $admin->notifications()->first();
+
+        $this->assertNotNull($notification);
+        $this->assertSame('Pendaftaran UMKM baru', $notification->data['title']);
+        $this->assertStringContainsString('Dapur Notifikasi', $notification->data['body']);
     }
 
     public function test_registration_generates_unique_slug_for_duplicate_umkm_name(): void

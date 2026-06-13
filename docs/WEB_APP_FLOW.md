@@ -40,8 +40,9 @@
 2. User mengisi data usaha, kategori, kontak, alamat, layanan, dan foto.
 3. Sistem memvalidasi input dan upload.
 4. Sistem membuat slug unik dan menyimpan data dengan status pending serta belum aktif.
-5. Akun owner tidak dibuat otomatis pada tahap ini.
-6. Admin melakukan verifikasi dari dashboard.
+5. Sistem mengirim notifikasi dashboard ke admin.
+6. Akun owner tidak dibuat otomatis pada tahap ini.
+7. Admin melakukan verifikasi dari dashboard.
 
 ## Flow Verifikasi UMKM
 
@@ -50,8 +51,18 @@
 3. Admin memilih verified, rejected, atau need revision.
 4. Status verified mengaktifkan UMKM agar tampil publik.
 5. Status rejected atau need revision menonaktifkan UMKM dari tampilan publik.
-6. Owner melihat status terbaru di dashboard jika sudah memiliki akun/assignment.
-7. Public hanya melihat UMKM yang aktif dan verified.
+6. Owner menerima notifikasi dashboard jika UMKM sudah memiliki akun/assignment.
+7. Owner melihat status terbaru di dashboard jika sudah memiliki akun/assignment.
+8. Public hanya melihat UMKM yang aktif dan verified.
+
+## Flow Notifikasi Dashboard
+
+1. Admin atau owner login ke `/admin`.
+2. Filament menampilkan notification bell dengan polling berkala.
+3. Admin menerima notifikasi pendaftaran UMKM baru dari form publik.
+4. Owner menerima notifikasi ketika UMKM miliknya verified, need revision, atau rejected.
+5. Notifikasi mengarah ke halaman edit UMKM di dashboard.
+6. Notifikasi tahap MVP hanya tersimpan di database, tanpa email, WhatsApp, atau realtime broadcast.
 
 ## Flow Tambah Produk/Jasa
 

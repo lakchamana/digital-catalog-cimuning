@@ -32,6 +32,9 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Listing `/produk` menyimpan filter di query string: `search`, `category`, `umkm`, `price`, `sort`, `perPage`, dan `page`.
 - Pendaftaran publik `/daftar-umkm` memakai Livewire `App\Livewire\Public\UmkmRegistrationForm`.
 - Slug unik dibuat lewat helper `App\Support\UniqueSlug` dan dipakai pada pendaftaran publik serta auto-fill form Filament.
+- Notifikasi dashboard memakai Laravel database notifications dan Filament notification bell dengan polling 30 detik.
+- Perubahan status verifikasi UMKM dipusatkan di `App\Support\UmkmVerificationWorkflow`.
+- Pendaftaran publik menotifikasi semua user role `admin`; action verifikasi/revisi/tolak menotifikasi owner jika UMKM memiliki `user_id`.
 
 ## Keputusan Desain
 
@@ -80,11 +83,16 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Filament form kategori, UMKM, dan produk sudah auto-fill slug dari nama.
 - Tabel UMKM Filament memiliki action admin: Verifikasi, Minta revisi, dan Tolak.
 - Test pendaftaran publik sudah ditambahkan, termasuk slug unik, upload invalid, dan proteksi UMKM pending dari public listing/detail.
+- Migration `notifications` sudah ditambahkan untuk database notifications.
+- Filament notification bell sudah aktif di panel `/admin`.
+- Dashboard admin memiliki widget `UMKM perlu ditinjau` untuk status `pending` dan `need_revision`.
+- Dashboard owner memiliki widget status UMKM miliknya.
+- Test notifikasi dashboard sudah ditambahkan untuk pendaftaran publik dan action verifikasi/revisi/tolak.
 
 ## Next Steps
 
 1. Uji manual `/admin` di browser dengan `admin@cimuning.test` / `password` dan owner dummy / `password`.
-2. Tambahkan notifikasi dashboard untuk status verifikasi dan kebutuhan revisi.
-3. Tambahkan tracking klik WhatsApp/Maps sebagai leads pada fase berikutnya.
-4. Tambahkan halaman/status tracking sederhana untuk pendaftar publik bila dibutuhkan.
+2. Tambahkan tracking klik WhatsApp/Maps sebagai leads pada fase berikutnya.
+3. Tambahkan halaman/status tracking sederhana untuk pendaftar publik bila dibutuhkan.
+4. Pertimbangkan email notification untuk status verifikasi setelah copy dan alur operasional final.
 5. Poles accessibility form dan validasi copy setelah uji manual mobile.
