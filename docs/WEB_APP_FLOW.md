@@ -75,5 +75,14 @@
 
 1. User membuka detail UMKM.
 2. User menekan CTA WhatsApp atau Lihat Lokasi.
-3. Website mengarahkan user ke WhatsApp atau maps.
-4. Pada fase berikutnya, klik dapat dicatat sebagai lead sederhana.
+3. Website mencatat klik sebagai lead anonim.
+4. Website mengarahkan user ke WhatsApp atau maps.
+5. Transaksi tetap dilakukan langsung di luar website.
+
+## Flow Analytics Lead
+
+1. Admin atau owner login ke `/admin`.
+2. Dashboard menampilkan ringkasan klik WhatsApp, klik Maps, klik 7 hari terakhir, dan UMKM paling diminati.
+3. Admin melihat semua aktivitas lead terbaru.
+4. Owner hanya melihat aktivitas lead dari UMKM miliknya.
+5. Data lead dipakai sebagai indikator minat kontak/lokasi, bukan transaksi internal.

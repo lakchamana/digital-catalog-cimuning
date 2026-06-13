@@ -3,8 +3,13 @@
 @php
     $imagePath = $product->image ?: $product->images->first()?->path;
     $imageUrl = $imagePath ? (\Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://']) ? $imagePath : asset('storage/'.$imagePath)) : null;
-    $whatsappUrl = $product->umkm?->whatsapp_url
-        ? $product->umkm->whatsapp_url.'?text='.urlencode("Halo, saya ingin bertanya tentang {$product->name}.")
+    $whatsappUrl = $product->umkm?->whatsapp_url && $product->umkm?->slug
+        ? route('leads.redirect', [
+            'umkm' => $product->umkm->slug,
+            'type' => 'whatsapp',
+            'product' => $product->id,
+            'source' => 'product_card',
+        ])
         : null;
 @endphp
 

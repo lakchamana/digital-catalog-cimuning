@@ -41,6 +41,9 @@
 - Admin dashboard widget for UMKM that need review.
 - Owner dashboard widget for assigned UMKM status.
 - Feature tests for dashboard notifications and UMKM verification status changes.
+- Lead event tracking for public WhatsApp and Google Maps CTA clicks.
+- Filament lead analytics widgets for contact click totals and recent lead activity.
+- Feature tests for lead redirects, public visibility protection, product lead relation, and owner lead scoping.
 
 ### Changed
 - Replaced default Laravel welcome route with Cimuning UMKM homepage.
@@ -59,6 +62,7 @@
 - UMKM admin verification workflow now includes a reject action and deactivates rejected/revision records.
 - Public UMKM registration now notifies admin users after a pending submission is created.
 - Filament UMKM verification table actions now use a shared workflow service and notify owners when an owner account is assigned.
+- Public WhatsApp and Maps CTA links now pass through a lightweight tracking redirect before opening the external target.
 
 ### Fixed
 - PHPUnit dev dependency is now installed successfully after PHP `zip` became available, so `php artisan test` can run.
@@ -70,3 +74,4 @@
 - Google Maps on public detail pages uses public Maps links/embed without an API key; click tracking is deferred.
 - Public UMKM registrations do not create owner accounts automatically; admin can assign an owner later from Filament.
 - Dashboard notifications are database-only for this MVP; email, WhatsApp, and realtime broadcast notifications are deferred.
+- Lead tracking records anonymous contact intent only; checkout, cart, payment, shipping, and internal transaction flows remain excluded.

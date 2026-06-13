@@ -103,7 +103,7 @@
                                     :location="$umkm->rw ?? 'Cimuning'"
                                     :verified="$umkm->is_verified"
                                     :slug="$umkm->slug"
-                                    :whatsapp-url="$umkm->whatsapp_url"
+                                    :whatsapp-url="$umkm->whatsapp_url ? route('leads.redirect', ['umkm' => $umkm->slug, 'type' => 'whatsapp', 'source' => 'card']) : null"
                                     :services="[
                                         'delivery' => $umkm->service_delivery,
                                         'cod' => $umkm->service_cod,

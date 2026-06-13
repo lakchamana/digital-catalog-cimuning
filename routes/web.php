@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LeadRedirectController;
 use App\Models\Category;
 use App\Models\Umkm;
 use Illuminate\Support\Facades\Route;
@@ -100,6 +101,9 @@ Route::get('/daftar-umkm', function () use ($hasTables) {
 
     return view('umkm.register');
 })->name('umkm.register');
+
+Route::get('/leads/{umkm:slug}/{type}', LeadRedirectController::class)
+    ->name('leads.redirect');
 
 Route::view('/tentang', 'pages.placeholder', [
     'title' => 'Tentang',

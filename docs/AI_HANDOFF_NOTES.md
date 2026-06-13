@@ -35,6 +35,9 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Notifikasi dashboard memakai Laravel database notifications dan Filament notification bell dengan polling 30 detik.
 - Perubahan status verifikasi UMKM dipusatkan di `App\Support\UmkmVerificationWorkflow`.
 - Pendaftaran publik menotifikasi semua user role `admin`; action verifikasi/revisi/tolak menotifikasi owner jika UMKM memiliki `user_id`.
+- Tracking klik WhatsApp/Maps memakai event detail di `lead_events` dan redirect route `/leads/{umkm:slug}/{type}`.
+- Lead analytics di Filament memakai scope `LeadEvent::visibleTo($user)`: admin melihat semua, owner hanya UMKM miliknya.
+- IP lead disimpan sebagai hash, bukan raw IP.
 
 ## Keputusan Desain
 
@@ -88,11 +91,14 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Dashboard admin memiliki widget `UMKM perlu ditinjau` untuk status `pending` dan `need_revision`.
 - Dashboard owner memiliki widget status UMKM miliknya.
 - Test notifikasi dashboard sudah ditambahkan untuk pendaftaran publik dan action verifikasi/revisi/tolak.
+- Tracking klik WhatsApp dan Maps sudah ditambahkan untuk detail UMKM, sticky CTA mobile, Maps section, product card, UMKM listing, dan UMKM pilihan homepage.
+- Dashboard Filament memiliki widget statistik lead dan aktivitas lead terbaru.
+- Test lead tracking sudah ditambahkan untuk redirect, target kosong, UMKM non-public, relasi produk, dan scoping owner.
 
 ## Next Steps
 
 1. Uji manual `/admin` di browser dengan `admin@cimuning.test` / `password` dan owner dummy / `password`.
-2. Tambahkan tracking klik WhatsApp/Maps sebagai leads pada fase berikutnya.
-3. Tambahkan halaman/status tracking sederhana untuk pendaftar publik bila dibutuhkan.
-4. Pertimbangkan email notification untuk status verifikasi setelah copy dan alur operasional final.
+2. Tambahkan halaman/status tracking sederhana untuk pendaftar publik bila dibutuhkan.
+3. Pertimbangkan email notification untuk status verifikasi setelah copy dan alur operasional final.
+4. Tambahkan export data lead/UMKM untuk admin bila sudah dibutuhkan operasional.
 5. Poles accessibility form dan validasi copy setelah uji manual mobile.

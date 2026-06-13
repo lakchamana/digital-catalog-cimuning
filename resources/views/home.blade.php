@@ -140,7 +140,7 @@
                         :image-class="$umkm->imageClass ?? 'from-cimuning-soft to-white'"
                         :verified="$umkm->is_verified ?? true"
                         :slug="$umkm->slug"
-                        :whatsapp-url="$umkm->whatsapp_url"
+                        :whatsapp-url="$umkm->whatsapp_url ? route('leads.redirect', ['umkm' => $umkm->slug, 'type' => 'whatsapp', 'source' => 'card']) : null"
                     />
                 @endforeach
             </div>

@@ -80,6 +80,11 @@ class Umkm extends Model
         return $this->hasMany(UmkmSocialLink::class);
     }
 
+    public function leadEvents(): HasMany
+    {
+        return $this->hasMany(LeadEvent::class);
+    }
+
     public function getIsVerifiedAttribute(): bool
     {
         return $this->status === 'verified';
