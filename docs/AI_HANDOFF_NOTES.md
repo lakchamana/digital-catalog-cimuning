@@ -70,11 +70,13 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Owner UMKM bisa masuk panel dan hanya melihat/mengelola data miliknya sendiri.
 - Upload logo/cover UMKM dan gambar produk memakai public disk melalui `public/storage`.
 - `php artisan test` sudah hijau dan berisi test tambahan untuk akses panel dan scoping owner.
+- Halaman detail UMKM `/umkm/{slug}` sudah dipoles dengan hero gambar, logo UMKM, badge layanan, Maps embed/link, sticky contact panel desktop, sticky CTA mobile, dan katalog produk berbasis gambar upload.
+- Route detail UMKM sudah eager-load `products.images` untuk menghindari N+1 pada galeri produk.
 
 ## Next Steps
 
-1. Polish detail UMKM dengan sticky CTA mobile, section Maps yang lebih jelas, dan galeri produk.
-2. Uji manual `/admin` di browser dengan `admin@cimuning.test` / `password` dan owner dummy / `password`.
-3. Tambahkan form pendaftaran UMKM publik yang masuk sebagai status `pending`.
-4. Tambahkan validasi slug otomatis/unik agar admin dan owner tidak perlu menulis slug manual.
-5. Tambahkan notifikasi dashboard untuk status verifikasi dan kebutuhan revisi.
+1. Uji manual `/admin` di browser dengan `admin@cimuning.test` / `password` dan owner dummy / `password`.
+2. Tambahkan form pendaftaran UMKM publik yang masuk sebagai status `pending`.
+3. Tambahkan validasi slug otomatis/unik agar admin dan owner tidak perlu menulis slug manual.
+4. Tambahkan notifikasi dashboard untuk status verifikasi dan kebutuhan revisi.
+5. Tambahkan tracking klik WhatsApp/Maps sebagai leads pada fase berikutnya.

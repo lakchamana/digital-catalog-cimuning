@@ -29,6 +29,7 @@
 - Public disk upload fields for UMKM logo, UMKM cover, and product images.
 - Dashboard stats widget for verified UMKM, pending verification, active products, and active categories.
 - Feature tests for Filament access and UMKM owner product scoping.
+- Polished public UMKM detail page with visual hero, logo display, service badges, sticky contact panel, Maps section, and mobile sticky CTA.
 
 ### Changed
 - Replaced default Laravel welcome route with Cimuning UMKM homepage.
@@ -40,6 +41,8 @@
 - Homepage, navbar, footer, metadata, and environment app name now use the new brand direction.
 - `/produk` listing now uses Livewire instead of a plain GET form/controller query.
 - Admin dashboard direction now uses Filament as the back office layer, while public pages remain Blade and Livewire.
+- `/umkm/{slug}` now eager-loads product images and renders uploaded UMKM/product images when available.
+- Product cards now show uploaded product images and a WhatsApp inquiry CTA when the UMKM has WhatsApp.
 
 ### Fixed
 - PHPUnit dev dependency is now installed successfully after PHP `zip` became available, so `php artisan test` can run.
@@ -48,3 +51,4 @@
 - MVP remains a directory/catalog platform. Payment, checkout, cart, and transaction flows are intentionally excluded.
 - MySQL/XAMPP is now active and user confirmed `php artisan migrate --seed` was run successfully.
 - Local PHP CLI has required extensions for Filament install: `intl`, `zip`, `fileinfo`, `mbstring`, `openssl`, and `pdo_mysql`.
+- Google Maps on public detail pages uses public Maps links/embed without an API key; click tracking is deferred.

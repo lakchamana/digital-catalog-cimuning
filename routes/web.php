@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Category;
-use App\Models\Product;
 use App\Models\Umkm;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
@@ -66,6 +65,7 @@ Route::get('/kategori/{slug}', function (string $slug) use ($hasTables) {
     }
 
     $category = Category::query()->where('slug', $slug)->where('is_active', true)->firstOrFail();
+
     return view('umkm.index', [
         'category' => $category->slug,
         'pageTitle' => "Kategori {$category->name}",
@@ -78,7 +78,15 @@ Route::get('/umkm/{slug}', function (string $slug) use ($hasTables) {
     }
 
     $umkm = Umkm::query()
-        ->with(['category', 'products' => fn ($query) => $query->where('is_active', true)->latest(), 'contacts', 'socialLinks'])
+        ->with([
+            'category',
+            'products' => fn ($query) => $query
+                ->with(['category', 'images' => fn ($query) => $query->orderBy('sort_order')->orderBy('id')])
+                ->where('is_active', true)
+                ->latest(),
+            'contacts',
+            'socialLinks',
+        ])
         ->where('is_active', true)
         ->where('status', 'verified')
         ->where('slug', $slug)

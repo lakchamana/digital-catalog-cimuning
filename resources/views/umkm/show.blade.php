@@ -1,33 +1,101 @@
+@php
+    $imageUrl = function (?string $path): ?string {
+        if (! $path) {
+            return null;
+        }
+
+        return \Illuminate\Support\Str::startsWith($path, ['http://', 'https://'])
+            ? $path
+            : asset('storage/'.$path);
+    };
+
+    $coverUrl = $imageUrl($umkm->cover_image);
+    $logoUrl = $imageUrl($umkm->logo_image);
+    $hasCoordinates = filled($umkm->latitude) && filled($umkm->longitude);
+    $mapQuery = $hasCoordinates
+        ? "{$umkm->latitude},{$umkm->longitude}"
+        : ($umkm->address ?: null);
+    $mapsUrl = $mapQuery ? 'https://www.google.com/maps/search/?api=1&query='.urlencode($mapQuery) : null;
+    $mapsEmbedUrl = $mapQuery ? 'https://www.google.com/maps?q='.urlencode($mapQuery).'&output=embed' : null;
+    $whatsappUrl = $umkm->whatsapp_url
+        ? $umkm->whatsapp_url.'?text='.urlencode("Halo, saya melihat profil {$umkm->name} di Cimuning Digital Hub.")
+        : null;
+    $services = [
+        'Delivery' => $umkm->service_delivery,
+        'COD' => $umkm->service_cod,
+        'Custom order' => $umkm->service_custom_order,
+        'Toko fisik' => $umkm->has_physical_store,
+    ];
+@endphp
+
 <x-public-layout :title="$umkm->name">
     <section class="bg-cimuning-section">
-        <div class="container-cimuning grid gap-8 py-12 lg:grid-cols-[1fr_380px] lg:py-16">
-            <div>
-                <div class="aspect-[16/9] rounded-card border border-cimuning-border bg-gradient-to-br from-cimuning-soft via-white to-cimuning-section shadow-card"></div>
-                <div class="mt-8">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <x-category-badge>{{ $umkm->category?->name ?? 'UMKM' }}</x-category-badge>
-                        @if ($umkm->is_verified)
-                            <x-verified-badge />
+        <div class="container-cimuning grid gap-8 pb-10 pt-8 lg:grid-cols-[1fr_380px] lg:pb-16 lg:pt-12">
+            <div class="min-w-0">
+                <div class="relative overflow-hidden rounded-card border border-cimuning-border bg-gradient-to-br from-cimuning-soft via-white to-cimuning-section shadow-card">
+                    <div class="aspect-[16/9]">
+                        @if ($coverUrl)
+                            <img src="{{ $coverUrl }}" alt="Cover {{ $umkm->name }}" class="h-full w-full object-cover">
+                        @else
+                            <div class="flex h-full items-center justify-center p-6 text-center">
+                                <div>
+                                    <p class="text-sm font-semibold uppercase tracking-wide text-cimuning-red">Cimuning Digital Hub</p>
+                                    <p class="mt-2 text-2xl font-bold text-cimuning-charcoal">{{ $umkm->category?->name ?? 'UMKM Lokal' }}</p>
+                                </div>
+                            </div>
                         @endif
                     </div>
-                    <h1 class="mt-4 text-3xl font-bold leading-tight text-cimuning-charcoal md:text-5xl">{{ $umkm->name }}</h1>
-                    <p class="mt-4 text-base leading-8 text-cimuning-slate">{{ $umkm->description }}</p>
                 </div>
+
+                <div class="mt-6 flex flex-col gap-5 sm:flex-row sm:items-end">
+                    <div class="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-card border border-cimuning-border bg-white shadow-card">
+                        @if ($logoUrl)
+                            <img src="{{ $logoUrl }}" alt="Logo {{ $umkm->name }}" class="h-full w-full object-cover">
+                        @else
+                            <span class="text-3xl font-bold text-cimuning-red">{{ \Illuminate\Support\Str::of($umkm->name)->substr(0, 1)->upper() }}</span>
+                        @endif
+                    </div>
+
+                    <div class="min-w-0 flex-1">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <x-category-badge>{{ $umkm->category?->name ?? 'UMKM' }}</x-category-badge>
+                            @if ($umkm->is_verified)
+                                <x-verified-badge />
+                            @endif
+                            @if ($umkm->rw)
+                                <span class="rounded-button border border-cimuning-border bg-white px-3 py-1 text-sm font-semibold text-cimuning-slate">{{ $umkm->rw }}</span>
+                            @endif
+                        </div>
+                        <h1 class="mt-4 text-3xl font-bold leading-tight text-cimuning-charcoal md:text-5xl">{{ $umkm->name }}</h1>
+                        <p class="mt-4 max-w-3xl text-base leading-8 text-cimuning-slate">{{ $umkm->description ?: 'Profil UMKM ini sedang dilengkapi oleh pengelola.' }}</p>
+                    </div>
+                </div>
+
+                @if (collect($services)->filter()->isNotEmpty())
+                    <div class="mt-6 flex flex-wrap gap-2">
+                        @foreach ($services as $label => $enabled)
+                            @if ($enabled)
+                                <span class="rounded-button border border-cimuning-border bg-white px-4 py-2 text-sm font-semibold text-cimuning-charcoal shadow-card">{{ $label }}</span>
+                            @endif
+                        @endforeach
+                    </div>
+                @endif
             </div>
 
-            <aside class="h-fit rounded-card border border-cimuning-border bg-white p-5 shadow-card">
+            <aside class="h-fit rounded-card border border-cimuning-border bg-white p-5 shadow-card lg:sticky lg:top-24">
                 <h2 class="text-xl font-bold text-cimuning-charcoal">Hubungi UMKM</h2>
-                <div class="mt-4 space-y-3 text-base text-cimuning-slate">
+                <div class="mt-4 space-y-3 text-base leading-7 text-cimuning-slate">
                     <p><span class="font-semibold text-cimuning-charcoal">Pemilik:</span> {{ $umkm->owner_name ?? '-' }}</p>
+                    <p><span class="font-semibold text-cimuning-charcoal">WhatsApp:</span> {{ $umkm->whatsapp ?? '-' }}</p>
                     <p><span class="font-semibold text-cimuning-charcoal">Lokasi:</span> {{ $umkm->rw ?? 'Cimuning' }}</p>
-                    <p><span class="font-semibold text-cimuning-charcoal">Alamat:</span> {{ $umkm->address ?? '-' }}</p>
+                    <p><span class="font-semibold text-cimuning-charcoal">Alamat:</span> {{ $umkm->address ?? 'Alamat belum dilengkapi.' }}</p>
                 </div>
                 <div class="mt-5 grid gap-3">
-                    @if ($umkm->whatsapp_url)
-                        <x-whatsapp-button href="{{ $umkm->whatsapp_url }}" class="w-full">Chat WhatsApp</x-whatsapp-button>
+                    @if ($whatsappUrl)
+                        <x-whatsapp-button href="{{ $whatsappUrl }}" target="_blank" rel="noopener" class="w-full">Chat WhatsApp</x-whatsapp-button>
                     @endif
-                    @if ($umkm->address)
-                        <x-secondary-button href="https://www.google.com/maps/search/?api=1&query={{ urlencode($umkm->address) }}" class="w-full">Lihat Lokasi</x-secondary-button>
+                    @if ($mapsUrl)
+                        <x-secondary-button href="{{ $mapsUrl }}" target="_blank" rel="noopener" class="w-full">Buka Maps</x-secondary-button>
                     @endif
                 </div>
                 <p class="mt-4 text-sm leading-6 text-cimuning-slate">Transaksi dilakukan langsung dengan pemilik usaha. Website ini tidak menyediakan checkout atau pembayaran.</p>
@@ -36,10 +104,61 @@
     </section>
 
     <section class="bg-white py-10 md:py-16">
+        <div class="container-cimuning grid gap-6 lg:grid-cols-[1fr_380px]">
+            <div>
+                <p class="text-sm font-semibold uppercase tracking-wide text-cimuning-red">Lokasi</p>
+                <h2 class="mt-2 text-2xl font-bold text-cimuning-charcoal">Temukan lokasi usaha</h2>
+                <p class="mt-3 max-w-2xl text-base leading-8 text-cimuning-slate">
+                    Gunakan Maps untuk melihat perkiraan lokasi usaha. Pastikan kembali alamat atau titik temu melalui WhatsApp sebelum berkunjung.
+                </p>
+            </div>
+
+            <div class="rounded-card border border-cimuning-border bg-cimuning-section p-5">
+                <p class="text-base font-semibold text-cimuning-charcoal">{{ $umkm->address ?? 'Alamat belum tersedia' }}</p>
+                @if ($hasCoordinates)
+                    <p class="mt-2 text-sm text-cimuning-slate">{{ $umkm->latitude }}, {{ $umkm->longitude }}</p>
+                @endif
+                @if ($mapsUrl)
+                    <x-secondary-button href="{{ $mapsUrl }}" target="_blank" rel="noopener" class="mt-4 w-full">Buka di Google Maps</x-secondary-button>
+                @endif
+            </div>
+        </div>
+
+        <div class="container-cimuning mt-7">
+            @if ($mapsEmbedUrl)
+                <div class="overflow-hidden rounded-card border border-cimuning-border bg-cimuning-section shadow-card">
+                    <iframe
+                        src="{{ $mapsEmbedUrl }}"
+                        title="Peta lokasi {{ $umkm->name }}"
+                        class="h-72 w-full border-0 md:h-96"
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                    ></iframe>
+                </div>
+            @else
+                <div class="rounded-card border border-dashed border-cimuning-border bg-cimuning-section p-8 text-center">
+                    <h3 class="text-xl font-bold text-cimuning-charcoal">Lokasi belum dilengkapi</h3>
+                    <p class="mt-2 text-base leading-7 text-cimuning-slate">Hubungi pemilik usaha untuk mendapatkan alamat atau titik temu yang paling akurat.</p>
+                </div>
+            @endif
+        </div>
+    </section>
+
+    <section class="bg-cimuning-section pb-28 pt-10 md:pb-16 md:pt-16">
         <div class="container-cimuning">
-            <h2 class="text-2xl font-bold text-cimuning-charcoal">Produk dan jasa</h2>
+            <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                <div>
+                    <p class="text-sm font-semibold uppercase tracking-wide text-cimuning-red">Katalog digital</p>
+                    <h2 class="mt-2 text-2xl font-bold text-cimuning-charcoal">Produk dan jasa</h2>
+                </div>
+                <p class="max-w-xl text-base leading-7 text-cimuning-slate">Pilih produk atau jasa yang menarik, lalu tanyakan langsung ke pemilik usaha melalui WhatsApp.</p>
+            </div>
+
             @if ($umkm->products->isEmpty())
-                <p class="mt-4 text-base text-cimuning-slate">Belum ada produk yang ditampilkan.</p>
+                <div class="mt-7 rounded-card border border-dashed border-cimuning-border bg-white p-8 text-center">
+                    <h3 class="text-xl font-bold text-cimuning-charcoal">Belum ada produk yang ditampilkan</h3>
+                    <p class="mt-2 text-base leading-7 text-cimuning-slate">Katalog UMKM ini akan diperbarui setelah pemilik usaha menambahkan produk atau jasa.</p>
+                </div>
             @else
                 <div class="mt-7 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                     @foreach ($umkm->products as $product)
@@ -49,4 +168,17 @@
             @endif
         </div>
     </section>
+
+    @if ($whatsappUrl || $mapsUrl)
+        <div class="fixed inset-x-0 bottom-0 z-40 border-t border-cimuning-border bg-white/95 px-4 py-3 shadow-[0_-8px_24px_rgba(16,24,40,0.12)] backdrop-blur lg:hidden">
+            <div class="mx-auto grid max-w-xl gap-2 {{ $whatsappUrl && $mapsUrl ? 'grid-cols-2' : 'grid-cols-1' }}">
+                @if ($whatsappUrl)
+                    <x-whatsapp-button href="{{ $whatsappUrl }}" target="_blank" rel="noopener" class="w-full px-3">Chat WhatsApp</x-whatsapp-button>
+                @endif
+                @if ($mapsUrl)
+                    <x-secondary-button href="{{ $mapsUrl }}" target="_blank" rel="noopener" class="w-full px-3">Buka Maps</x-secondary-button>
+                @endif
+            </div>
+        </div>
+    @endif
 </x-public-layout>
