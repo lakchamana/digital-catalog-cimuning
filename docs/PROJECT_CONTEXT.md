@@ -24,7 +24,7 @@ Website ini tidak menangani pembayaran, checkout, cart, ongkir otomatis, atau tr
 - Database: MySQL pada fase implementasi data.
 - Frontend: Blade dan Tailwind CSS.
 - Interactivity: Livewire untuk search/filter/pagination/form data, Alpine.js untuk drawer, modal, dropdown, dan hamburger menu.
-- Auth: Laravel authentication system pada fase dashboard.
+- Auth/back office: Laravel authentication system melalui Laravel Filament 5 untuk panel `/admin`.
 
 ## Prinsip Desain
 
@@ -47,6 +47,12 @@ Mayoritas user diasumsikan memakai smartphone. Semua halaman harus nyaman diguna
 - Admin: mengelola kategori, UMKM, produk/jasa, foto, dan status verifikasi.
 - UMKM Owner: mengelola profil dan produk miliknya sendiri.
 - Public User/Guest: melihat homepage, mencari UMKM, melihat produk/jasa, dan menghubungi UMKM tanpa login.
+
+## Dashboard Back Office
+
+Panel `/admin` memakai Laravel Filament 5. Public pages tetap Blade + Livewire dan tidak dipindahkan ke Filament. Admin dapat mengelola kategori, semua UMKM, semua produk, upload foto, dan status verifikasi. UMKM owner dapat masuk panel tetapi query resource dibatasi ke UMKM dan produk miliknya sendiri.
+
+Upload gambar memakai public disk Laravel dan storage link `public/storage`. Gambar yang didukung pada tahap ini adalah JPG, PNG, dan WEBP dengan batas konservatif 2 MB.
 
 ## Fitur MVP
 

@@ -21,6 +21,10 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Alpine.js dipakai untuk UI ringan seperti mobile drawer.
 - Livewire digunakan untuk listing `/umkm` melalui `App\Livewire\Public\UmkmSearch`.
 - Livewire digunakan untuk listing `/produk` melalui `App\Livewire\Public\ProductSearch`.
+- Laravel Filament 5 digunakan untuk back office `/admin`, bukan untuk mengganti UI publik.
+- Akses panel Filament dibatasi lewat `User::canAccessPanel()` untuk role `admin` dan `umkm_owner`.
+- Policy kategori, UMKM, dan produk didaftarkan eksplisit di `AppServiceProvider`.
+- Resource Filament melakukan scoping data: admin melihat semua, UMKM owner hanya melihat UMKM/produk miliknya.
 - Core Eloquent models sudah dibuat: `Category`, `Umkm`, `Product`, `ProductImage`, `UmkmContact`, dan `UmkmSocialLink`.
 - Homepage, listing UMKM, listing produk, kategori, dan detail UMKM sudah membaca database jika tabel tersedia.
 - View publik tetap memiliki fallback aman ketika database belum dimigrasi atau MySQL belum aktif.
@@ -60,11 +64,17 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Livewire UMKM search/filter sudah dibuat dengan keyword, kategori, RW, verified, layanan, sort, pagination, loading skeleton, empty state, dan mobile bottom sheet.
 - Branding sudah diganti menjadi Cimuning Digital Hub di UI utama, metadata, `.env`, dan `.env.example`.
 - Livewire produk search/filter sudah dibuat dengan keyword, kategori, UMKM, harga, sort, pagination, loading skeleton, empty state, dan mobile bottom sheet.
+- Filament v5.6.7 sudah terpasang dan panel `/admin` sudah dibuat.
+- Resource admin tersedia untuk kategori, UMKM, dan produk.
+- Admin bisa melakukan verifikasi UMKM melalui action cepat di tabel UMKM.
+- Owner UMKM bisa masuk panel dan hanya melihat/mengelola data miliknya sendiri.
+- Upload logo/cover UMKM dan gambar produk memakai public disk melalui `public/storage`.
+- `php artisan test` sudah hijau dan berisi test tambahan untuk akses panel dan scoping owner.
 
 ## Next Steps
 
 1. Polish detail UMKM dengan sticky CTA mobile, section Maps yang lebih jelas, dan galeri produk.
-2. Mulai setup auth Laravel dan dashboard dasar.
-3. Tambahkan CRUD kategori setelah auth/dashboard siap.
-4. Tambahkan policy/middleware role untuk admin dan UMKM owner.
-5. Tambahkan upload gambar aman untuk logo, cover, dan produk.
+2. Uji manual `/admin` di browser dengan `admin@cimuning.test` / `password` dan owner dummy / `password`.
+3. Tambahkan form pendaftaran UMKM publik yang masuk sebagai status `pending`.
+4. Tambahkan validasi slug otomatis/unik agar admin dan owner tidak perlu menulis slug manual.
+5. Tambahkan notifikasi dashboard untuk status verifikasi dan kebutuhan revisi.
