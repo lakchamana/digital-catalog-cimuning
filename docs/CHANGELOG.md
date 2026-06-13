@@ -30,6 +30,9 @@
 - Dashboard stats widget for verified UMKM, pending verification, active products, and active categories.
 - Feature tests for Filament access and UMKM owner product scoping.
 - Polished public UMKM detail page with visual hero, logo display, service badges, sticky contact panel, Maps section, and mobile sticky CTA.
+- Public UMKM registration form at `/daftar-umkm` with validation, optional logo/cover uploads, and pending review status.
+- Reusable unique slug helper for UMKM, category, and product records.
+- Feature tests for public UMKM registration, unique slug generation, invalid uploads, and pending visibility protection.
 
 ### Changed
 - Replaced default Laravel welcome route with Cimuning UMKM homepage.
@@ -43,6 +46,9 @@
 - Admin dashboard direction now uses Filament as the back office layer, while public pages remain Blade and Livewire.
 - `/umkm/{slug}` now eager-loads product images and renders uploaded UMKM/product images when available.
 - Product cards now show uploaded product images and a WhatsApp inquiry CTA when the UMKM has WhatsApp.
+- `/daftar-umkm` now renders the Livewire registration form instead of the MVP placeholder page.
+- Filament category, UMKM, and product forms now auto-fill slugs from names while keeping slugs editable.
+- UMKM admin verification workflow now includes a reject action and deactivates rejected/revision records.
 
 ### Fixed
 - PHPUnit dev dependency is now installed successfully after PHP `zip` became available, so `php artisan test` can run.
@@ -52,3 +58,4 @@
 - MySQL/XAMPP is now active and user confirmed `php artisan migrate --seed` was run successfully.
 - Local PHP CLI has required extensions for Filament install: `intl`, `zip`, `fileinfo`, `mbstring`, `openssl`, and `pdo_mysql`.
 - Google Maps on public detail pages uses public Maps links/embed without an API key; click tracking is deferred.
+- Public UMKM registrations do not create owner accounts automatically; admin can assign an owner later from Filament.

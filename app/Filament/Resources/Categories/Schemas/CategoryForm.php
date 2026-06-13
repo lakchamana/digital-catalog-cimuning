@@ -2,11 +2,15 @@
 
 namespace App\Filament\Resources\Categories\Schemas;
 
+use App\Models\Category;
+use App\Support\UniqueSlug;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Model;
 
 class CategoryForm
 {
@@ -19,7 +23,12 @@ class CategoryForm
                         TextInput::make('name')
                             ->label('Nama kategori')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn (Set $set, ?string $state, ?Model $record) => $set(
+                                'slug',
+                                UniqueSlug::make((string) $state, Category::class, ignoreId: $record?->getKey()),
+                            )),
                         TextInput::make('slug')
                             ->required()
                             ->maxLength(255)

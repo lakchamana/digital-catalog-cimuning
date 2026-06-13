@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Products\Schemas;
 
+use App\Models\Product;
+use App\Support\UniqueSlug;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -9,8 +11,10 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class ProductForm
 {
@@ -47,7 +51,12 @@ class ProductForm
                         TextInput::make('name')
                             ->label('Nama produk')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn (Set $set, ?string $state, ?Model $record) => $set(
+                                'slug',
+                                UniqueSlug::make((string) $state, Product::class, ignoreId: $record?->getKey()),
+                            )),
                         TextInput::make('slug')
                             ->required()
                             ->maxLength(255)

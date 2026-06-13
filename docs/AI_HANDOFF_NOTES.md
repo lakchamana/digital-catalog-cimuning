@@ -30,6 +30,8 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - View publik tetap memiliki fallback aman ketika database belum dimigrasi atau MySQL belum aktif.
 - Listing `/umkm` menyimpan filter di query string: `search`, `category`, `rw`, `verified`, `services`, `sort`, `perPage`, dan `page`.
 - Listing `/produk` menyimpan filter di query string: `search`, `category`, `umkm`, `price`, `sort`, `perPage`, dan `page`.
+- Pendaftaran publik `/daftar-umkm` memakai Livewire `App\Livewire\Public\UmkmRegistrationForm`.
+- Slug unik dibuat lewat helper `App\Support\UniqueSlug` dan dipakai pada pendaftaran publik serta auto-fill form Filament.
 
 ## Keputusan Desain
 
@@ -72,11 +74,17 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - `php artisan test` sudah hijau dan berisi test tambahan untuk akses panel dan scoping owner.
 - Halaman detail UMKM `/umkm/{slug}` sudah dipoles dengan hero gambar, logo UMKM, badge layanan, Maps embed/link, sticky contact panel desktop, sticky CTA mobile, dan katalog produk berbasis gambar upload.
 - Route detail UMKM sudah eager-load `products.images` untuk menghindari N+1 pada galeri produk.
+- Placeholder `/daftar-umkm` sudah diganti dengan form pendaftaran publik.
+- Form pendaftaran publik membuat UMKM `pending`, `is_active = false`, tanpa membuat akun owner otomatis.
+- Upload logo/cover dari pendaftaran publik disimpan ke public disk dengan validasi JPG/PNG/WEBP maksimal 2 MB.
+- Filament form kategori, UMKM, dan produk sudah auto-fill slug dari nama.
+- Tabel UMKM Filament memiliki action admin: Verifikasi, Minta revisi, dan Tolak.
+- Test pendaftaran publik sudah ditambahkan, termasuk slug unik, upload invalid, dan proteksi UMKM pending dari public listing/detail.
 
 ## Next Steps
 
 1. Uji manual `/admin` di browser dengan `admin@cimuning.test` / `password` dan owner dummy / `password`.
-2. Tambahkan form pendaftaran UMKM publik yang masuk sebagai status `pending`.
-3. Tambahkan validasi slug otomatis/unik agar admin dan owner tidak perlu menulis slug manual.
-4. Tambahkan notifikasi dashboard untuk status verifikasi dan kebutuhan revisi.
-5. Tambahkan tracking klik WhatsApp/Maps sebagai leads pada fase berikutnya.
+2. Tambahkan notifikasi dashboard untuk status verifikasi dan kebutuhan revisi.
+3. Tambahkan tracking klik WhatsApp/Maps sebagai leads pada fase berikutnya.
+4. Tambahkan halaman/status tracking sederhana untuk pendaftar publik bila dibutuhkan.
+5. Poles accessibility form dan validasi copy setelah uji manual mobile.

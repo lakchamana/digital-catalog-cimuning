@@ -95,11 +95,11 @@ Route::get('/umkm/{slug}', function (string $slug) use ($hasTables) {
     return view('umkm.show', compact('umkm'));
 })->name('umkm.show');
 
-Route::view('/daftar-umkm', 'pages.placeholder', [
-    'title' => 'Daftarkan UMKM',
-    'heading' => 'Daftarkan UMKM Anda',
-    'description' => 'Form pendaftaran UMKM akan dibuat dengan validasi, upload foto, dan alur verifikasi pada fase dashboard.',
-])->name('umkm.register');
+Route::get('/daftar-umkm', function () use ($hasTables) {
+    abort_unless($hasTables(['categories', 'umkms']), 503);
+
+    return view('umkm.register');
+})->name('umkm.register');
 
 Route::view('/tentang', 'pages.placeholder', [
     'title' => 'Tentang',

@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Umkms\Schemas;
 
+use App\Models\Umkm;
+use App\Support\UniqueSlug;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -9,7 +11,9 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Model;
 
 class UmkmForm
 {
@@ -40,7 +44,12 @@ class UmkmForm
                         TextInput::make('name')
                             ->label('Nama UMKM')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn (Set $set, ?string $state, ?Model $record) => $set(
+                                'slug',
+                                UniqueSlug::make((string) $state, Umkm::class, ignoreId: $record?->getKey()),
+                            )),
                         TextInput::make('slug')
                             ->required()
                             ->maxLength(255)

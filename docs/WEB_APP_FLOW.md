@@ -39,16 +39,19 @@
 1. User membuka `/daftar-umkm`.
 2. User mengisi data usaha, kategori, kontak, alamat, layanan, dan foto.
 3. Sistem memvalidasi input dan upload.
-4. Data masuk dengan status pending.
-5. Admin melakukan verifikasi.
+4. Sistem membuat slug unik dan menyimpan data dengan status pending serta belum aktif.
+5. Akun owner tidak dibuat otomatis pada tahap ini.
+6. Admin melakukan verifikasi dari dashboard.
 
 ## Flow Verifikasi UMKM
 
 1. Admin membuka dashboard verification.
 2. Admin memeriksa UMKM pending.
 3. Admin memilih verified, rejected, atau need revision.
-4. Owner melihat status terbaru di dashboard.
-5. Public hanya melihat UMKM yang aktif dan layak tampil.
+4. Status verified mengaktifkan UMKM agar tampil publik.
+5. Status rejected atau need revision menonaktifkan UMKM dari tampilan publik.
+6. Owner melihat status terbaru di dashboard jika sudah memiliki akun/assignment.
+7. Public hanya melihat UMKM yang aktif dan verified.
 
 ## Flow Tambah Produk/Jasa
 

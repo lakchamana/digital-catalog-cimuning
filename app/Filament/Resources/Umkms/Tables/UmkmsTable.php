@@ -139,7 +139,14 @@ class UmkmsTable
                     ->color('warning')
                     ->requiresConfirmation()
                     ->visible(fn (Umkm $record): bool => Filament::auth()->user()?->isAdmin() && $record->status !== 'need_revision')
-                    ->action(fn (Umkm $record) => $record->update(['status' => 'need_revision'])),
+                    ->action(fn (Umkm $record) => $record->update(['status' => 'need_revision', 'is_active' => false])),
+                Action::make('reject')
+                    ->label('Tolak')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->visible(fn (Umkm $record): bool => Filament::auth()->user()?->isAdmin() && $record->status !== 'rejected')
+                    ->action(fn (Umkm $record) => $record->update(['status' => 'rejected', 'is_active' => false])),
                 EditAction::make(),
             ])
             ->toolbarActions([
