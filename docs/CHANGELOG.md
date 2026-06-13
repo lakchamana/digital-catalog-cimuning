@@ -14,15 +14,21 @@
 - Idempotent seed data for admin, UMKM owners, categories, verified UMKMs, contacts, social links, and products.
 - Database-aware public homepage, UMKM listing, product listing, category listing, and UMKM detail page.
 - Product card component for product/service discovery.
+- Livewire UMKM search component with shareable query string filters.
+- UMKM filters for keyword, category, RW, verified status, services, sorting, and pagination size.
+- Mobile filter bottom sheet with Alpine.js and loading skeleton state for UMKM discovery.
+- Service badges on UMKM cards.
 
 ### Changed
 - Replaced default Laravel welcome route with Cimuning UMKM homepage.
 - Homepage now reads categories and featured UMKMs from the database when tables are available, with static fallback for pre-migration development.
 - `/umkm` and `/produk` now support simple database-backed keyword search when seeded data is available.
+- `/umkm` listing now uses Livewire instead of a plain GET form/controller query.
+- `/kategori/{slug}` now renders the Livewire UMKM listing with an initial category filter.
 
 ### Fixed
 -
 
 ### Notes
 - MVP remains a directory/catalog platform. Payment, checkout, cart, and transaction flows are intentionally excluded.
-- MySQL migration was not run locally because the MySQL service on `127.0.0.1:3306` refused the connection. Migrations and seeders were verified with SQLite in-memory.
+- MySQL/XAMPP is now active and user confirmed `php artisan migrate --seed` was run successfully.

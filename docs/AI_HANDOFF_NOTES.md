@@ -19,10 +19,11 @@ Project ini adalah Cimuning UMKM Online Directory, sebuah katalog online UMKM Ci
 - Stack utama: Laravel, Blade, Tailwind CSS, Livewire, Alpine.js, MySQL.
 - Tailwind v4 digunakan melalui Vite dan token warna didefinisikan di `resources/css/app.css`.
 - Alpine.js dipakai untuk UI ringan seperti mobile drawer.
-- Livewire disiapkan sebagai dependency untuk fase search/filter/form, namun komponen Livewire database belum dibuat pada tahap pertama.
+- Livewire digunakan untuk listing `/umkm` melalui `App\Livewire\Public\UmkmSearch`.
 - Core Eloquent models sudah dibuat: `Category`, `Umkm`, `Product`, `ProductImage`, `UmkmContact`, dan `UmkmSocialLink`.
 - Homepage, listing UMKM, listing produk, kategori, dan detail UMKM sudah membaca database jika tabel tersedia.
 - View publik tetap memiliki fallback aman ketika database belum dimigrasi atau MySQL belum aktif.
+- Listing `/umkm` menyimpan filter di query string: `search`, `category`, `rw`, `verified`, `services`, `sort`, `perPage`, dan `page`.
 
 ## Keputusan Desain
 
@@ -51,12 +52,13 @@ Project ini adalah Cimuning UMKM Online Directory, sebuah katalog online UMKM Ci
 - Route publik tersedia untuk `/`, `/umkm`, `/umkm/{slug}`, `/produk`, `/kategori/{slug}`, `/daftar-umkm`, `/tentang`, dan `/kontak`.
 - Migration inti, relationship model, dan seeder dummy sudah dibuat.
 - Seeder membuat admin `admin@cimuning.test` dan owner dummy dengan password `password`.
-- MySQL lokal belum dimigrasi karena service di `127.0.0.1:3306` menolak koneksi. Migration dan seeder sudah lolos verifikasi dengan SQLite in-memory.
+- User sudah mengaktifkan XAMPP/MySQL/Apache dan menjalankan `php artisan migrate --seed`.
+- Livewire UMKM search/filter sudah dibuat dengan keyword, kategori, RW, verified, layanan, sort, pagination, loading skeleton, empty state, dan mobile bottom sheet.
 
 ## Next Steps
 
-1. Jalankan MySQL lokal, buat database `cimuning_umkm`, lalu jalankan `php artisan migrate --seed`.
-2. Buat Livewire component untuk UMKM search dengan query string, filter kategori/RW/verified/layanan, pagination, loading state, dan empty state.
-3. Tambahkan pagination pada listing `/umkm` dan `/produk`.
-4. Polish detail UMKM dengan sticky CTA mobile dan galeri produk.
-5. Mulai setup auth dan dashboard dasar setelah public discovery stabil.
+1. Buat Livewire component untuk `/produk` agar search produk juga punya filter dan pagination.
+2. Polish detail UMKM dengan sticky CTA mobile dan galeri produk.
+3. Mulai setup auth Laravel dan dashboard dasar.
+4. Tambahkan CRUD kategori setelah auth/dashboard siap.
+5. Tambahkan policy/middleware role untuk admin dan UMKM owner.

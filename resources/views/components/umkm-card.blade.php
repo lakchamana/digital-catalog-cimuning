@@ -7,6 +7,7 @@
     'verified' => true,
     'slug' => null,
     'whatsappUrl' => null,
+    'services' => [],
 ])
 
 <article {{ $attributes->merge(['class' => 'group overflow-hidden rounded-card border border-cimuning-border bg-white shadow-card transition duration-200 hover:-translate-y-0.5 hover:shadow-card-hover']) }}>
@@ -27,6 +28,20 @@
             <p class="mt-2 line-clamp-3 text-base leading-7 text-cimuning-slate">{{ $description }}</p>
         </div>
         <p class="text-sm font-medium text-cimuning-slate">{{ $location }}</p>
+        @if (collect($services)->filter()->isNotEmpty())
+            <div class="flex flex-wrap gap-2">
+                @foreach ([
+                    'delivery' => 'Delivery',
+                    'cod' => 'COD',
+                    'custom_order' => 'Custom Order',
+                    'physical_store' => 'Toko Fisik',
+                ] as $key => $label)
+                    @if (! empty($services[$key]))
+                        <span class="rounded-button border border-cimuning-border bg-cimuning-section px-3 py-1 text-xs font-medium text-cimuning-slate">{{ $label }}</span>
+                    @endif
+                @endforeach
+            </div>
+        @endif
         <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <x-secondary-button href="{{ $slug ? route('umkm.show', $slug) : route('umkm.index') }}" class="w-full">Lihat Detail</x-secondary-button>
             <x-whatsapp-button href="{{ $whatsappUrl ?? 'https://wa.me/6281234567890' }}" class="w-full">Chat WhatsApp</x-whatsapp-button>

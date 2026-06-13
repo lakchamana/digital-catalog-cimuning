@@ -36,6 +36,10 @@
         color: var(--color-cimuning-charcoal);
     }
 
+    [x-cloak] {
+        display: none !important;
+    }
+
     a,
     button,
     input,

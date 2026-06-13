@@ -47,37 +47,11 @@ Route::get('/', function () use ($hasTables) {
 })->name('home');
 
 Route::get('/umkm', function () use ($hasTables) {
-    $search = request('search');
-    $category = request('category');
-    $umkms = collect();
-    $categories = collect();
+    abort_unless($hasTables(['categories', 'umkms', 'products']), 503);
 
-    if ($hasTables(['categories', 'umkms', 'products'])) {
-        $categories = Category::query()
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->orderBy('name')
-            ->get();
-
-        $umkms = Umkm::query()
-            ->with('category')
-            ->where('is_active', true)
-            ->where('status', 'verified')
-            ->when($category, fn ($query) => $query->whereHas('category', fn ($categoryQuery) => $categoryQuery->where('slug', $category)->orWhere('name', $category)))
-            ->when($search, function ($query) use ($search) {
-                $query->where(function ($nested) use ($search) {
-                    $nested->where('name', 'like', "%{$search}%")
-                        ->orWhere('description', 'like', "%{$search}%")
-                        ->orWhere('rw', 'like', "%{$search}%")
-                        ->orWhereHas('category', fn ($categoryQuery) => $categoryQuery->where('name', 'like', "%{$search}%"))
-                        ->orWhereHas('products', fn ($productQuery) => $productQuery->where('name', 'like', "%{$search}%")->orWhere('description', 'like', "%{$search}%"));
-                });
-            })
-            ->latest()
-            ->get();
-    }
-
-    return view('umkm.index', compact('umkms', 'categories', 'search', 'category'));
+    return view('umkm.index', [
+        'category' => request('category'),
+    ]);
 })->name('umkm.index');
 
 Route::get('/produk', function () use ($hasTables) {
@@ -110,17 +84,7 @@ Route::get('/kategori/{slug}', function (string $slug) use ($hasTables) {
     }
 
     $category = Category::query()->where('slug', $slug)->where('is_active', true)->firstOrFail();
-    $umkms = $category->umkms()
-        ->with('category')
-        ->where('is_active', true)
-        ->where('status', 'verified')
-        ->latest()
-        ->get();
-
     return view('umkm.index', [
-        'umkms' => $umkms,
-        'categories' => Category::query()->where('is_active', true)->orderBy('sort_order')->get(),
-        'search' => null,
         'category' => $category->slug,
         'pageTitle' => "Kategori {$category->name}",
     ]);
