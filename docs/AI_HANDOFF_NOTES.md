@@ -2,7 +2,7 @@
 
 ## Context Singkat
 
-Project ini adalah Cimuning UMKM Online Directory, sebuah katalog online UMKM Cimuning, Kota Bekasi. Fokusnya adalah discovery, search, profil UMKM, produk/jasa, status verified, dan kontak langsung lewat WhatsApp/maps/media sosial.
+Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Kota Bekasi. Fokusnya adalah discovery, search, profil UMKM, katalog produk digital, status verified, lokasi Google Maps, dan kontak langsung lewat WhatsApp/media sosial.
 
 ## File Penting Yang Harus Dibaca
 
@@ -20,10 +20,12 @@ Project ini adalah Cimuning UMKM Online Directory, sebuah katalog online UMKM Ci
 - Tailwind v4 digunakan melalui Vite dan token warna didefinisikan di `resources/css/app.css`.
 - Alpine.js dipakai untuk UI ringan seperti mobile drawer.
 - Livewire digunakan untuk listing `/umkm` melalui `App\Livewire\Public\UmkmSearch`.
+- Livewire digunakan untuk listing `/produk` melalui `App\Livewire\Public\ProductSearch`.
 - Core Eloquent models sudah dibuat: `Category`, `Umkm`, `Product`, `ProductImage`, `UmkmContact`, dan `UmkmSocialLink`.
 - Homepage, listing UMKM, listing produk, kategori, dan detail UMKM sudah membaca database jika tabel tersedia.
 - View publik tetap memiliki fallback aman ketika database belum dimigrasi atau MySQL belum aktif.
 - Listing `/umkm` menyimpan filter di query string: `search`, `category`, `rw`, `verified`, `services`, `sort`, `perPage`, dan `page`.
+- Listing `/produk` menyimpan filter di query string: `search`, `category`, `umkm`, `price`, `sort`, `perPage`, dan `page`.
 
 ## Keputusan Desain
 
@@ -34,6 +36,8 @@ Project ini adalah Cimuning UMKM Online Directory, sebuah katalog online UMKM Ci
 - Biru untuk link/maps/action sekunder.
 - Tombol WhatsApp menggunakan hijau WhatsApp.
 - Layout dibuat mobile-first.
+- Logo utama berada di `public/assets/brand/logo-cimuning.png` dan juga dipakai sebagai favicon PNG.
+- Nama aplikasi utama adalah `Cimuning Digital Hub`.
 
 ## Larangan Penting
 
@@ -54,11 +58,13 @@ Project ini adalah Cimuning UMKM Online Directory, sebuah katalog online UMKM Ci
 - Seeder membuat admin `admin@cimuning.test` dan owner dummy dengan password `password`.
 - User sudah mengaktifkan XAMPP/MySQL/Apache dan menjalankan `php artisan migrate --seed`.
 - Livewire UMKM search/filter sudah dibuat dengan keyword, kategori, RW, verified, layanan, sort, pagination, loading skeleton, empty state, dan mobile bottom sheet.
+- Branding sudah diganti menjadi Cimuning Digital Hub di UI utama, metadata, `.env`, dan `.env.example`.
+- Livewire produk search/filter sudah dibuat dengan keyword, kategori, UMKM, harga, sort, pagination, loading skeleton, empty state, dan mobile bottom sheet.
 
 ## Next Steps
 
-1. Buat Livewire component untuk `/produk` agar search produk juga punya filter dan pagination.
-2. Polish detail UMKM dengan sticky CTA mobile dan galeri produk.
-3. Mulai setup auth Laravel dan dashboard dasar.
-4. Tambahkan CRUD kategori setelah auth/dashboard siap.
-5. Tambahkan policy/middleware role untuk admin dan UMKM owner.
+1. Polish detail UMKM dengan sticky CTA mobile, section Maps yang lebih jelas, dan galeri produk.
+2. Mulai setup auth Laravel dan dashboard dasar.
+3. Tambahkan CRUD kategori setelah auth/dashboard siap.
+4. Tambahkan policy/middleware role untuk admin dan UMKM owner.
+5. Tambahkan upload gambar aman untuk logo, cover, dan produk.

@@ -11,10 +11,10 @@
 <header x-data="{ open: false }" class="sticky top-0 z-50 border-b border-cimuning-border bg-white/95 backdrop-blur">
     <nav class="container-cimuning flex h-16 items-center justify-between gap-4 lg:h-[72px]" aria-label="Navigasi utama">
         <a href="{{ route('home') }}" class="flex min-h-11 items-center gap-3 rounded-button focus:outline-2">
-            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-cimuning-red text-lg font-bold text-white shadow-card">C</span>
+            <img src="{{ asset('assets/brand/logo-cimuning.png') }}" alt="Logo Cimuning Digital Hub" class="h-10 w-10 rounded-xl object-contain shadow-card">
             <span class="leading-tight">
-                <span class="block text-sm font-bold text-cimuning-charcoal sm:text-base">Cimuning UMKM</span>
-                <span class="block text-xs text-cimuning-slate">Online Directory</span>
+                <span class="block text-sm font-bold text-cimuning-charcoal sm:text-base">Cimuning Digital Hub</span>
+                <span class="block text-xs text-cimuning-slate">Direktori UMKM Cimuning</span>
             </span>
         </a>
 

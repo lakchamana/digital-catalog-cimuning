@@ -55,27 +55,9 @@ Route::get('/umkm', function () use ($hasTables) {
 })->name('umkm.index');
 
 Route::get('/produk', function () use ($hasTables) {
-    $search = request('search');
-    $products = collect();
+    abort_unless($hasTables(['products', 'umkms', 'categories']), 503);
 
-    if ($hasTables(['products', 'umkms', 'categories'])) {
-        $products = Product::query()
-            ->with(['umkm', 'category'])
-            ->where('is_active', true)
-            ->whereHas('umkm', fn ($query) => $query->where('is_active', true)->where('status', 'verified'))
-            ->when($search, function ($query) use ($search) {
-                $query->where(function ($nested) use ($search) {
-                    $nested->where('name', 'like', "%{$search}%")
-                        ->orWhere('description', 'like', "%{$search}%")
-                        ->orWhereHas('umkm', fn ($umkmQuery) => $umkmQuery->where('name', 'like', "%{$search}%"))
-                        ->orWhereHas('category', fn ($categoryQuery) => $categoryQuery->where('name', 'like', "%{$search}%"));
-                });
-            })
-            ->latest()
-            ->get();
-    }
-
-    return view('products.index', compact('products', 'search'));
+    return view('products.index');
 })->name('products.index');
 
 Route::get('/kategori/{slug}', function (string $slug) use ($hasTables) {
@@ -113,8 +95,8 @@ Route::view('/daftar-umkm', 'pages.placeholder', [
 
 Route::view('/tentang', 'pages.placeholder', [
     'title' => 'Tentang',
-    'heading' => 'Tentang Cimuning UMKM Online Directory',
-    'description' => 'Platform ini membantu warga menemukan UMKM lokal dan menghubungi pelaku usaha secara langsung.',
+    'heading' => 'Tentang Cimuning Digital Hub',
+    'description' => 'Platform ini membantu warga menemukan UMKM lokal Cimuning, melihat katalog produk digital, membuka lokasi Google Maps, dan menghubungi pelaku usaha secara langsung.',
 ])->name('about');
 
 Route::view('/kontak', 'pages.placeholder', [

@@ -49,12 +49,12 @@
     <section class="bg-cimuning-white">
         <div class="container-cimuning grid gap-10 py-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:py-20">
             <div>
-                <x-category-badge>Direktori UMKM Cimuning</x-category-badge>
+                <x-category-badge>Cimuning Digital Hub</x-category-badge>
                 <h1 class="mt-5 text-4xl font-bold leading-tight text-cimuning-charcoal md:text-5xl">
-                    Temukan UMKM Cimuning dengan lebih mudah
+                    Temukan UMKM Cimuning dalam satu hub digital
                 </h1>
                 <p class="mt-5 max-w-2xl text-base leading-8 text-cimuning-slate md:text-lg">
-                    Cari makanan, jasa, toko harian, produk kreatif, dan usaha lokal di sekitar Cimuning. Hubungi pemilik usaha langsung lewat WhatsApp, maps, atau media sosial.
+                    Jelajahi usaha lokal, lihat katalog produk digital, temukan lokasi lewat Google Maps, lalu hubungi pemilik UMKM langsung melalui WhatsApp atau media sosial.
                 </p>
 
                 <form action="{{ route('umkm.index') }}" method="GET" class="mt-8 rounded-card border border-cimuning-border bg-white p-4 shadow-card md:p-5">
@@ -64,7 +64,7 @@
                         <x-primary-button class="w-full md:w-auto">Cari UMKM</x-primary-button>
                     </div>
                     <p class="mt-3 text-sm leading-6 text-cimuning-slate">
-                        Platform ini membantu mempertemukan pembeli dan pelaku UMKM. Transaksi dilakukan langsung dengan pemilik usaha.
+                        Cimuning Digital Hub membantu mempertemukan warga dan pelaku UMKM. Transaksi tetap dilakukan langsung dengan pemilik usaha, tanpa checkout di website.
                     </p>
                 </form>
 
@@ -93,8 +93,8 @@
                             <p class="mt-1 text-sm text-cimuning-slate">UMKM potensial</p>
                         </div>
                         <div class="rounded-card border border-cimuning-border bg-white p-4">
-                            <p class="text-2xl font-bold text-cimuning-green">Verified</p>
-                            <p class="mt-1 text-sm text-cimuning-slate">Status kepercayaan</p>
+                            <p class="text-2xl font-bold text-cimuning-green">Maps</p>
+                            <p class="mt-1 text-sm text-cimuning-slate">Lokasi usaha</p>
                         </div>
                     </div>
                 </div>
@@ -127,7 +127,7 @@
         <div class="container-cimuning">
             <div class="max-w-2xl">
                 <h2 class="text-2xl font-bold text-cimuning-charcoal md:text-3xl">UMKM pilihan</h2>
-                <p class="mt-2 text-base leading-7 text-cimuning-slate">Contoh tampilan card untuk UMKM verified. Data ini sementara sampai database dan Livewire search dibuat.</p>
+                <p class="mt-2 text-base leading-7 text-cimuning-slate">UMKM verified yang bisa ditemukan melalui katalog digital dan dihubungi langsung oleh warga.</p>
             </div>
 
             <div class="mt-7 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -154,7 +154,7 @@
                     <div>
                         <h2 class="text-2xl font-bold md:text-3xl">Punya usaha di Cimuning?</h2>
                         <p class="mt-3 max-w-2xl text-base leading-8 text-white/80">
-                            Daftarkan UMKM Anda agar lebih mudah ditemukan warga. Admin akan membantu proses verifikasi data pada tahap dashboard berikutnya.
+                            Daftarkan UMKM Anda agar profil usaha, katalog produk, kontak WhatsApp, dan lokasi usaha lebih mudah ditemukan warga Cimuning.
                         </p>
                     </div>
                     <x-primary-button href="{{ route('umkm.register') }}" class="bg-cimuning-red hover:bg-cimuning-deep">Daftarkan UMKM</x-primary-button>

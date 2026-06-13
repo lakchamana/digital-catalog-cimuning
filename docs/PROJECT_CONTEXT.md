@@ -2,11 +2,11 @@
 
 ## Ringkasan
 
-Cimuning UMKM Online Directory adalah web app katalog online untuk membantu masyarakat menemukan UMKM lokal di Cimuning, Kota Bekasi. Platform ini berfungsi sebagai etalase digital dan direktori usaha, bukan e-commerce checkout.
+Cimuning Digital Hub adalah web app katalog online untuk membantu masyarakat menemukan UMKM lokal di Cimuning, Kota Bekasi. Platform ini berfungsi sebagai etalase digital dan direktori usaha yang mengintegrasikan katalog produk digital, lokasi Google Maps, dan jalur kontak langsung ke pelaku usaha.
 
 ## Jenis Platform
 
-Platform ini adalah online directory/katalog digital. Fokus utama aplikasi adalah pencarian UMKM, profil usaha, produk/jasa, status verifikasi, dan jalur kontak langsung seperti WhatsApp, telepon, maps, website, dan media sosial.
+Platform ini adalah online directory/katalog digital. Fokus utama aplikasi adalah pencarian UMKM, profil usaha, produk/jasa, status verifikasi, lokasi Google Maps, dan jalur kontak langsung seperti WhatsApp, telepon, website, dan media sosial.
 
 ## Target User
 

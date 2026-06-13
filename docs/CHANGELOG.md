@@ -18,6 +18,10 @@
 - UMKM filters for keyword, category, RW, verified status, services, sorting, and pagination size.
 - Mobile filter bottom sheet with Alpine.js and loading skeleton state for UMKM discovery.
 - Service badges on UMKM cards.
+- Cimuning logo asset as the main navbar/footer logo and browser tab icon.
+- Livewire product search component with shareable query string filters.
+- Product filters for keyword, category, UMKM, price availability, sorting, and pagination size.
+- Mobile filter bottom sheet and loading skeleton state for product discovery.
 
 ### Changed
 - Replaced default Laravel welcome route with Cimuning UMKM homepage.
@@ -25,6 +29,9 @@
 - `/umkm` and `/produk` now support simple database-backed keyword search when seeded data is available.
 - `/umkm` listing now uses Livewire instead of a plain GET form/controller query.
 - `/kategori/{slug}` now renders the Livewire UMKM listing with an initial category filter.
+- App branding changed to Cimuning Digital Hub.
+- Homepage, navbar, footer, metadata, and environment app name now use the new brand direction.
+- `/produk` listing now uses Livewire instead of a plain GET form/controller query.
 
 ### Fixed
 -

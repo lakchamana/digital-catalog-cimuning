@@ -2,14 +2,14 @@
     <div class="container-cimuning grid gap-8 py-10 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
             <div class="flex items-center gap-3">
-                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-cimuning-red text-lg font-bold text-white">C</span>
+                <img src="{{ asset('assets/brand/logo-cimuning.png') }}" alt="Logo Cimuning Digital Hub" class="h-10 w-10 rounded-xl object-contain">
                 <div>
-                    <p class="font-bold text-cimuning-charcoal">Cimuning UMKM</p>
-                    <p class="text-sm text-cimuning-slate">Online Directory</p>
+                    <p class="font-bold text-cimuning-charcoal">Cimuning Digital Hub</p>
+                    <p class="text-sm text-cimuning-slate">Direktori UMKM Cimuning</p>
                 </div>
             </div>
             <p class="mt-4 max-w-md text-base leading-7 text-cimuning-slate">
-                Platform direktori untuk membantu warga menemukan UMKM Cimuning dan menghubungi pelaku usaha secara langsung.
+                Platform direktori UMKM lokal Cimuning yang menghubungkan katalog produk digital, lokasi Google Maps, dan kontak langsung ke pelaku usaha.
             </p>
         </div>
 
