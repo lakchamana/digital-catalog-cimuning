@@ -74,6 +74,11 @@
 - QR scan tracking via `lead_events.type = qr_scan` with anonymous metadata.
 - Public QR share card on UMKM detail pages and Filament QR download actions for public UMKMs.
 - Feature tests for QR SVG rendering, QR scan redirect tracking, public visibility protection, and owner lead scoping.
+- Dedicated public About and Contact/Help pages replacing MVP placeholders.
+- Feature tests for public information pages, metadata, CTA links, and footer information navigation.
+- Filament product gallery management using the existing `product_images` relation.
+- Shared upload disk helper so Filament uploads follow `FILESYSTEM_DISK` in production while staying compatible with local public storage.
+- Feature tests for product gallery fallback images, gallery ordering, and upload disk selection.
 
 ### Changed
 - Replaced default Laravel welcome route with Cimuning UMKM homepage.
@@ -112,6 +117,10 @@
 - Production uploads now use the `cloudinary` filesystem disk instead of ephemeral local Railway storage.
 - Lead event recording is now centralized through `App\Support\LeadEventRecorder` for WhatsApp, Maps, and QR scan events.
 - Lead analytics widgets now label QR scans as “Scan QR” and include them in recent activity.
+- Footer navigation now includes “Tentang Kami” and “Kontak/Bantuan” links.
+- `/tentang` and `/kontak` now render complete public information views instead of the shared placeholder page.
+- Product upload fields, UMKM logo/cover fields, and Filament image columns now use the configured upload disk instead of hardcoding `public`.
+- Product cards now show the first gallery image when the main image is empty and display a small extra-photo count badge.
 
 ### Fixed
 - PHPUnit dev dependency is now installed successfully after PHP `zip` became available, so `php artisan test` can run.
@@ -141,3 +150,4 @@
 - Do not remove `server.php` while production uses the PHP built-in server; Livewire and Filament asset routes depend on this fallback.
 - Do not switch production `FILESYSTEM_DISK` back to `local` or `public` on Railway because uploaded files would be lost on redeploy.
 - QR v1 intentionally renders SVG only; PNG/poster templates can follow after image extension support or print design requirements are finalized.
+- Contact page v1 intentionally does not show fake phone/email details or collect messages in a database; official contact channels can be added after they are finalized.

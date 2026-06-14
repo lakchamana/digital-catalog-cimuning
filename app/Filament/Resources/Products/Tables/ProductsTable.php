@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Products\Tables;
 
+use App\Models\Product;
+use App\Support\UploadDisk;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -22,7 +24,8 @@ class ProductsTable
             ->columns([
                 ImageColumn::make('image')
                     ->label('Foto')
-                    ->disk('public')
+                    ->state(fn (Product $record): ?string => $record->image ?: $record->images->first()?->path)
+                    ->disk(UploadDisk::name())
                     ->square(),
                 TextColumn::make('umkm.name')
                     ->label('UMKM')
@@ -33,6 +36,12 @@ class ProductsTable
                 TextColumn::make('name')
                     ->label('Produk')
                     ->searchable(),
+                TextColumn::make('images_count')
+                    ->label('Galeri')
+                    ->counts('images')
+                    ->badge()
+                    ->formatStateUsing(fn (int|string|null $state): string => ((int) $state).' foto')
+                    ->color(fn (int|string|null $state): string => ((int) $state) > 0 ? 'info' : 'gray'),
                 TextColumn::make('slug')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),

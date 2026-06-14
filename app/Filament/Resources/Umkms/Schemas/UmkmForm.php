@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Umkms\Schemas;
 
 use App\Models\Umkm;
 use App\Support\OwnerFormHelper;
+use App\Support\UploadDisk;
 use App\Support\UniqueSlug;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
@@ -222,7 +223,7 @@ class UmkmForm
                         ->label('Logo usaha')
                         ->helperText('Opsional. Gunakan gambar JPG, PNG, atau WEBP maksimal 2 MB.')
                         ->image()
-                        ->disk('public')
+                        ->disk(UploadDisk::name())
                         ->directory('umkms/logos')
                         ->visibility('public')
                         ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
@@ -234,7 +235,7 @@ class UmkmForm
                         ->label('Cover usaha')
                         ->helperText('Opsional. Foto tempat usaha atau produk utama akan terlihat di profil.')
                         ->image()
-                        ->disk('public')
+                        ->disk(UploadDisk::name())
                         ->directory('umkms/covers')
                         ->visibility('public')
                         ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])

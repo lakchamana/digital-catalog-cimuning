@@ -44,7 +44,7 @@ class ProductResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery()->with(['category', 'umkm']);
+        $query = parent::getEloquentQuery()->with(['category', 'umkm', 'images']);
         $user = Filament::auth()->user();
 
         if ($user?->isUmkmOwner()) {

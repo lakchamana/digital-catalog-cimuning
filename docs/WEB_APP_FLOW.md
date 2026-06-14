@@ -11,6 +11,13 @@
 7. User menghubungi pemilik usaha lewat WhatsApp, telepon, maps, website, atau media sosial.
 8. Transaksi dilakukan langsung di luar website.
 
+## Flow Informasi Publik
+
+1. User membuka `/tentang` untuk memahami tujuan Cimuning Digital Hub, cara kerja direktori, status verified, QR profil, Maps, dan prinsip kontak langsung.
+2. User membuka `/kontak` atau link “Bantuan” untuk memilih jalur bantuan: cari produk/jasa, lihat UMKM, daftar owner, login owner, verifikasi, atau revisi data.
+3. Halaman kontak v1 tidak menampilkan nomor/email dummy dan tidak menyimpan pesan ke database.
+4. Kontak resmi pengelola dapat ditambahkan setelah kanal resmi final.
+
 ## Flow UMKM Owner
 
 1. Calon owner membuka `/daftar-umkm`.
@@ -104,9 +111,11 @@
 ## Flow Tambah Produk/Jasa
 
 1. Owner membuka dashboard products.
-2. Owner menambah nama, kategori, deskripsi, harga opsional, gambar, dan status aktif.
-3. Sistem memvalidasi data dan upload gambar.
-4. Produk tampil di detail UMKM dan listing produk jika aktif.
+2. Owner menambah nama, kategori, deskripsi, harga opsional, gambar utama, galeri foto opsional, dan status aktif.
+3. Sistem memvalidasi data dan upload gambar JPG/PNG/WEBP maksimal 2 MB per file.
+4. Upload mengikuti disk aktif: public storage di lokal atau Cloudinary saat production memakai `FILESYSTEM_DISK=cloudinary`.
+5. Produk tampil di detail UMKM dan listing produk jika aktif.
+6. Jika gambar utama kosong, tampilan publik memakai foto galeri pertama sebagai fallback.
 
 ## Flow Kontak WhatsApp/Maps
 

@@ -86,7 +86,7 @@ class ProductSearch extends Component
         $search = trim($this->search);
 
         return Product::query()
-            ->with(['category', 'umkm'])
+            ->with(['category', 'umkm', 'images'])
             ->where('is_active', true)
             ->whereHas('umkm', fn (Builder $query) => $query->where('is_active', true)->where('status', 'verified'))
             ->when($this->category !== '', fn (Builder $query) => $query->whereHas(

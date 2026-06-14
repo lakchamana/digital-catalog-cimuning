@@ -67,6 +67,8 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Config cache dan route cache production dijalankan di `docker-entrypoint.sh` saat runtime, bukan di Docker build, karena environment variables Railway tersedia saat container berjalan.
 - `AppServiceProvider` memaksa HTTPS pada production dan `bootstrap/app.php` mempercayai proxy Railway agar URL asset tidak menjadi mixed content.
 - Upload production memakai custom disk `cloudinary` melalui `App\Support\CloudinaryStorage`; local development tetap bisa memakai public/local disk sesuai `.env`.
+- Filament upload fields and image columns should use `App\Support\UploadDisk::name()` so local `FILESYSTEM_DISK=local` maps to the public disk while production `FILESYSTEM_DISK=cloudinary` uses Cloudinary.
+- Produk memiliki gambar utama di `products.image` dan galeri tambahan melalui relasi `Product::images()` ke `product_images`; dashboard Filament sekarang bisa mengelola keduanya.
 - Dependency Cloudinary memakai SDK resmi `cloudinary/cloudinary_php`, bukan package `cloudinary-labs/cloudinary-laravel`, karena kompatibilitas Laravel 13.
 - `.env.example` sudah diarahkan production-ready dengan variable Cloudinary, MySQL Railway, `SESSION_DRIVER=database`, dan `CACHE_STORE=database`.
 - QR profil UMKM memakai package `endroid/qr-code` dan dirender sebagai SVG agar tidak bergantung pada extension GD/Imagick.
@@ -74,6 +76,8 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - QR hanya tersedia untuk UMKM `is_active = true` dan `status = verified`.
 - Scan QR dicatat sebagai `lead_events.type = qr_scan` dengan `source = qr_profile`, lalu diarahkan ke `route('umkm.show', $slug)`.
 - Pencatatan lead dipusatkan di `App\Support\LeadEventRecorder` dan dipakai oleh redirect WhatsApp/Maps serta QR scan.
+- Halaman `/tentang` dan `/kontak` sudah memakai view khusus, bukan placeholder MVP.
+- Kontak v1 tidak menampilkan nomor/email dummy dan tidak menyimpan pesan ke database; halaman mengarahkan user ke pencarian, direktori, daftar owner, dan login owner.
 
 ## Keputusan Desain
 
@@ -105,6 +109,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Laravel scaffold dibuat di root project.
 - Dokumentasi awal dibuat di folder `docs/`.
 - Public layout, navbar, footer, button components, badges, UMKM card, homepage, dan placeholder pages dibuat.
+- Placeholder `/tentang` dan `/kontak` sudah diganti dengan halaman informasi publik yang lengkap.
 - Route publik tersedia untuk `/`, `/umkm`, `/umkm/{slug}`, `/produk`, `/kategori`, `/kategori/{slug}`, `/daftar-umkm`, `/tentang`, dan `/kontak`.
 - Migration inti, relationship model, dan seeder dummy sudah dibuat.
 - Seeder membuat admin `admin@cimuning.test` dan owner dummy dengan password `password`.
@@ -118,6 +123,9 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Owner UMKM bisa masuk panel dan hanya melihat/mengelola data miliknya sendiri.
 - Owner registration kini memiliki CAPTCHA lokal dan honeypot; jika gagal, pesan validasi dibuat ramah.
 - Upload logo/cover UMKM dan gambar produk memakai public disk melalui `public/storage` di lokal, dan Cloudinary saat `FILESYSTEM_DISK=cloudinary` di production.
+- Upload logo/cover UMKM, gambar utama produk, dan galeri produk kini memakai helper disk upload sehingga mengikuti `FILESYSTEM_DISK` tanpa hardcode `public` di form Filament.
+- Galeri foto produk sudah bisa dikelola dari Filament Product form dengan maksimal 6 gambar JPG/PNG/WEBP masing-masing 2 MB.
+- Product card publik memakai prioritas gambar utama, lalu gambar galeri pertama, lalu fallback visual, serta menampilkan badge tambahan foto jika galeri berisi lebih dari satu gambar.
 - `php artisan test` sudah hijau dan berisi test tambahan untuk akses panel dan scoping owner.
 - Halaman detail UMKM `/umkm/{slug}` sudah dipoles dengan hero gambar, logo UMKM, badge layanan, Maps embed/link, sticky contact panel desktop, sticky CTA mobile, dan katalog produk berbasis gambar upload.
 - Route detail UMKM sudah eager-load `products.images` untuk menghindari N+1 pada galeri produk.
@@ -156,6 +164,8 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - QR profil UMKM sudah ditambahkan untuk UMKM verified + active, termasuk public QR card di detail UMKM dan action download QR di Filament.
 - Lead analytics sudah mengenali `qr_scan` sebagai “Scan QR”.
 - Test QR profil sudah ditambahkan untuk SVG, tracking redirect, proteksi UMKM non-public, dan scoping owner lead.
+- Halaman Tentang dan Kontak/Bantuan publik sudah dilengkapi dengan SEO metadata, CTA, footer links, dan copy tanpa kontak palsu.
+- Test halaman informasi publik sudah ditambahkan untuk mencegah regresi ke placeholder.
 
 ## Next Steps
 
@@ -163,6 +173,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 2. Uji manual homepage mobile/desktop untuk memastikan carousel terasa natural, tombol rapi, dan kategori tidak terlalu padat.
 3. Lanjutkan validasi copy setelah uji manual mobile.
 4. Pertimbangkan template poster/stiker QR setelah kebutuhan desain cetak final tersedia.
+5. Uji manual upload gambar di Railway/Cloudinary untuk memastikan URL yang tersimpan tampil di public card dan tabel Filament.
 5. Pertimbangkan email notification dan password reset flow setelah konfigurasi mail siap.
 6. Tambahkan export data lead/UMKM untuk admin bila sudah dibutuhkan operasional.
 7. Uji manual wizard UMKM owner di perangkat mobile, terutama tombol "Gunakan lokasi saya" dan "Buka Google Maps".

@@ -1,5 +1,5 @@
 <footer role="contentinfo" class="border-t border-cimuning-border bg-white">
-    <div class="container-cimuning grid gap-8 py-10 md:grid-cols-[1.4fr_1fr_1fr]">
+    <div class="container-cimuning grid gap-8 py-10 md:grid-cols-[1.35fr_0.9fr_0.9fr_1fr]">
         <div>
             <div class="flex items-center gap-3">
                 <img src="{{ asset('assets/brand/logo-cimuning.png') }}" alt="Logo Cimuning Digital Hub" class="h-10 w-10 rounded-xl object-contain">
@@ -20,6 +20,15 @@
                 <a class="block hover:text-cimuning-red" href="{{ route('products.index') }}">Produk dan Jasa</a>
                 <a class="block hover:text-cimuning-red" href="{{ route('categories.index') }}">Semua Kategori</a>
                 <a class="block hover:text-cimuning-red" href="{{ route('umkm.register') }}">Daftarkan UMKM</a>
+            </div>
+        </div>
+
+        <div>
+            <h2 class="text-sm font-semibold text-cimuning-charcoal">Informasi</h2>
+            <div class="mt-3 space-y-2 text-sm text-cimuning-slate">
+                <a class="block hover:text-cimuning-red" href="{{ route('about') }}">Tentang Kami</a>
+                <a class="block hover:text-cimuning-red" href="{{ route('contact') }}">Kontak/Bantuan</a>
+                <a class="block hover:text-cimuning-red" href="{{ route('contact') }}">Bantuan Owner</a>
             </div>
         </div>
 

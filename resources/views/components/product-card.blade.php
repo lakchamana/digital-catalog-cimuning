@@ -3,6 +3,7 @@
 @php
     $imagePath = $product->image ?: $product->images->first()?->path;
     $imageUrl = $imagePath ? (\Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://']) ? $imagePath : asset('storage/'.$imagePath)) : null;
+    $galleryCount = $product->relationLoaded('images') ? $product->images->count() : $product->images()->count();
     $whatsappUrl = $product->umkm?->whatsapp_url && $product->umkm?->slug
         ? route('leads.redirect', [
             'umkm' => $product->umkm->slug,
@@ -23,6 +24,11 @@
                     {{ $product->category?->name ?? 'Produk/Jasa' }}
                 </span>
             </div>
+        @endif
+        @if ($galleryCount > 1)
+            <span class="absolute right-3 top-3 rounded-full bg-white/92 px-3 py-1 text-xs font-bold text-cimuning-charcoal shadow-card">
+                +{{ $galleryCount - 1 }} foto
+            </span>
         @endif
     </div>
     <div class="space-y-3 p-5">

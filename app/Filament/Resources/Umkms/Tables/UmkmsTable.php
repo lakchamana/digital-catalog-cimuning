@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Umkms\Tables;
 
 use App\Models\Umkm;
+use App\Support\UploadDisk;
 use App\Support\UmkmVerificationWorkflow;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -24,7 +25,7 @@ class UmkmsTable
             ->columns([
                 ImageColumn::make('logo_image')
                     ->label('Logo')
-                    ->disk('public')
+                    ->disk(UploadDisk::name())
                     ->circular(),
                 TextColumn::make('owner.name')
                     ->label('Akun')

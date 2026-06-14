@@ -187,14 +187,6 @@ Route::get('/daftar-umkm', function () {
 Route::get('/leads/{umkm:slug}/{type}', LeadRedirectController::class)
     ->name('leads.redirect');
 
-Route::view('/tentang', 'pages.placeholder', [
-    'title' => 'Tentang',
-    'heading' => 'Tentang Cimuning Digital Hub',
-    'description' => 'Platform ini membantu warga menemukan UMKM lokal Cimuning, melihat katalog produk digital, membuka lokasi Google Maps, dan menghubungi pelaku usaha secara langsung.',
-])->name('about');
+Route::view('/tentang', 'pages.about')->name('about');
 
-Route::view('/kontak', 'pages.placeholder', [
-    'title' => 'Kontak',
-    'heading' => 'Kontak Pengelola',
-    'description' => 'Informasi kontak pengelola akan ditambahkan setelah struktur admin dan data platform disiapkan.',
-])->name('contact');
+Route::view('/kontak', 'pages.contact')->name('contact');

@@ -3,10 +3,12 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use App\Models\Product;
+use App\Support\UploadDisk;
 use App\Support\UniqueSlug;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -85,8 +87,9 @@ class ProductForm
                     ->schema([
                         FileUpload::make('image')
                             ->label('Gambar utama')
+                            ->helperText('Dipakai sebagai foto utama di katalog. Jika kosong, sistem memakai foto galeri pertama.')
                             ->image()
-                            ->disk('public')
+                            ->disk(UploadDisk::name())
                             ->directory('products')
                             ->visibility('public')
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
@@ -94,6 +97,43 @@ class ProductForm
                             ->imagePreviewHeight('160')
                             ->openable()
                             ->downloadable(),
+
+                        Repeater::make('images')
+                            ->label('Galeri foto produk')
+                            ->relationship('images')
+                            ->helperText('Tambahkan sampai 6 foto pendukung. Foto paling awal dipakai sebagai cadangan bila gambar utama kosong.')
+                            ->schema([
+                                FileUpload::make('path')
+                                    ->label('Foto')
+                                    ->image()
+                                    ->disk(UploadDisk::name())
+                                    ->directory('products/gallery')
+                                    ->visibility('public')
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                    ->maxSize(2048)
+                                    ->imagePreviewHeight('120')
+                                    ->openable()
+                                    ->downloadable()
+                                    ->required(),
+                                TextInput::make('alt_text')
+                                    ->label('Keterangan foto')
+                                    ->maxLength(255)
+                                    ->placeholder('Contoh: varian rasa cokelat'),
+                                TextInput::make('sort_order')
+                                    ->label('Urutan')
+                                    ->numeric()
+                                    ->default(0)
+                                    ->minValue(0)
+                                    ->helperText('Angka kecil tampil lebih dulu.'),
+                            ])
+                            ->columns(3)
+                            ->defaultItems(0)
+                            ->maxItems(6)
+                            ->addActionLabel('Tambah foto galeri')
+                            ->reorderableWithButtons()
+                            ->collapsible()
+                            ->itemLabel(fn (array $state): ?string => $state['alt_text'] ?? 'Foto galeri')
+                            ->columnSpanFull(),
                     ]),
             ]);
     }
