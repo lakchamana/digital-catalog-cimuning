@@ -70,6 +70,10 @@
 - Railway deployment support with Dockerfile, runtime entrypoint, PHP server router, and Railway MySQL production testing notes.
 - Cloudinary production storage support through `cloudinary/cloudinary_php`, `config/cloudinary.php`, and custom `App\Support\CloudinaryStorage`.
 - Deployment documentation handoff in `docs/DEPLOYMENT_UPDATE.md`.
+- QR profile SVG generation for verified active UMKM profiles.
+- QR scan tracking via `lead_events.type = qr_scan` with anonymous metadata.
+- Public QR share card on UMKM detail pages and Filament QR download actions for public UMKMs.
+- Feature tests for QR SVG rendering, QR scan redirect tracking, public visibility protection, and owner lead scoping.
 
 ### Changed
 - Replaced default Laravel welcome route with Cimuning UMKM homepage.
@@ -106,6 +110,8 @@
 - Production URL generation now forces HTTPS and trusts Railway proxy headers to avoid mixed-content asset loading.
 - Runtime container startup now handles cache clear/cache rebuild, storage link, migrations, seeders, and server start in `docker-entrypoint.sh`.
 - Production uploads now use the `cloudinary` filesystem disk instead of ephemeral local Railway storage.
+- Lead event recording is now centralized through `App\Support\LeadEventRecorder` for WhatsApp, Maps, and QR scan events.
+- Lead analytics widgets now label QR scans as “Scan QR” and include them in recent activity.
 
 ### Fixed
 - PHPUnit dev dependency is now installed successfully after PHP `zip` became available, so `php artisan test` can run.
@@ -134,3 +140,4 @@
 - Do not run `php artisan config:cache` during Docker build because Railway environment variables are runtime-only.
 - Do not remove `server.php` while production uses the PHP built-in server; Livewire and Filament asset routes depend on this fallback.
 - Do not switch production `FILESYSTEM_DISK` back to `local` or `public` on Railway because uploaded files would be lost on redeploy.
+- QR v1 intentionally renders SVG only; PNG/poster templates can follow after image extension support or print design requirements are finalized.

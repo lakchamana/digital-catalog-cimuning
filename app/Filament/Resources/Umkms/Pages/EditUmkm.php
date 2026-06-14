@@ -6,6 +6,7 @@ use App\Filament\Resources\Umkms\UmkmResource;
 use App\Models\Umkm;
 use App\Support\OwnerFormHelper;
 use App\Support\UniqueSlug;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
@@ -18,6 +19,16 @@ class EditUmkm extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('downloadQr')
+                ->label('Download QR')
+                ->icon('heroicon-o-qr-code')
+                ->color('gray')
+                ->url(fn (): string => route('qr.umkm.svg', [
+                    'umkm' => $this->record->slug,
+                    'download' => 1,
+                ]))
+                ->visible(fn (): bool => $this->record->is_active && $this->record->status === 'verified')
+                ->openUrlInNewTab(),
             DeleteAction::make()
                 ->visible(fn (): bool => Filament::auth()->user()?->isAdmin()),
         ];

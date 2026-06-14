@@ -27,10 +27,11 @@
 - Polishing responsive dan accessibility.
 - Deployment testing internal ke Railway dengan Railway MySQL dan Cloudinary upload storage.
 - Dokumentasi deployment Railway/Cloudinary dan runtime caveats.
+- QR profile UMKM dengan SVG download dan tracking scan anonim.
 
 ## Phase 3
 
-- QR profile UMKM.
+- Template poster/stiker QR profil UMKM untuk kebutuhan cetak/offline sharing.
 - Artikel atau cerita UMKM.
 - Export data UMKM untuk admin.
 - Optimasi SEO halaman detail.

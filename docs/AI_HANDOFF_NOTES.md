@@ -69,6 +69,11 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Upload production memakai custom disk `cloudinary` melalui `App\Support\CloudinaryStorage`; local development tetap bisa memakai public/local disk sesuai `.env`.
 - Dependency Cloudinary memakai SDK resmi `cloudinary/cloudinary_php`, bukan package `cloudinary-labs/cloudinary-laravel`, karena kompatibilitas Laravel 13.
 - `.env.example` sudah diarahkan production-ready dengan variable Cloudinary, MySQL Railway, `SESSION_DRIVER=database`, dan `CACHE_STORE=database`.
+- QR profil UMKM memakai package `endroid/qr-code` dan dirender sebagai SVG agar tidak bergantung pada extension GD/Imagick.
+- Route QR public: `/qr/umkm/{umkm:slug}.svg` untuk SVG dan `/qr/umkm/{umkm:slug}/open` untuk tracking scan lalu redirect ke profil.
+- QR hanya tersedia untuk UMKM `is_active = true` dan `status = verified`.
+- Scan QR dicatat sebagai `lead_events.type = qr_scan` dengan `source = qr_profile`, lalu diarahkan ke `route('umkm.show', $slug)`.
+- Pencatatan lead dipusatkan di `App\Support\LeadEventRecorder` dan dipakai oleh redirect WhatsApp/Maps serta QR scan.
 
 ## Keputusan Desain
 
@@ -93,6 +98,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Jangan menjalankan `php artisan config:cache` di Dockerfile build phase.
 - Jangan menghapus `server.php` selama production masih memakai PHP built-in server/router ini.
 - Jangan mengganti production upload ke `public`/`local` disk di Railway karena file upload akan hilang saat redeploy.
+- Jangan mengubah QR menjadi langsung WhatsApp untuk v1; target default adalah profil UMKM agar katalog, lokasi, dan kontak tetap terlihat.
 
 ## Status Pekerjaan Terakhir
 
@@ -147,13 +153,16 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - File deployment yang sudah ada: `Dockerfile`, `docker-entrypoint.sh`, `server.php`, `config/cloudinary.php`, dan `App\Support\CloudinaryStorage`.
 - Railway MySQL digunakan untuk production testing; migration dan seeder dijalankan otomatis saat container start dengan `--force`.
 - `nixpacks.toml` disebut di deployment update sebagai alternatif lama, tetapi file tersebut tidak ada di workspace saat catatan ini diperbarui; Railway memprioritaskan Dockerfile.
+- QR profil UMKM sudah ditambahkan untuk UMKM verified + active, termasuk public QR card di detail UMKM dan action download QR di Filament.
+- Lead analytics sudah mengenali `qr_scan` sebagai “Scan QR”.
+- Test QR profil sudah ditambahkan untuk SVG, tracking redirect, proteksi UMKM non-public, dan scoping owner lead.
 
 ## Next Steps
 
 1. Uji manual `/admin` di browser dengan `admin@cimuning.test` / `password` dan owner dummy / `password`.
 2. Uji manual homepage mobile/desktop untuk memastikan carousel terasa natural, tombol rapi, dan kategori tidak terlalu padat.
 3. Lanjutkan validasi copy setelah uji manual mobile.
-4. Pertimbangkan QR profile UMKM sebagai lanjutan SEO/offline sharing.
+4. Pertimbangkan template poster/stiker QR setelah kebutuhan desain cetak final tersedia.
 5. Pertimbangkan email notification dan password reset flow setelah konfigurasi mail siap.
 6. Tambahkan export data lead/UMKM untuk admin bila sudah dibutuhkan operasional.
 7. Uji manual wizard UMKM owner di perangkat mobile, terutama tombol "Gunakan lokasi saya" dan "Buka Google Maps".

@@ -31,6 +31,9 @@
     $stickyWhatsappLeadUrl = $whatsappUrl ? $leadUrl('whatsapp', 'sticky') : null;
     $stickyMapsLeadUrl = $mapsUrl ? $leadUrl('maps', 'sticky') : null;
     $mapsSectionLeadUrl = $mapsUrl ? $leadUrl('maps', 'maps_section') : null;
+    $qrSvgUrl = route('qr.umkm.svg', $umkm->slug);
+    $qrDownloadUrl = $qrSvgUrl.'?download=1';
+    $qrOpenUrl = route('qr.umkm.open', $umkm->slug);
     $services = [
         'Delivery' => $umkm->service_delivery,
         'COD' => $umkm->service_cod,
@@ -162,6 +165,15 @@
                     @endif
                 </div>
                 <p class="mt-4 text-sm leading-6 text-cimuning-slate">Transaksi dilakukan langsung dengan pemilik usaha. Website ini tidak menyediakan checkout atau pembayaran.</p>
+
+                <div class="mt-6 rounded-card border border-cimuning-border bg-cimuning-section p-4">
+                    <h2 class="text-lg font-bold text-cimuning-charcoal">Bagikan Profil UMKM</h2>
+                    <p class="mt-2 text-sm leading-6 text-cimuning-slate">Scan QR ini untuk membuka profil, katalog produk, lokasi, dan kontak {{ $umkm->name }}.</p>
+                    <a href="{{ $qrOpenUrl }}" class="mt-4 block rounded-card border border-cimuning-border bg-white p-3 shadow-card" aria-label="Buka profil {{ $umkm->name }} dari QR">
+                        <img src="{{ $qrSvgUrl }}" alt="QR profil {{ $umkm->name }}" class="mx-auto h-48 w-48">
+                    </a>
+                    <x-secondary-button href="{{ $qrDownloadUrl }}" class="mt-4 w-full" download>Download QR</x-secondary-button>
+                </div>
             </aside>
         </div>
     </section>

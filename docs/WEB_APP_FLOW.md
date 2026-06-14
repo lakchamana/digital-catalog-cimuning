@@ -127,10 +127,19 @@
 ## Flow Analytics Lead
 
 1. Admin atau owner login ke `/admin`.
-2. Dashboard menampilkan ringkasan klik WhatsApp, klik Maps, klik 7 hari terakhir, dan UMKM paling diminati.
+2. Dashboard menampilkan ringkasan klik WhatsApp, klik Maps, scan QR, klik 7 hari terakhir, dan UMKM paling diminati.
 3. Admin melihat semua aktivitas lead terbaru.
 4. Owner hanya melihat aktivitas lead dari UMKM miliknya.
 5. Data lead dipakai sebagai indikator minat kontak/lokasi, bukan transaksi internal.
+
+## Flow QR Profil UMKM
+
+1. User membuka detail UMKM verified.
+2. Halaman menampilkan QR profil yang mengarah ke route tracking internal.
+3. User dapat scan atau download SVG QR untuk dibagikan offline.
+4. Saat QR discan, website mencatat event anonim `qr_scan`.
+5. Website mengarahkan user ke profil UMKM publik.
+6. QR hanya aktif untuk UMKM yang sudah verified dan active.
 
 ## Flow Deployment Railway
 

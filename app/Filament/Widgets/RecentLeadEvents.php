@@ -39,9 +39,14 @@ class RecentLeadEvents extends TableWidget
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'whatsapp' => 'WhatsApp',
                         'maps' => 'Maps',
+                        'qr_scan' => 'Scan QR',
                         default => $state,
                     })
-                    ->color(fn (string $state): string => $state === 'whatsapp' ? 'success' : 'info'),
+                    ->color(fn (string $state): string => match ($state) {
+                        'whatsapp' => 'success',
+                        'maps', 'qr_scan' => 'info',
+                        default => 'gray',
+                    }),
                 TextColumn::make('source')
                     ->label('Sumber')
                     ->formatStateUsing(fn (?string $state): string => match ($state) {
@@ -50,6 +55,7 @@ class RecentLeadEvents extends TableWidget
                         'product_card' => 'Card produk',
                         'sticky' => 'Sticky mobile',
                         'maps_section' => 'Section Maps',
+                        'qr_profile' => 'QR profil',
                         default => '-',
                     }),
                 TextColumn::make('created_at')
@@ -58,6 +64,6 @@ class RecentLeadEvents extends TableWidget
                     ->sortable(),
             ])
             ->emptyStateHeading('Belum ada lead')
-            ->emptyStateDescription('Klik WhatsApp dan Maps dari halaman publik akan muncul di sini.');
+            ->emptyStateDescription('Klik WhatsApp, Maps, dan scan QR dari halaman publik akan muncul di sini.');
     }
 }

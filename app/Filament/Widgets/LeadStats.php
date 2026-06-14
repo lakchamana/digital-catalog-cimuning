@@ -32,12 +32,16 @@ class LeadStats extends StatsOverviewWidget
                 ->description('Minat kunjungan lokasi')
                 ->color('info')
                 ->icon('heroicon-o-map-pin'),
+            Stat::make('Scan QR', (clone $leadQuery)->where('type', 'qr_scan')->count())
+                ->description('Profil dibuka dari QR')
+                ->color('gray')
+                ->icon('heroicon-o-qr-code'),
             Stat::make('Klik 7 hari terakhir', (clone $leadQuery)->where('created_at', '>=', Carbon::now()->subDays(7))->count())
                 ->description('Aktivitas terbaru')
                 ->color('warning')
                 ->icon('heroicon-o-chart-bar'),
             Stat::make('UMKM paling diminati', $topUmkm?->umkm?->name ?? '-')
-                ->description($topUmkm ? "{$topUmkm->aggregate} klik kontak" : 'Belum ada lead')
+                ->description($topUmkm ? "{$topUmkm->aggregate} aktivitas" : 'Belum ada lead')
                 ->color('gray')
                 ->icon('heroicon-o-building-storefront'),
         ];

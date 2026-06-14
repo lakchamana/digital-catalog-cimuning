@@ -148,6 +148,16 @@ class UmkmsTable
                     ->requiresConfirmation()
                     ->visible(fn (Umkm $record): bool => Filament::auth()->user()?->isAdmin() && $record->status !== 'rejected')
                     ->action(fn (Umkm $record) => UmkmVerificationWorkflow::reject($record)),
+                Action::make('downloadQr')
+                    ->label('Download QR')
+                    ->icon('heroicon-o-qr-code')
+                    ->color('gray')
+                    ->url(fn (Umkm $record): string => route('qr.umkm.svg', [
+                        'umkm' => $record->slug,
+                        'download' => 1,
+                    ]))
+                    ->visible(fn (Umkm $record): bool => $record->is_active && $record->status === 'verified')
+                    ->openUrlInNewTab(),
                 EditAction::make(),
             ])
             ->toolbarActions([

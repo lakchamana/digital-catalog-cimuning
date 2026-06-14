@@ -80,6 +80,7 @@ Cache config/route dilakukan saat runtime di `docker-entrypoint.sh`, bukan saat 
 - CRUD kategori, UMKM, produk/jasa.
 - Upload foto.
 - Status verifikasi.
+- QR profil UMKM untuk offline sharing.
 
 ## Fitur Ditunda
 

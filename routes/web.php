@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LeadRedirectController;
+use App\Http\Controllers\QrCodeController;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Umkm;
@@ -105,6 +106,12 @@ Route::get('/kategori/{slug}', function (string $slug) use ($hasTables) {
         'pageTitle' => "Kategori {$category->name}",
     ]);
 })->name('categories.show');
+
+Route::get('/qr/umkm/{umkm:slug}.svg', [QrCodeController::class, 'svg'])
+    ->name('qr.umkm.svg');
+
+Route::get('/qr/umkm/{umkm:slug}/open', [QrCodeController::class, 'open'])
+    ->name('qr.umkm.open');
 
 Route::get('/umkm/{slug}', function (string $slug) use ($hasTables) {
     if (! $hasTables(['umkms', 'products', 'categories'])) {
