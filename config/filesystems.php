@@ -60,6 +60,12 @@ return [
             'report' => false,
         ],
 
+        // Cloudinary — digunakan di production (Railway) sebagai pengganti disk public.
+        // Aktifkan dengan FILESYSTEM_DISK=cloudinary di .env production.
+        'cloudinary' => [
+            'driver' => 'cloudinary',
+        ],
+
     ],
 
     /*
