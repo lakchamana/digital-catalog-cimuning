@@ -29,7 +29,8 @@ class OwnerOnboardingTest extends TestCase
     public function test_owner_registration_creates_umkm_owner_user(): void
     {
         $component = Livewire::test(RegisterOwner::class);
-        $captchaAnswer = session('owner_register_captcha_answer');
+        $captchaToken = session('owner_register_captcha_token');
+        $captchaAnswer = session("owner_register_captchas.{$captchaToken}.answer");
 
         $component
             ->fillForm([
@@ -37,7 +38,8 @@ class OwnerOnboardingTest extends TestCase
                 'email' => 'owner-baru@example.test',
                 'password' => 'password',
                 'passwordConfirmation' => 'password',
-                'captcha_answer' => $captchaAnswer,
+                'captcha_token' => $captchaToken,
+                'captcha_answer' => " {$captchaAnswer} ",
             ])
             ->call('register')
             ->assertHasNoFormErrors()
@@ -49,14 +51,45 @@ class OwnerOnboardingTest extends TestCase
         $this->assertAuthenticatedAs($owner);
     }
 
+    public function test_owner_registration_captcha_allows_multiple_open_tabs(): void
+    {
+        $firstTab = Livewire::test(RegisterOwner::class);
+        $firstToken = session('owner_register_captcha_token');
+        $firstAnswer = session("owner_register_captchas.{$firstToken}.answer");
+
+        Livewire::test(RegisterOwner::class);
+
+        $firstTab
+            ->fillForm([
+                'name' => 'Owner Multi Tab',
+                'email' => 'owner-multitab@example.test',
+                'password' => 'password',
+                'passwordConfirmation' => 'password',
+                'captcha_token' => $firstToken,
+                'captcha_answer' => $firstAnswer,
+            ])
+            ->call('register')
+            ->assertHasNoFormErrors()
+            ->assertRedirect(UmkmResource::getUrl('create'));
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'owner-multitab@example.test',
+            'role' => 'umkm_owner',
+        ]);
+    }
+
     public function test_owner_registration_rejects_wrong_captcha_and_honeypot(): void
     {
-        Livewire::test(RegisterOwner::class)
+        $wrongComponent = Livewire::test(RegisterOwner::class);
+        $wrongToken = session('owner_register_captcha_token');
+
+        $wrongComponent
             ->fillForm([
                 'name' => 'Owner Salah',
                 'email' => 'owner-salah@example.test',
                 'password' => 'password',
                 'passwordConfirmation' => 'password',
+                'captcha_token' => $wrongToken,
                 'captcha_answer' => '999',
             ])
             ->call('register')
@@ -65,7 +98,8 @@ class OwnerOnboardingTest extends TestCase
         $this->assertDatabaseMissing('users', ['email' => 'owner-salah@example.test']);
 
         $component = Livewire::test(RegisterOwner::class);
-        $captchaAnswer = session('owner_register_captcha_answer');
+        $captchaToken = session('owner_register_captcha_token');
+        $captchaAnswer = session("owner_register_captchas.{$captchaToken}.answer");
 
         $component
             ->fillForm([
@@ -73,13 +107,34 @@ class OwnerOnboardingTest extends TestCase
                 'email' => 'owner-bot@example.test',
                 'password' => 'password',
                 'passwordConfirmation' => 'password',
+                'captcha_token' => $captchaToken,
                 'captcha_answer' => $captchaAnswer,
-                'company_website' => 'https://spam.example',
+                'profile_confirmation' => 'filled-by-bot',
             ])
             ->call('register')
             ->assertHasFormErrors(['captcha_answer']);
 
         $this->assertDatabaseMissing('users', ['email' => 'owner-bot@example.test']);
+    }
+
+    public function test_owner_registration_rejects_missing_captcha_token(): void
+    {
+        $captchaToken = session('owner_register_captcha_token');
+        $captchaAnswer = session("owner_register_captchas.{$captchaToken}.answer");
+
+        Livewire::test(RegisterOwner::class)
+            ->fillForm([
+                'name' => 'Owner Token Hilang',
+                'email' => 'owner-token-hilang@example.test',
+                'password' => 'password',
+                'passwordConfirmation' => 'password',
+                'captcha_token' => 'token-tidak-ada',
+                'captcha_answer' => $captchaAnswer,
+            ])
+            ->call('register')
+            ->assertHasFormErrors(['captcha_answer']);
+
+        $this->assertDatabaseMissing('users', ['email' => 'owner-token-hilang@example.test']);
     }
 
     public function test_new_owner_can_access_admin_panel(): void

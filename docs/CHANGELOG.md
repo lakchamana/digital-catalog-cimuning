@@ -79,6 +79,8 @@
 - Filament product gallery management using the existing `product_images` relation.
 - Shared upload disk helper so Filament uploads follow `FILESYSTEM_DISK` in production while staying compatible with local public storage.
 - Feature tests for product gallery fallback images, gallery ordering, and upload disk selection.
+- Product search reliability tests for keyword, category fallback, UMKM, price, invalid filter state, and reset behavior.
+- Tokenized local CAPTCHA support for owner registration to reduce false failures across refreshes or multiple browser tabs.
 
 ### Changed
 - Replaced default Laravel welcome route with Cimuning UMKM homepage.
@@ -121,6 +123,10 @@
 - `/tentang` and `/kontak` now render complete public information views instead of the shared placeholder page.
 - Product upload fields, UMKM logo/cover fields, and Filament image columns now use the configured upload disk instead of hardcoding `public`.
 - Product cards now show the first gallery image when the main image is empty and display a small extra-photo count badge.
+- `/produk` filters now sanitize invalid query string values and use UMKM category as a fallback when a product has no direct category.
+- Product search now checks product category and UMKM category names.
+- Owner registration CAPTCHA now validates against a per-form token instead of one global session answer.
+- Owner registration honeypot now uses a less autofill-prone hidden field.
 
 ### Fixed
 - PHPUnit dev dependency is now installed successfully after PHP `zip` became available, so `php artisan test` can run.
@@ -129,6 +135,8 @@
 - Livewire and Filament JavaScript route loading on Railway via `server.php` fallback to Laravel routes.
 - Mixed-content issues on Railway caused by HTTPS termination at the platform proxy.
 - Build-time config cache issue by moving Laravel config/route caching to runtime.
+- Product category filters returning empty results when products relied on their UMKM category instead of `products.category_id`.
+- Owner registration false failures caused by CAPTCHA session replacement across multiple tabs or browser autofill touching the honeypot.
 
 ### Notes
 - MVP remains a directory/catalog platform. Payment, checkout, cart, and transaction flows are intentionally excluded.
@@ -143,6 +151,7 @@
 - `/kategori` is the index for all active categories, while `/kategori/{slug}` remains the category-filtered UMKM listing.
 - SEO improvements are for public discovery pages only; admin, lead redirect, checkout, payment, cart, and transaction flows remain excluded from sitemap/indexing.
 - Owner onboarding CAPTCHA is local and free; it is meant as a lightweight spam barrier, not a full bot-defense service.
+- Owner onboarding CAPTCHA is tokenized per form render; opening a second register tab should not invalidate the first tab's answer.
 - UMKM geotagging does not use a paid Google Maps API. Owners can use browser location, paste coordinates/Maps text, or open Google Maps manually.
 - Browser Geolocation works on localhost during development and requires HTTPS in production.
 - Railway production testing URL: `https://digital-catalog-cimuning-production.up.railway.app/`.

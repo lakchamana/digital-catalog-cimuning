@@ -74,6 +74,12 @@
                         @if ($price !== 'all')
                             <span class="inline-flex items-center rounded-button border border-cimuning-border bg-white px-3 py-1.5 text-xs font-semibold text-cimuning-slate">{{ $price === 'priced' ? 'Ada harga' : 'Hubungi UMKM' }}</span>
                         @endif
+                        @if ($sort !== 'latest')
+                            <span class="inline-flex items-center rounded-button border border-cimuning-border bg-white px-3 py-1.5 text-xs font-semibold text-cimuning-slate">{{ $sort === 'az' ? 'A-Z' : ($sort === 'price_low' ? 'Harga terendah' : 'Harga tertinggi') }}</span>
+                        @endif
+                        @if ((int) $perPage !== 9)
+                            <span class="inline-flex items-center rounded-button border border-cimuning-border bg-white px-3 py-1.5 text-xs font-semibold text-cimuning-slate">{{ $perPage }} per halaman</span>
+                        @endif
                     </div>
                 </div>
 

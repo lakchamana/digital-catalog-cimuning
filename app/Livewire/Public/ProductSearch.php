@@ -33,10 +33,17 @@ class ProductSearch extends Component
     public string $sort = 'latest';
 
     #[Url(as: 'perPage', except: 9)]
-    public int $perPage = 9;
+    public int|string $perPage = 9;
+
+    public function mount(): void
+    {
+        $this->normalizeFilters();
+    }
 
     public function updated(string $property): void
     {
+        $this->normalizeFilters();
+
         if ($property !== 'page') {
             $this->resetPage();
         }
@@ -65,7 +72,14 @@ class ProductSearch extends Component
     {
         return Category::query()
             ->where('is_active', true)
-            ->whereHas('products', fn (Builder $query) => $query->where('is_active', true))
+            ->where(function (Builder $query) {
+                $query
+                    ->whereHas('products', fn (Builder $productQuery) => $this->applyPublicProductScope($productQuery))
+                    ->orWhereHas('umkms', fn (Builder $umkmQuery) => $umkmQuery
+                        ->where('is_active', true)
+                        ->where('status', 'verified')
+                        ->whereHas('products', fn (Builder $productQuery) => $productQuery->where('is_active', true)));
+            })
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get();
@@ -85,25 +99,29 @@ class ProductSearch extends Component
     {
         $search = trim($this->search);
 
-        return Product::query()
+        $this->normalizeFilters();
+
+        return $this->applyPublicProductScope(Product::query())
             ->with(['category', 'umkm', 'images'])
-            ->where('is_active', true)
-            ->whereHas('umkm', fn (Builder $query) => $query->where('is_active', true)->where('status', 'verified'))
-            ->when($this->category !== '', fn (Builder $query) => $query->whereHas(
-                'category',
-                fn (Builder $categoryQuery) => $categoryQuery->where('slug', $this->category),
-            ))
+            ->when($this->category !== '', fn (Builder $query) => $query->where(function (Builder $categoryScope) {
+                $categoryScope
+                    ->whereHas('category', fn (Builder $categoryQuery) => $categoryQuery->where('slug', $this->category))
+                    ->orWhereHas('umkm.category', fn (Builder $categoryQuery) => $categoryQuery->where('slug', $this->category));
+            }))
             ->when($this->umkm !== '', fn (Builder $query) => $query->whereHas(
                 'umkm',
                 fn (Builder $umkmQuery) => $umkmQuery->where('slug', $this->umkm),
             ))
-            ->when($this->price === 'priced', fn (Builder $query) => $query->whereNotNull('price'))
-            ->when($this->price === 'contact', fn (Builder $query) => $query->whereNull('price'))
+            ->when($this->price === 'priced', fn (Builder $query) => $query->where('price', '>', 0))
+            ->when($this->price === 'contact', fn (Builder $query) => $query->where(function (Builder $priceQuery) {
+                $priceQuery->whereNull('price')->orWhere('price', '<=', 0);
+            }))
             ->when($search !== '', function (Builder $query) use ($search) {
                 $query->where(function (Builder $nested) use ($search) {
                     $nested->where('name', 'like', "%{$search}%")
                         ->orWhere('description', 'like', "%{$search}%")
                         ->orWhereHas('category', fn (Builder $categoryQuery) => $categoryQuery->where('name', 'like', "%{$search}%"))
+                        ->orWhereHas('umkm.category', fn (Builder $categoryQuery) => $categoryQuery->where('name', 'like', "%{$search}%"))
                         ->orWhereHas('umkm', fn (Builder $umkmQuery) => $umkmQuery->where('name', 'like', "%{$search}%")->orWhere('rw', 'like', "%{$search}%"));
                 });
             })
@@ -123,7 +141,9 @@ class ProductSearch extends Component
 
     protected function validatedPerPage(): int
     {
-        return in_array($this->perPage, [9, 18, 27], true) ? $this->perPage : 9;
+        $perPage = (int) $this->perPage;
+
+        return in_array($perPage, [9, 18, 27], true) ? $perPage : 9;
     }
 
     protected function activeFilterCount(): int
@@ -134,7 +154,63 @@ class ProductSearch extends Component
             $this->umkm !== '',
             $this->price !== 'all',
             $this->sort !== 'latest',
-            $this->perPage !== 9,
+            (int) $this->perPage !== 9,
         ])->filter()->count();
+    }
+
+    protected function applyPublicProductScope(Builder $query): Builder
+    {
+        return $query
+            ->where('is_active', true)
+            ->whereHas('umkm', fn (Builder $umkmQuery) => $umkmQuery->where('is_active', true)->where('status', 'verified'));
+    }
+
+    protected function normalizeFilters(): void
+    {
+        $this->search = trim($this->search);
+
+        if (! in_array($this->price, ['all', 'priced', 'contact'], true)) {
+            $this->price = 'all';
+        }
+
+        if (! in_array($this->sort, ['latest', 'az', 'price_low', 'price_high'], true)) {
+            $this->sort = 'latest';
+        }
+
+        $this->perPage = $this->validatedPerPage();
+
+        if ($this->category !== '' && ! $this->validCategorySlug($this->category)) {
+            $this->category = '';
+        }
+
+        if ($this->umkm !== '' && ! $this->validUmkmSlug($this->umkm)) {
+            $this->umkm = '';
+        }
+    }
+
+    protected function validCategorySlug(string $slug): bool
+    {
+        return Category::query()
+            ->where('slug', $slug)
+            ->where('is_active', true)
+            ->where(function (Builder $query) {
+                $query
+                    ->whereHas('products', fn (Builder $productQuery) => $this->applyPublicProductScope($productQuery))
+                    ->orWhereHas('umkms', fn (Builder $umkmQuery) => $umkmQuery
+                        ->where('is_active', true)
+                        ->where('status', 'verified')
+                        ->whereHas('products', fn (Builder $productQuery) => $productQuery->where('is_active', true)));
+            })
+            ->exists();
+    }
+
+    protected function validUmkmSlug(string $slug): bool
+    {
+        return Umkm::query()
+            ->where('slug', $slug)
+            ->where('is_active', true)
+            ->where('status', 'verified')
+            ->whereHas('products', fn (Builder $query) => $query->where('is_active', true))
+            ->exists();
     }
 }

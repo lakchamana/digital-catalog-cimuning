@@ -52,7 +52,7 @@
 
 1. User membuka `/daftar-umkm`.
 2. User membaca manfaat dan langkah pendaftaran account-first.
-3. User membuat akun owner dari `/admin/register` dengan CAPTCHA matematika lokal dan honeypot anti-spam.
+3. User membuat akun owner dari `/admin/register` dengan CAPTCHA matematika lokal tokenized dan honeypot anti-spam.
 4. Setelah login, owner melengkapi data usaha, kategori, kontak, lokasi, media sosial, layanan, dan foto dari dashboard.
 5. Sistem membantu lokasi tanpa API berbayar: browser Geolocation, parsing koordinat/teks Maps, dan tombol buka Google Maps.
 6. Sistem menerima Instagram/TikTok sebagai username atau URL, lalu menormalisasi saat data disimpan.
@@ -60,6 +60,15 @@
 8. Sistem membuat slug unik otomatis dan menyimpan data dengan status pending serta belum aktif.
 9. Sistem mengirim notifikasi dashboard ke admin.
 10. Admin melakukan verifikasi dari dashboard.
+
+## Flow Pencarian Produk/Jasa
+
+1. User membuka `/produk` atau mencari dari navbar.
+2. Livewire membaca query string untuk keyword, kategori, UMKM, harga, sort, dan jumlah per halaman.
+3. Nilai filter yang tidak valid dikembalikan ke default agar URL aneh tidak merusak halaman.
+4. Filter kategori mencocokkan kategori produk atau kategori UMKM sebagai fallback bila produk belum punya kategori sendiri.
+5. Filter harga membedakan produk dengan harga di atas 0 dan produk yang perlu menghubungi UMKM.
+6. Hasil hanya menampilkan produk aktif dari UMKM active dan verified.
 
 ## Flow Homepage Product-Led
 
