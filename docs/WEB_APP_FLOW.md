@@ -14,13 +14,15 @@
 ## Flow UMKM Owner
 
 1. Calon owner membuka `/daftar-umkm`.
-2. Owner membuat akun melalui `/admin/register`.
-3. Owner login ke dashboard.
-4. Owner mengisi atau memperbarui profil UMKM miliknya.
-5. UMKM baru tersimpan sebagai pending dan belum tampil publik.
-6. Owner menambah produk/jasa dan foto setelah profil UMKM tersedia.
-7. Owner melihat status pending, verified, rejected, atau need revision.
-8. Owner memperbaiki data jika admin meminta revisi.
+2. Owner membuat akun melalui `/admin/register` dan menjawab CAPTCHA lokal sederhana.
+3. Sistem membuat akun dengan role `umkm_owner` dan mengarahkan owner ke dashboard.
+4. Owner mengisi atau memperbarui profil UMKM miliknya melalui wizard bertahap.
+5. Owner tidak perlu memahami slug/URL teknis karena sistem membuat slug otomatis.
+6. Owner dapat mengisi lokasi memakai alamat, tombol browser Geolocation, atau tempel koordinat/link Google Maps.
+7. UMKM baru tersimpan sebagai pending dan belum tampil publik.
+8. Owner menambah produk/jasa dan foto setelah profil UMKM tersedia.
+9. Owner melihat status pending, verified, rejected, atau need revision.
+10. Owner memperbaiki data jika admin meminta revisi.
 
 ## Flow Admin
 
@@ -43,12 +45,14 @@
 
 1. User membuka `/daftar-umkm`.
 2. User membaca manfaat dan langkah pendaftaran account-first.
-3. User membuat akun owner dari `/admin/register`.
-4. Setelah login, owner melengkapi data usaha, kategori, kontak, alamat, layanan, dan foto dari dashboard.
-5. Sistem memvalidasi input dan upload.
-6. Sistem membuat slug unik dan menyimpan data dengan status pending serta belum aktif.
-7. Sistem mengirim notifikasi dashboard ke admin.
-8. Admin melakukan verifikasi dari dashboard.
+3. User membuat akun owner dari `/admin/register` dengan CAPTCHA matematika lokal dan honeypot anti-spam.
+4. Setelah login, owner melengkapi data usaha, kategori, kontak, lokasi, media sosial, layanan, dan foto dari dashboard.
+5. Sistem membantu lokasi tanpa API berbayar: browser Geolocation, parsing koordinat/teks Maps, dan tombol buka Google Maps.
+6. Sistem menerima Instagram/TikTok sebagai username atau URL, lalu menormalisasi saat data disimpan.
+7. Sistem memvalidasi input dan upload.
+8. Sistem membuat slug unik otomatis dan menyimpan data dengan status pending serta belum aktif.
+9. Sistem mengirim notifikasi dashboard ke admin.
+10. Admin melakukan verifikasi dari dashboard.
 
 ## Flow Homepage Product-Led
 
@@ -111,6 +115,14 @@
 3. Website mencatat klik sebagai lead anonim.
 4. Website mengarahkan user ke WhatsApp atau maps.
 5. Transaksi tetap dilakukan langsung di luar website.
+
+## Flow SEO Public Discovery
+
+1. Search engine atau user membuka halaman public.
+2. Layout public menyediakan canonical URL, meta description, Open Graph, dan Twitter card.
+3. Detail UMKM verified menyediakan JSON-LD `LocalBusiness` dari data usaha, lokasi, kontak, dan katalog produk.
+4. `/sitemap.xml` memuat halaman public, kategori aktif, dan UMKM aktif + verified.
+5. `/admin`, `/leads/...`, UMKM pending/rejected/inactive, dan fitur transaksi tidak masuk sitemap.
 
 ## Flow Analytics Lead
 

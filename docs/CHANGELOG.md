@@ -58,6 +58,15 @@
 - Feature tests for navbar search, homepage carousel, category shortcuts, category index visibility, and walkthrough markup.
 - Public accessibility polish for skip links, visible focus rings, nav current state, dialog ARIA attributes, and Livewire result announcements.
 - Feature tests for public accessibility landmarks, filter drawers, live regions, and route rendering.
+- Dynamic public SEO metadata with canonical URLs, Open Graph, Twitter card, and optional JSON-LD structured data.
+- LocalBusiness JSON-LD schema for verified public UMKM detail pages.
+- Dynamic `/sitemap.xml` for indexable public pages, active categories, and verified active UMKMs.
+- Feature tests for UMKM detail SEO metadata, sitemap visibility rules, and robots sitemap reference.
+- Local CAPTCHA and hidden honeypot protection on owner registration at `/admin/register`.
+- Owner-friendly UMKM wizard form with separate steps for profile, contact, location, social media, photos/services, and review.
+- Google Maps location helper for owners using browser Geolocation, pasted coordinates/Maps text parsing, and a direct Google Maps search button without a paid Maps API.
+- Social media normalization helper for Instagram and TikTok usernames or URLs.
+- Feature tests for owner CAPTCHA, honeypot rejection, automatic UMKM slugs, social URL normalization, and Maps coordinate parsing.
 
 ### Changed
 - Replaced default Laravel welcome route with Cimuning UMKM homepage.
@@ -86,6 +95,10 @@
 - Homepage carousel now uses horizontal-only `scrollTo` movement and pauses auto-advance when the carousel is outside the viewport.
 - Public filter panels now avoid duplicate form control IDs between desktop and mobile variants.
 - Public mobile drawer, filter bottom sheets, and walkthrough now expose clearer dialog semantics for assistive technology.
+- UMKM detail pages now generate SEO title, description, social image fallback, and structured data from public UMKM records.
+- Owner UMKM and product forms now hide slug fields from owners; slugs are still generated automatically from names and remain editable by admins.
+- Owner-created UMKMs now redirect back to the edit page with clearer pending-review guidance after save.
+- Owner dashboard status copy now gives clearer next actions for pending, verified, need revision, and rejected UMKMs.
 
 ### Fixed
 - PHPUnit dev dependency is now installed successfully after PHP `zip` became available, so `php artisan test` can run.
@@ -103,3 +116,7 @@
 - Guest UMKM submission is intentionally replaced by account-first onboarding; the old Livewire guest form is no longer rendered publicly.
 - First-visit tutorial is available on public pages only; custom dashboard onboarding remains deferred.
 - `/kategori` is the index for all active categories, while `/kategori/{slug}` remains the category-filtered UMKM listing.
+- SEO improvements are for public discovery pages only; admin, lead redirect, checkout, payment, cart, and transaction flows remain excluded from sitemap/indexing.
+- Owner onboarding CAPTCHA is local and free; it is meant as a lightweight spam barrier, not a full bot-defense service.
+- UMKM geotagging does not use a paid Google Maps API. Owners can use browser location, paste coordinates/Maps text, or open Google Maps manually.
+- Browser Geolocation works on localhost during development and requires HTTPS in production.

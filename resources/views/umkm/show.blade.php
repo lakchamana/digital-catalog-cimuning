@@ -11,6 +11,7 @@
 
     $coverUrl = $imageUrl($umkm->cover_image);
     $logoUrl = $imageUrl($umkm->logo_image);
+    $socialImage = $coverUrl ?: ($logoUrl ?: asset('assets/brand/logo-cimuning.png'));
     $hasCoordinates = filled($umkm->latitude) && filled($umkm->longitude);
     $mapQuery = $hasCoordinates
         ? "{$umkm->latitude},{$umkm->longitude}"
@@ -36,9 +37,61 @@
         'Custom order' => $umkm->service_custom_order,
         'Toko fisik' => $umkm->has_physical_store,
     ];
+    $locationText = collect([$umkm->rw, $umkm->address])->filter()->implode(', ') ?: 'Cimuning';
+    $seoDescription = \Illuminate\Support\Str::limit(
+        trim("{$umkm->name} adalah UMKM ".($umkm->category?->name ?? 'lokal')." di {$locationText}. ".($umkm->description ?: 'Lihat profil, katalog produk, WhatsApp, dan lokasi Maps di Cimuning Digital Hub.')),
+        155,
+    );
+    $structuredData = [
+        '@context' => 'https://schema.org',
+        '@type' => 'LocalBusiness',
+        'name' => $umkm->name,
+        'description' => $seoDescription,
+        'url' => route('umkm.show', $umkm->slug),
+        'image' => $socialImage,
+        'logo' => $logoUrl ?: asset('assets/brand/logo-cimuning.png'),
+        'telephone' => $umkm->phone ?: $umkm->whatsapp,
+        'email' => $umkm->email,
+        'address' => array_filter([
+            '@type' => 'PostalAddress',
+            'streetAddress' => $umkm->address,
+            'addressLocality' => 'Cimuning',
+            'addressRegion' => 'Kota Bekasi',
+            'addressCountry' => 'ID',
+        ]),
+        'areaServed' => 'Cimuning, Mustikajaya, Kota Bekasi',
+        'knowsAbout' => $umkm->category?->name,
+        'sameAs' => collect([$umkm->website, $umkm->instagram, $umkm->tiktok])->filter()->values()->all(),
+        'makesOffer' => $umkm->products->map(fn ($product) => array_filter([
+            '@type' => 'Offer',
+            'name' => $product->name,
+            'description' => $product->description,
+            'price' => $product->price,
+            'priceCurrency' => $product->price ? 'IDR' : null,
+            'availability' => 'https://schema.org/InStock',
+            'url' => route('umkm.show', $umkm->slug),
+        ]))->values()->all(),
+    ];
+
+    if ($hasCoordinates) {
+        $structuredData['geo'] = [
+            '@type' => 'GeoCoordinates',
+            'latitude' => (float) $umkm->latitude,
+            'longitude' => (float) $umkm->longitude,
+        ];
+    }
+
+    $structuredData = array_filter($structuredData, fn ($value) => filled($value) || is_array($value));
 @endphp
 
-<x-public-layout :title="$umkm->name">
+<x-public-layout
+    :title="$umkm->name"
+    :description="$seoDescription"
+    :canonical="route('umkm.show', $umkm->slug)"
+    :image="$socialImage"
+    type="business.business"
+    :structured-data="$structuredData"
+>
     <section class="bg-cimuning-section">
         <div class="container-cimuning grid gap-8 pb-10 pt-8 lg:grid-cols-[1fr_380px] lg:pb-16 lg:pt-12">
             <div class="min-w-0">

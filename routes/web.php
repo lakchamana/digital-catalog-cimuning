@@ -129,6 +129,50 @@ Route::get('/umkm/{slug}', function (string $slug) use ($hasTables) {
     return view('umkm.show', compact('umkm'));
 })->name('umkm.show');
 
+Route::get('/sitemap.xml', function () use ($hasTables) {
+    $urls = collect([
+        ['loc' => route('home'), 'priority' => '1.0', 'changefreq' => 'daily'],
+        ['loc' => route('products.index'), 'priority' => '0.9', 'changefreq' => 'daily'],
+        ['loc' => route('umkm.index'), 'priority' => '0.9', 'changefreq' => 'daily'],
+        ['loc' => route('categories.index'), 'priority' => '0.8', 'changefreq' => 'weekly'],
+        ['loc' => route('umkm.register'), 'priority' => '0.5', 'changefreq' => 'monthly'],
+        ['loc' => route('about'), 'priority' => '0.4', 'changefreq' => 'monthly'],
+        ['loc' => route('contact'), 'priority' => '0.4', 'changefreq' => 'monthly'],
+    ]);
+
+    if ($hasTables(['categories'])) {
+        Category::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get()
+            ->each(fn (Category $category) => $urls->push([
+                'loc' => route('categories.show', $category->slug),
+                'lastmod' => optional($category->updated_at)->toAtomString(),
+                'priority' => '0.7',
+                'changefreq' => 'weekly',
+            ]));
+    }
+
+    if ($hasTables(['umkms'])) {
+        Umkm::query()
+            ->where('is_active', true)
+            ->where('status', 'verified')
+            ->latest('updated_at')
+            ->get()
+            ->each(fn (Umkm $umkm) => $urls->push([
+                'loc' => route('umkm.show', $umkm->slug),
+                'lastmod' => optional($umkm->updated_at)->toAtomString(),
+                'priority' => '0.8',
+                'changefreq' => 'weekly',
+            ]));
+    }
+
+    return response()
+        ->view('sitemap', ['urls' => $urls])
+        ->header('Content-Type', 'application/xml');
+})->name('sitemap');
+
 Route::get('/daftar-umkm', function () {
     return view('umkm.register');
 })->name('umkm.register');

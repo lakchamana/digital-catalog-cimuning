@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Umkm;
 use App\Models\User;
+use App\Support\OwnerFormHelper;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -21,17 +22,22 @@ class OwnerOnboardingTest extends TestCase
     {
         $this->get('/admin/register')
             ->assertOk()
-            ->assertSee('Buat akun owner UMKM');
+            ->assertSee('Buat akun owner UMKM')
+            ->assertSee('Verifikasi keamanan');
     }
 
     public function test_owner_registration_creates_umkm_owner_user(): void
     {
-        Livewire::test(RegisterOwner::class)
+        $component = Livewire::test(RegisterOwner::class);
+        $captchaAnswer = session('owner_register_captcha_answer');
+
+        $component
             ->fillForm([
                 'name' => 'Owner Baru',
                 'email' => 'owner-baru@example.test',
                 'password' => 'password',
                 'passwordConfirmation' => 'password',
+                'captcha_answer' => $captchaAnswer,
             ])
             ->call('register')
             ->assertHasNoFormErrors()
@@ -41,6 +47,39 @@ class OwnerOnboardingTest extends TestCase
 
         $this->assertSame('umkm_owner', $owner->role);
         $this->assertAuthenticatedAs($owner);
+    }
+
+    public function test_owner_registration_rejects_wrong_captcha_and_honeypot(): void
+    {
+        Livewire::test(RegisterOwner::class)
+            ->fillForm([
+                'name' => 'Owner Salah',
+                'email' => 'owner-salah@example.test',
+                'password' => 'password',
+                'passwordConfirmation' => 'password',
+                'captcha_answer' => '999',
+            ])
+            ->call('register')
+            ->assertHasFormErrors(['captcha_answer']);
+
+        $this->assertDatabaseMissing('users', ['email' => 'owner-salah@example.test']);
+
+        $component = Livewire::test(RegisterOwner::class);
+        $captchaAnswer = session('owner_register_captcha_answer');
+
+        $component
+            ->fillForm([
+                'name' => 'Owner Bot',
+                'email' => 'owner-bot@example.test',
+                'password' => 'password',
+                'passwordConfirmation' => 'password',
+                'captcha_answer' => $captchaAnswer,
+                'company_website' => 'https://spam.example',
+            ])
+            ->call('register')
+            ->assertHasFormErrors(['captcha_answer']);
+
+        $this->assertDatabaseMissing('users', ['email' => 'owner-bot@example.test']);
     }
 
     public function test_new_owner_can_access_admin_panel(): void
@@ -79,11 +118,13 @@ class OwnerOnboardingTest extends TestCase
             ->fillForm([
                 'category_id' => $category->id,
                 'name' => 'Dapur Owner Baru',
-                'slug' => 'dapur-owner-baru',
                 'description' => 'Makanan rumahan untuk warga Cimuning.',
                 'owner_name' => 'Owner Baru',
                 'whatsapp' => '081234567890',
                 'address' => 'Jl. Cimuning Raya',
+                'maps_link' => 'https://www.google.com/maps/place/Cimuning/@-6.3123456,107.0123456,17z',
+                'instagram' => '@dapur_owner',
+                'tiktok' => 'dapurowner',
                 'is_active' => true,
                 'status' => 'verified',
             ])
@@ -93,9 +134,62 @@ class OwnerOnboardingTest extends TestCase
         $umkm = Umkm::query()->where('slug', 'dapur-owner-baru')->firstOrFail();
 
         $this->assertSame($owner->id, $umkm->user_id);
+        $this->assertSame('dapur-owner-baru', $umkm->slug);
         $this->assertSame('pending', $umkm->status);
         $this->assertFalse($umkm->is_active);
+        $this->assertSame('-6.3123456', (string) $umkm->latitude);
+        $this->assertSame('107.0123456', (string) $umkm->longitude);
+        $this->assertSame('https://instagram.com/dapur_owner', $umkm->instagram);
+        $this->assertSame('https://www.tiktok.com/@dapurowner', $umkm->tiktok);
         $this->assertSame('Pendaftaran UMKM baru', $admin->notifications()->first()?->data['title']);
+    }
+
+    public function test_owner_created_umkm_gets_unique_slug_when_name_is_duplicated(): void
+    {
+        $category = $this->category();
+        $owner = User::query()->create([
+            'name' => 'Owner Slug',
+            'email' => 'owner-slug@example.test',
+            'password' => 'password',
+            'role' => 'umkm_owner',
+        ]);
+
+        Umkm::query()->create([
+            'category_id' => $category->id,
+            'name' => 'Dapur Sama',
+            'slug' => 'dapur-sama',
+            'status' => 'verified',
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($owner);
+
+        Livewire::test(CreateUmkm::class)
+            ->fillForm([
+                'category_id' => $category->id,
+                'name' => 'Dapur Sama',
+                'whatsapp' => '081234567890',
+            ])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('umkms', [
+            'user_id' => $owner->id,
+            'name' => 'Dapur Sama',
+            'slug' => 'dapur-sama-2',
+            'status' => 'pending',
+            'is_active' => false,
+        ]);
+    }
+
+    public function test_maps_text_parser_accepts_coordinates_from_google_maps_text(): void
+    {
+        $coordinates = OwnerFormHelper::coordinatesFromMapsText('https://www.google.com/maps/place/Cimuning/@-6.3123456,107.0123456,17z');
+
+        $this->assertSame([
+            'latitude' => '-6.3123456',
+            'longitude' => '107.0123456',
+        ], $coordinates);
     }
 
     public function test_homepage_only_shows_products_from_verified_active_umkms(): void

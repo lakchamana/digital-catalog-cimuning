@@ -51,6 +51,15 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Public layout memiliki skip link ke `#main-content`, visible focus ring global, dan nav aktif memakai `aria-current="page"`.
 - Drawer mobile, filter bottom sheet, dan walkthrough memakai dialog semantics (`role="dialog"`, `aria-modal`, `aria-labelledby`) tanpa dependency tambahan.
 - Listing Livewire `/produk` dan `/umkm` memiliki live region untuk total hasil/loading/empty state serta ID filter yang dibedakan antara desktop dan mobile.
+- Public layout menerima props SEO: `description`, `canonical`, `image`, `type`, dan `structuredData`.
+- Detail UMKM public merender canonical, Open Graph, Twitter card, dan JSON-LD `LocalBusiness` dari data UMKM verified.
+- Sitemap dinamis tersedia di `/sitemap.xml`; hanya memuat homepage, listing public, kategori aktif, dan UMKM aktif + verified.
+- `robots.txt` menolak `/admin` dan mereferensikan sitemap; route `/leads/...` tidak dimasukkan ke sitemap.
+- Registrasi owner `/admin/register` memakai CAPTCHA matematika lokal berbasis session dan honeypot tersembunyi, tanpa layanan eksternal.
+- Form UMKM Filament sekarang memakai wizard bertahap agar owner awam tidak melihat seluruh field teknis sekaligus.
+- Field slug disembunyikan dari owner untuk UMKM dan produk; sistem tetap membuat slug unik dari nama, sedangkan admin masih bisa mengedit slug sebagai field advanced.
+- Helper owner berada di `App\Support\OwnerFormHelper` untuk normalisasi Instagram/TikTok dan parsing koordinat dari teks/link Maps.
+- Pengambilan lokasi owner tidak memakai Google Maps API berbayar: UI menyediakan browser Geolocation, parsing koordinat, dan tombol membuka Google Maps dari alamat.
 
 ## Keputusan Desain
 
@@ -89,6 +98,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Resource admin tersedia untuk kategori, UMKM, dan produk.
 - Admin bisa melakukan verifikasi UMKM melalui action cepat di tabel UMKM.
 - Owner UMKM bisa masuk panel dan hanya melihat/mengelola data miliknya sendiri.
+- Owner registration kini memiliki CAPTCHA lokal dan honeypot; jika gagal, pesan validasi dibuat ramah.
 - Upload logo/cover UMKM dan gambar produk memakai public disk melalui `public/storage`.
 - `php artisan test` sudah hijau dan berisi test tambahan untuk akses panel dan scoping owner.
 - Halaman detail UMKM `/umkm/{slug}` sudah dipoles dengan hero gambar, logo UMKM, badge layanan, Maps embed/link, sticky contact panel desktop, sticky CTA mobile, dan katalog produk berbasis gambar upload.
@@ -117,12 +127,18 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Test discovery publik sudah ditambahkan untuk navbar search, carousel, category shortcuts, `/kategori`, dan walkthrough.
 - Accessibility polish publik sudah diterapkan untuk skip link, focus ring, aria-current, drawer/filter/walkthrough dialog attributes, live region hasil pencarian, dan duplikasi ID filter.
 - Test aksesibilitas publik sudah ditambahkan untuk layout landmarks, filter drawer, live region, dan render route publik utama.
+- SEO public tahap awal sudah ditambahkan untuk detail UMKM dan sitemap publik.
+- Test SEO public sudah ditambahkan untuk meta detail UMKM, fallback social image, sitemap, dan robots.
+- Owner onboarding sudah dipoles: form UMKM owner berupa wizard, slug tidak perlu diisi owner, koordinat bisa dibantu dari Geolocation atau teks Maps, dan social media boleh berupa username atau URL.
+- Test owner onboarding sudah diperluas untuk CAPTCHA, honeypot, slug otomatis, koordinat Maps, dan normalisasi Instagram/TikTok.
 
 ## Next Steps
 
 1. Uji manual `/admin` di browser dengan `admin@cimuning.test` / `password` dan owner dummy / `password`.
 2. Uji manual homepage mobile/desktop untuk memastikan carousel terasa natural, tombol rapi, dan kategori tidak terlalu padat.
 3. Lanjutkan validasi copy setelah uji manual mobile.
-4. Pertimbangkan email notification dan password reset flow setelah konfigurasi mail siap.
-5. Tambahkan export data lead/UMKM untuk admin bila sudah dibutuhkan operasional.
-6. Tambahkan tutorial/dashboard guidance khusus owner jika onboarding Filament dirasa masih membingungkan.
+4. Pertimbangkan QR profile UMKM sebagai lanjutan SEO/offline sharing.
+5. Pertimbangkan email notification dan password reset flow setelah konfigurasi mail siap.
+6. Tambahkan export data lead/UMKM untuk admin bila sudah dibutuhkan operasional.
+7. Uji manual wizard UMKM owner di perangkat mobile, terutama tombol "Gunakan lokasi saya" dan "Buka Google Maps".
+8. Pertimbangkan dashboard tutorial khusus owner jika wizard Filament masih terasa membingungkan untuk pengguna awam.

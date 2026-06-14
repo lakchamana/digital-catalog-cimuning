@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\Umkms\UmkmResource;
 use App\Models\Umkm;
 use Filament\Actions\Action;
@@ -28,7 +29,7 @@ class OwnerUmkmStatus extends TableWidget
 
         return $table
             ->heading('Status UMKM saya')
-            ->description('Pantau status verifikasi dan perbaiki profil bila admin meminta revisi.')
+            ->description('Lengkapi profil UMKM, tunggu verifikasi admin, lalu tambahkan produk atau jasa agar warga mudah menemukan usaha Anda.')
             ->query(
                 Umkm::query()
                     ->with('category')
@@ -56,6 +57,15 @@ class OwnerUmkmStatus extends TableWidget
                         'need_revision' => 'warning',
                         default => 'gray',
                     }),
+                TextColumn::make('owner_guidance')
+                    ->label('Arahan')
+                    ->state(fn (Umkm $record): string => match ($record->status) {
+                        'verified' => 'Profil sudah tampil. Tambahkan produk/jasa agar katalog lebih lengkap.',
+                        'need_revision' => 'Perbaiki data profil sesuai arahan admin, lalu simpan ulang.',
+                        'rejected' => 'Data belum bisa ditampilkan. Periksa kembali profil dan kontak usaha.',
+                        default => 'Menunggu admin meninjau data usaha Anda.',
+                    })
+                    ->wrap(),
                 IconColumn::make('is_active')
                     ->label('Tampil publik')
                     ->boolean(),
@@ -66,12 +76,16 @@ class OwnerUmkmStatus extends TableWidget
             ])
             ->recordUrl(fn (Umkm $record): string => UmkmResource::getUrl('edit', ['record' => $record]))
             ->emptyStateHeading('Belum ada UMKM yang terhubung')
-            ->emptyStateDescription('Lengkapi profil UMKM Anda agar admin bisa meninjau dan memverifikasi sebelum tampil publik.')
+            ->emptyStateDescription('Mulai dari melengkapi profil UMKM. Anda tidak perlu mengatur URL/slug; sistem akan membuatnya otomatis.')
             ->emptyStateActions([
                 Action::make('createUmkm')
                     ->label('Lengkapi Profil UMKM')
                     ->url(UmkmResource::getUrl('create'))
                     ->icon('heroicon-o-plus-circle'),
+                Action::make('createProduct')
+                    ->label('Tambah Produk/Jasa')
+                    ->url(ProductResource::getUrl('create'))
+                    ->icon('heroicon-o-shopping-bag'),
             ]);
     }
 }

@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Support\UniqueSlug;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -60,7 +61,10 @@ class ProductForm
                         TextInput::make('slug')
                             ->required()
                             ->maxLength(255)
-                            ->helperText('Slug dipakai untuk referensi URL/SEO tahap berikutnya.'),
+                            ->helperText('Untuk admin: bagian URL/SEO produk.')
+                            ->visible(fn () => Filament::auth()->user()?->isAdmin()),
+                        Hidden::make('slug')
+                            ->visible(fn () => Filament::auth()->user()?->isUmkmOwner()),
                         TextInput::make('price')
                             ->label('Harga')
                             ->numeric()
