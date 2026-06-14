@@ -49,6 +49,12 @@ class ProductSearch extends Component
         }
     }
 
+    public function submitSearch(): void
+    {
+        $this->normalizeFilters();
+        $this->resetPage();
+    }
+
     public function resetFilters(): void
     {
         $this->reset(['search', 'category', 'umkm']);
@@ -58,13 +64,37 @@ class ProductSearch extends Component
         $this->resetPage();
     }
 
+    public function clearFilter(string $filter): void
+    {
+        match ($filter) {
+            'search' => $this->search = '',
+            'category' => $this->category = '',
+            'umkm' => $this->umkm = '',
+            'price' => $this->price = 'all',
+            'sort' => $this->sort = 'latest',
+            'perPage' => $this->perPage = 9,
+            default => null,
+        };
+
+        $this->normalizeFilters();
+        $this->resetPage();
+    }
+
     public function render(): View
     {
+        $this->normalizeFilters();
+
+        $categories = $this->categories();
+        $umkms = $this->umkmOptions();
+        $products = $this->products();
+
         return view('livewire.public.product-search', [
-            'categories' => $this->categories(),
-            'umkms' => $this->umkmOptions(),
-            'products' => $this->products(),
+            'categories' => $categories,
+            'umkms' => $umkms,
+            'products' => $products,
             'activeFilterCount' => $this->activeFilterCount(),
+            'activeFilters' => $this->activeFilters($categories, $umkms),
+            'resultHeading' => $this->resultHeading($categories, $umkms),
         ]);
     }
 
@@ -156,6 +186,67 @@ class ProductSearch extends Component
             $this->sort !== 'latest',
             (int) $this->perPage !== 9,
         ])->filter()->count();
+    }
+
+    /**
+     * @return array<int, array{key: string, label: string, value: string}>
+     */
+    protected function activeFilters(Collection $categories, Collection $umkms): array
+    {
+        return collect([
+            $this->search !== '' ? [
+                'key' => 'search',
+                'label' => 'Kata kunci',
+                'value' => $this->search,
+            ] : null,
+            $this->category !== '' ? [
+                'key' => 'category',
+                'label' => 'Kategori',
+                'value' => $categories->firstWhere('slug', $this->category)?->name ?? $this->category,
+            ] : null,
+            $this->umkm !== '' ? [
+                'key' => 'umkm',
+                'label' => 'UMKM',
+                'value' => $umkms->firstWhere('slug', $this->umkm)?->name ?? $this->umkm,
+            ] : null,
+            $this->price !== 'all' ? [
+                'key' => 'price',
+                'label' => 'Harga',
+                'value' => $this->price === 'priced' ? 'Ada harga' : 'Hubungi UMKM',
+            ] : null,
+            $this->sort !== 'latest' ? [
+                'key' => 'sort',
+                'label' => 'Urutan',
+                'value' => match ($this->sort) {
+                    'az' => 'A-Z',
+                    'price_low' => 'Harga terendah',
+                    'price_high' => 'Harga tertinggi',
+                    default => 'Terbaru',
+                },
+            ] : null,
+            (int) $this->perPage !== 9 ? [
+                'key' => 'perPage',
+                'label' => 'Jumlah',
+                'value' => $this->perPage.' per halaman',
+            ] : null,
+        ])->filter()->values()->all();
+    }
+
+    protected function resultHeading(Collection $categories, Collection $umkms): string
+    {
+        if ($this->search !== '') {
+            return 'Hasil untuk "'.$this->search.'"';
+        }
+
+        if ($this->category !== '') {
+            return 'Produk kategori '.($categories->firstWhere('slug', $this->category)?->name ?? $this->category);
+        }
+
+        if ($this->umkm !== '') {
+            return 'Produk dari '.($umkms->firstWhere('slug', $this->umkm)?->name ?? $this->umkm);
+        }
+
+        return 'Semua produk/jasa';
     }
 
     protected function applyPublicProductScope(Builder $query): Builder

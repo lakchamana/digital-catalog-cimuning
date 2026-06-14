@@ -20,8 +20,28 @@ class ProductSearchTest extends TestCase
 
         Livewire::test(ProductSearch::class)
             ->set('search', 'Jasa')
+            ->call('submitSearch')
+            ->assertSet('search', 'Jasa')
+            ->assertSee('Hasil untuk')
+            ->assertSee('Kata kunci')
             ->assertSee('Paket Jahit')
             ->assertDontSee('Nasi Ayam');
+    }
+
+    public function test_product_search_ui_has_clear_primary_search_action(): void
+    {
+        $this->seedProducts();
+
+        $this->get(route('products.index'))
+            ->assertOk()
+            ->assertSee('Cari produk atau jasa')
+            ->assertSee('Contoh: nasi box, laundry, servis motor...')
+            ->assertSee('wire:submit.prevent="submitSearch"', false)
+            ->assertSee('Cari')
+            ->assertSee('Saring hasil')
+            ->assertSee('Lihat hasil')
+            ->assertDontSee('>Reset</button>', false)
+            ->assertDontSee('Terapkan Filter');
     }
 
     public function test_category_filter_matches_product_category_or_umkm_category_fallback(): void
@@ -105,6 +125,27 @@ class ProductSearchTest extends TestCase
             ->assertSet('price', 'all')
             ->assertSet('sort', 'latest')
             ->assertSet('perPage', 9);
+    }
+
+    public function test_filter_chips_can_clear_individual_filters(): void
+    {
+        $this->seedProducts();
+
+        Livewire::test(ProductSearch::class)
+            ->set('search', 'Nasi')
+            ->set('category', 'kuliner')
+            ->set('price', 'priced')
+            ->assertSee('Kata kunci')
+            ->assertSee('Kategori')
+            ->assertSee('Harga')
+            ->call('clearFilter', 'search')
+            ->assertSet('search', '')
+            ->assertSet('category', 'kuliner')
+            ->assertSet('price', 'priced')
+            ->assertSee('Produk kategori Kuliner')
+            ->call('clearFilter', 'category')
+            ->assertSet('category', '')
+            ->assertSet('price', 'priced');
     }
 
     private function seedProducts(): void

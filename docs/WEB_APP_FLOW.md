@@ -64,11 +64,13 @@
 ## Flow Pencarian Produk/Jasa
 
 1. User membuka `/produk` atau mencari dari navbar.
-2. Livewire membaca query string untuk keyword, kategori, UMKM, harga, sort, dan jumlah per halaman.
-3. Nilai filter yang tidak valid dikembalikan ke default agar URL aneh tidak merusak halaman.
-4. Filter kategori mencocokkan kategori produk atau kategori UMKM sebagai fallback bila produk belum punya kategori sendiri.
-5. Filter harga membedakan produk dengan harga di atas 0 dan produk yang perlu menghubungi UMKM.
-6. Hasil hanya menampilkan produk aktif dari UMKM active dan verified.
+2. User mengetik kebutuhan dan dapat menekan tombol utama "Cari"; hasil tetap diperbarui oleh Livewire.
+3. User dapat membuka filter untuk kategori, UMKM, harga, urutan, dan jumlah per halaman.
+4. Filter aktif tampil sebagai chip dan bisa dihapus satu per satu tanpa menghapus semua pencarian.
+5. Nilai filter yang tidak valid dikembalikan ke default agar URL aneh tidak merusak halaman.
+6. Filter kategori mencocokkan kategori produk atau kategori UMKM sebagai fallback bila produk belum punya kategori sendiri.
+7. Filter harga membedakan produk dengan harga di atas 0 dan produk yang perlu menghubungi UMKM.
+8. Hasil hanya menampilkan produk aktif dari UMKM active dan verified.
 
 ## Flow Homepage Product-Led
 
