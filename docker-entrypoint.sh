@@ -27,5 +27,7 @@ php artisan db:seed --class=DatabaseSeeder --force
 
 echo "=== Startup complete. Starting PHP server on port ${PORT:-8080} ==="
 
-# Jalankan PHP built-in server
-exec php -S "0.0.0.0:${PORT:-8080}" -t public
+# Jalankan PHP built-in server DENGAN router script.
+# Tanpa router, PHP server langsung 404 untuk path .js/.css yang tidak ada
+# sebagai file statis — ini membuat Livewire dan Filament gagal load.
+exec php -S "0.0.0.0:${PORT:-8080}" server.php
