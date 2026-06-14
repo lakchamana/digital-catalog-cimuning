@@ -13,6 +13,7 @@ use App\Support\CloudinaryStorage;
 use Filament\Auth\Http\Responses\Contracts\RegistrationResponse;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -30,6 +31,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Force HTTPS di production — Railway proxy terminates SSL,
+        // jadi PHP built-in server hanya melihat HTTP.
+        // Tanpa ini, semua URL generate http:// → Mixed Content error.
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+
         Gate::policy(Category::class, CategoryPolicy::class);
         Gate::policy(Umkm::class, UmkmPolicy::class);
         Gate::policy(Product::class, ProductPolicy::class);
