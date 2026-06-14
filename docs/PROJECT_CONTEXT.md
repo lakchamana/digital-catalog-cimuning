@@ -25,6 +25,7 @@ Website ini tidak menangani pembayaran, checkout, cart, ongkir otomatis, atau tr
 - Frontend: Blade dan Tailwind CSS.
 - Interactivity: Livewire untuk search/filter/pagination/form data, Alpine.js untuk drawer, modal, dropdown, dan hamburger menu.
 - Auth/back office: Laravel authentication system melalui Laravel Filament 5 untuk panel `/admin`.
+- Deployment testing: Railway web service dengan Docker, Railway MySQL, dan Cloudinary untuk file upload production.
 
 ## Prinsip Desain
 
@@ -52,7 +53,20 @@ Mayoritas user diasumsikan memakai smartphone. Semua halaman harus nyaman diguna
 
 Panel `/admin` memakai Laravel Filament 5. Public pages tetap Blade + Livewire dan tidak dipindahkan ke Filament. Admin dapat mengelola kategori, semua UMKM, semua produk, upload foto, dan status verifikasi. UMKM owner dapat masuk panel tetapi query resource dibatasi ke UMKM dan produk miliknya sendiri.
 
-Upload gambar memakai public disk Laravel dan storage link `public/storage`. Gambar yang didukung pada tahap ini adalah JPG, PNG, dan WEBP dengan batas konservatif 2 MB.
+Upload gambar di lokal memakai public disk Laravel dan storage link `public/storage`. Di production Railway, upload diarahkan ke Cloudinary melalui custom filesystem disk karena filesystem Railway bersifat ephemeral. Gambar yang didukung pada tahap ini adalah JPG, PNG, dan WEBP dengan batas konservatif 2 MB.
+
+## Deployment
+
+Project sudah disiapkan untuk testing internal di Railway pada URL production `https://digital-catalog-cimuning-production.up.railway.app/`. Railway menjalankan container Docker berbasis PHP 8.3/FrankenPHP, build Vite dengan Node.js 22, memakai Railway MySQL Plugin, dan menyimpan upload UMKM/produk ke Cloudinary.
+
+File deployment penting:
+
+- `Dockerfile` untuk build container Railway.
+- `docker-entrypoint.sh` untuk runtime cache, storage link, migrate, seed, dan start server.
+- `server.php` sebagai router PHP built-in server agar route Livewire/Filament JS tetap diteruskan ke Laravel.
+- `config/cloudinary.php` dan `App\Support\CloudinaryStorage` untuk filesystem disk Cloudinary.
+
+Cache config/route dilakukan saat runtime di `docker-entrypoint.sh`, bukan saat Docker build, karena environment variables Railway baru tersedia saat container berjalan.
 
 ## Fitur MVP
 

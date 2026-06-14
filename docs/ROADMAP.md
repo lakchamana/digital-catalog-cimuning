@@ -25,6 +25,8 @@
 - Halaman semua kategori `/kategori`.
 - Interactive walkthrough first-visit publik.
 - Polishing responsive dan accessibility.
+- Deployment testing internal ke Railway dengan Railway MySQL dan Cloudinary upload storage.
+- Dokumentasi deployment Railway/Cloudinary dan runtime caveats.
 
 ## Phase 3
 
@@ -34,6 +36,7 @@
 - Optimasi SEO halaman detail.
 - Tutorial/dashboard guidance khusus owner bila dibutuhkan.
 - PWA ringan untuk pengalaman mobile.
+- Hardening production deployment: backup database, domain custom, observability/log monitoring, dan secret rotation.
 
 ## Future Improvement
 
@@ -43,6 +46,7 @@
 - Featured banner dan campaign UMKM lokal.
 - Manajemen banner carousel dari dashboard admin.
 - Import data UMKM dari spreadsheet dengan validasi.
+- Environment staging terpisah dari production jika project mulai diuji banyak pihak.
 
 ## Fitur Yang Belum Boleh Dibuat Dulu
 

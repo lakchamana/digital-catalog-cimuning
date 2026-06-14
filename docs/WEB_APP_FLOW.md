@@ -131,3 +131,15 @@
 3. Admin melihat semua aktivitas lead terbaru.
 4. Owner hanya melihat aktivitas lead dari UMKM miliknya.
 5. Data lead dipakai sebagai indikator minat kontak/lokasi, bukan transaksi internal.
+
+## Flow Deployment Railway
+
+1. Perubahan project dipush ke GitHub branch yang dipantau Railway.
+2. Railway membangun container dari `Dockerfile`.
+3. Build menginstall dependency PHP, dependency Node, dan menjalankan build Vite.
+4. Saat container start, `docker-entrypoint.sh` membersihkan cache lama, membuat config/route cache baru dari environment variables Railway, membuat storage link, menjalankan migration, menjalankan seeder idempotent, lalu menyalakan PHP server.
+5. `server.php` menjadi router PHP built-in server: file statis yang ada diserve langsung, sedangkan request asset/route Livewire dan Filament yang bukan file fisik diteruskan ke Laravel.
+6. Railway reverse proxy menerima HTTPS dari browser dan meneruskan ke container; Laravel memaksa URL HTTPS dan mempercayai proxy agar asset tidak mixed content.
+7. Database production testing memakai Railway MySQL.
+8. Upload logo, cover, dan foto produk memakai Cloudinary saat `FILESYSTEM_DISK=cloudinary`.
+9. Local development tetap bisa berjalan dengan XAMPP/MySQL lokal dan disk lokal/public sesuai `.env`.

@@ -67,6 +67,9 @@
 - Google Maps location helper for owners using browser Geolocation, pasted coordinates/Maps text parsing, and a direct Google Maps search button without a paid Maps API.
 - Social media normalization helper for Instagram and TikTok usernames or URLs.
 - Feature tests for owner CAPTCHA, honeypot rejection, automatic UMKM slugs, social URL normalization, and Maps coordinate parsing.
+- Railway deployment support with Dockerfile, runtime entrypoint, PHP server router, and Railway MySQL production testing notes.
+- Cloudinary production storage support through `cloudinary/cloudinary_php`, `config/cloudinary.php`, and custom `App\Support\CloudinaryStorage`.
+- Deployment documentation handoff in `docs/DEPLOYMENT_UPDATE.md`.
 
 ### Changed
 - Replaced default Laravel welcome route with Cimuning UMKM homepage.
@@ -99,11 +102,18 @@
 - Owner UMKM and product forms now hide slug fields from owners; slugs are still generated automatically from names and remain editable by admins.
 - Owner-created UMKMs now redirect back to the edit page with clearer pending-review guidance after save.
 - Owner dashboard status copy now gives clearer next actions for pending, verified, need revision, and rejected UMKMs.
+- `.env.example` is now production-oriented for Railway/Cloudinary variables while local development can still override values in `.env`.
+- Production URL generation now forces HTTPS and trusts Railway proxy headers to avoid mixed-content asset loading.
+- Runtime container startup now handles cache clear/cache rebuild, storage link, migrations, seeders, and server start in `docker-entrypoint.sh`.
+- Production uploads now use the `cloudinary` filesystem disk instead of ephemeral local Railway storage.
 
 ### Fixed
 - PHPUnit dev dependency is now installed successfully after PHP `zip` became available, so `php artisan test` can run.
 - Homepage carousel no longer jumps the page back up while users are scrolling through catalog sections.
 - Homepage carousel prev/next controls are now positioned as cleaner floating controls with safer spacing from slide edges.
+- Livewire and Filament JavaScript route loading on Railway via `server.php` fallback to Laravel routes.
+- Mixed-content issues on Railway caused by HTTPS termination at the platform proxy.
+- Build-time config cache issue by moving Laravel config/route caching to runtime.
 
 ### Notes
 - MVP remains a directory/catalog platform. Payment, checkout, cart, and transaction flows are intentionally excluded.
@@ -120,3 +130,7 @@
 - Owner onboarding CAPTCHA is local and free; it is meant as a lightweight spam barrier, not a full bot-defense service.
 - UMKM geotagging does not use a paid Google Maps API. Owners can use browser location, paste coordinates/Maps text, or open Google Maps manually.
 - Browser Geolocation works on localhost during development and requires HTTPS in production.
+- Railway production testing URL: `https://digital-catalog-cimuning-production.up.railway.app/`.
+- Do not run `php artisan config:cache` during Docker build because Railway environment variables are runtime-only.
+- Do not remove `server.php` while production uses the PHP built-in server; Livewire and Filament asset routes depend on this fallback.
+- Do not switch production `FILESYSTEM_DISK` back to `local` or `public` on Railway because uploaded files would be lost on redeploy.

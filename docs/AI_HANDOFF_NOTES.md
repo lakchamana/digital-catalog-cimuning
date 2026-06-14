@@ -13,10 +13,12 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - `docs/PROJECT_CONTEXT.md`
 - `docs/WEB_APP_FLOW.md`
 - `docs/ROADMAP.md`
+- `docs/DEPLOYMENT_UPDATE.md`
 
 ## Keputusan Teknikal
 
 - Stack utama: Laravel, Blade, Tailwind CSS, Livewire, Alpine.js, MySQL.
+- Deployment testing internal sudah disiapkan di Railway: `https://digital-catalog-cimuning-production.up.railway.app/`.
 - Tailwind v4 digunakan melalui Vite dan token warna didefinisikan di `resources/css/app.css`.
 - Alpine.js dipakai untuk UI ringan seperti mobile drawer.
 - Livewire digunakan untuk listing `/umkm` melalui `App\Livewire\Public\UmkmSearch`.
@@ -60,6 +62,13 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Field slug disembunyikan dari owner untuk UMKM dan produk; sistem tetap membuat slug unik dari nama, sedangkan admin masih bisa mengedit slug sebagai field advanced.
 - Helper owner berada di `App\Support\OwnerFormHelper` untuk normalisasi Instagram/TikTok dan parsing koordinat dari teks/link Maps.
 - Pengambilan lokasi owner tidak memakai Google Maps API berbayar: UI menyediakan browser Geolocation, parsing koordinat, dan tombol membuka Google Maps dari alamat.
+- Production Railway memakai Dockerfile, `docker-entrypoint.sh`, dan `server.php`.
+- `server.php` wajib dipertahankan untuk PHP built-in server production karena Livewire/Filament JS adalah route Laravel, bukan file statis biasa.
+- Config cache dan route cache production dijalankan di `docker-entrypoint.sh` saat runtime, bukan di Docker build, karena environment variables Railway tersedia saat container berjalan.
+- `AppServiceProvider` memaksa HTTPS pada production dan `bootstrap/app.php` mempercayai proxy Railway agar URL asset tidak menjadi mixed content.
+- Upload production memakai custom disk `cloudinary` melalui `App\Support\CloudinaryStorage`; local development tetap bisa memakai public/local disk sesuai `.env`.
+- Dependency Cloudinary memakai SDK resmi `cloudinary/cloudinary_php`, bukan package `cloudinary-labs/cloudinary-laravel`, karena kompatibilitas Laravel 13.
+- `.env.example` sudah diarahkan production-ready dengan variable Cloudinary, MySQL Railway, `SESSION_DRIVER=database`, dan `CACHE_STORE=database`.
 
 ## Keputusan Desain
 
@@ -81,6 +90,9 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Jangan membuat ongkir otomatis.
 - Jangan mengubah platform menjadi marketplace transaksi.
 - Jangan mewajibkan login untuk public user yang hanya ingin mencari UMKM.
+- Jangan menjalankan `php artisan config:cache` di Dockerfile build phase.
+- Jangan menghapus `server.php` selama production masih memakai PHP built-in server/router ini.
+- Jangan mengganti production upload ke `public`/`local` disk di Railway karena file upload akan hilang saat redeploy.
 
 ## Status Pekerjaan Terakhir
 
@@ -99,7 +111,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Admin bisa melakukan verifikasi UMKM melalui action cepat di tabel UMKM.
 - Owner UMKM bisa masuk panel dan hanya melihat/mengelola data miliknya sendiri.
 - Owner registration kini memiliki CAPTCHA lokal dan honeypot; jika gagal, pesan validasi dibuat ramah.
-- Upload logo/cover UMKM dan gambar produk memakai public disk melalui `public/storage`.
+- Upload logo/cover UMKM dan gambar produk memakai public disk melalui `public/storage` di lokal, dan Cloudinary saat `FILESYSTEM_DISK=cloudinary` di production.
 - `php artisan test` sudah hijau dan berisi test tambahan untuk akses panel dan scoping owner.
 - Halaman detail UMKM `/umkm/{slug}` sudah dipoles dengan hero gambar, logo UMKM, badge layanan, Maps embed/link, sticky contact panel desktop, sticky CTA mobile, dan katalog produk berbasis gambar upload.
 - Route detail UMKM sudah eager-load `products.images` untuk menghindari N+1 pada galeri produk.
@@ -131,6 +143,10 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Test SEO public sudah ditambahkan untuk meta detail UMKM, fallback social image, sitemap, dan robots.
 - Owner onboarding sudah dipoles: form UMKM owner berupa wizard, slug tidak perlu diisi owner, koordinat bisa dibantu dari Geolocation atau teks Maps, dan social media boleh berupa username atau URL.
 - Test owner onboarding sudah diperluas untuk CAPTCHA, honeypot, slug otomatis, koordinat Maps, dan normalisasi Instagram/TikTok.
+- Deployment Railway + Cloudinary sudah ditambahkan oleh AI agent lain dan didokumentasikan di `docs/DEPLOYMENT_UPDATE.md`.
+- File deployment yang sudah ada: `Dockerfile`, `docker-entrypoint.sh`, `server.php`, `config/cloudinary.php`, dan `App\Support\CloudinaryStorage`.
+- Railway MySQL digunakan untuk production testing; migration dan seeder dijalankan otomatis saat container start dengan `--force`.
+- `nixpacks.toml` disebut di deployment update sebagai alternatif lama, tetapi file tersebut tidak ada di workspace saat catatan ini diperbarui; Railway memprioritaskan Dockerfile.
 
 ## Next Steps
 
@@ -142,3 +158,4 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 6. Tambahkan export data lead/UMKM untuk admin bila sudah dibutuhkan operasional.
 7. Uji manual wizard UMKM owner di perangkat mobile, terutama tombol "Gunakan lokasi saya" dan "Buka Google Maps".
 8. Pertimbangkan dashboard tutorial khusus owner jika wizard Filament masih terasa membingungkan untuk pengguna awam.
+9. Uji manual production Railway setelah setiap perubahan besar: homepage, `/produk`, `/umkm`, `/admin`, Livewire JS, Filament asset, upload Cloudinary, dan mixed-content console.
