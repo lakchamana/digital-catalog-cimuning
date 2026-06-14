@@ -48,6 +48,9 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Komponen `x-category-icon` memetakan slug kategori ke ikon SVG lokal dengan fallback.
 - Tutorial first-visit publik memakai komponen `x-first-visit-onboarding` sebagai interactive walkthrough dengan localStorage key `cimuning_walkthrough_seen_v1`.
 - Tutorial hanya untuk public layout; panel Filament belum punya tutorial custom.
+- Public layout memiliki skip link ke `#main-content`, visible focus ring global, dan nav aktif memakai `aria-current="page"`.
+- Drawer mobile, filter bottom sheet, dan walkthrough memakai dialog semantics (`role="dialog"`, `aria-modal`, `aria-labelledby`) tanpa dependency tambahan.
+- Listing Livewire `/produk` dan `/umkm` memiliki live region untuk total hasil/loading/empty state serta ID filter yang dibedakan antara desktop dan mobile.
 
 ## Keputusan Desain
 
@@ -112,12 +115,14 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Seeder kategori sudah ditambah dengan Pendidikan, Kesehatan, Laundry, Elektronik, Agribisnis, Properti/Rumah, Event & Catering, dan Anak & Bayi.
 - Tutorial first-visit publik sudah diganti menjadi interactive walkthrough bertahap untuk search, kategori/produk, dan daftar akun owner.
 - Test discovery publik sudah ditambahkan untuk navbar search, carousel, category shortcuts, `/kategori`, dan walkthrough.
+- Accessibility polish publik sudah diterapkan untuk skip link, focus ring, aria-current, drawer/filter/walkthrough dialog attributes, live region hasil pencarian, dan duplikasi ID filter.
+- Test aksesibilitas publik sudah ditambahkan untuk layout landmarks, filter drawer, live region, dan render route publik utama.
 
 ## Next Steps
 
 1. Uji manual `/admin` di browser dengan `admin@cimuning.test` / `password` dan owner dummy / `password`.
 2. Uji manual homepage mobile/desktop untuk memastikan carousel terasa natural, tombol rapi, dan kategori tidak terlalu padat.
-3. Poles accessibility form dan validasi copy setelah uji manual mobile.
+3. Lanjutkan validasi copy setelah uji manual mobile.
 4. Pertimbangkan email notification dan password reset flow setelah konfigurasi mail siap.
 5. Tambahkan export data lead/UMKM untuk admin bila sudah dibutuhkan operasional.
 6. Tambahkan tutorial/dashboard guidance khusus owner jika onboarding Filament dirasa masih membingungkan.

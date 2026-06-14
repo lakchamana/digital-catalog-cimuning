@@ -1,7 +1,11 @@
+@php
+    $filterIdSuffix = $filterIdSuffix ?? 'default';
+@endphp
+
 <div class="space-y-6">
     <div>
-        <label for="category-filter" class="text-sm font-semibold text-cimuning-charcoal">Kategori</label>
-        <select id="category-filter" wire:model.live="category" class="mt-2 min-h-11 w-full rounded-input border border-cimuning-border bg-white px-4 text-base text-cimuning-charcoal focus:border-cimuning-red focus:outline-2">
+        <label for="category-filter-{{ $filterIdSuffix }}" class="text-sm font-semibold text-cimuning-charcoal">Kategori</label>
+        <select id="category-filter-{{ $filterIdSuffix }}" wire:model.live="category" class="mt-2 min-h-11 w-full rounded-input border border-cimuning-border bg-white px-4 text-base text-cimuning-charcoal focus:border-cimuning-red focus:outline-2">
             <option value="">Semua kategori</option>
             @foreach ($categories as $item)
                 <option value="{{ $item->slug }}">{{ $item->name }}</option>
@@ -10,8 +14,8 @@
     </div>
 
     <div>
-        <label for="rw-filter" class="text-sm font-semibold text-cimuning-charcoal">Lokasi/RW</label>
-        <select id="rw-filter" wire:model.live="rw" class="mt-2 min-h-11 w-full rounded-input border border-cimuning-border bg-white px-4 text-base text-cimuning-charcoal focus:border-cimuning-red focus:outline-2">
+        <label for="rw-filter-{{ $filterIdSuffix }}" class="text-sm font-semibold text-cimuning-charcoal">Lokasi/RW</label>
+        <select id="rw-filter-{{ $filterIdSuffix }}" wire:model.live="rw" class="mt-2 min-h-11 w-full rounded-input border border-cimuning-border bg-white px-4 text-base text-cimuning-charcoal focus:border-cimuning-red focus:outline-2">
             <option value="">Semua RW</option>
             @foreach ($rws as $item)
                 <option value="{{ $item }}">{{ $item }}</option>
@@ -20,8 +24,8 @@
     </div>
 
     <div>
-        <label for="sort-filter" class="text-sm font-semibold text-cimuning-charcoal">Urutkan</label>
-        <select id="sort-filter" wire:model.live="sort" class="mt-2 min-h-11 w-full rounded-input border border-cimuning-border bg-white px-4 text-base text-cimuning-charcoal focus:border-cimuning-red focus:outline-2">
+        <label for="sort-filter-{{ $filterIdSuffix }}" class="text-sm font-semibold text-cimuning-charcoal">Urutkan</label>
+        <select id="sort-filter-{{ $filterIdSuffix }}" wire:model.live="sort" class="mt-2 min-h-11 w-full rounded-input border border-cimuning-border bg-white px-4 text-base text-cimuning-charcoal focus:border-cimuning-red focus:outline-2">
             <option value="latest">Terbaru</option>
             <option value="az">A-Z</option>
             <option value="popular">Populer</option>
@@ -29,8 +33,8 @@
     </div>
 
     <div>
-        <label for="per-page-filter" class="text-sm font-semibold text-cimuning-charcoal">Jumlah per halaman</label>
-        <select id="per-page-filter" wire:model.live="perPage" class="mt-2 min-h-11 w-full rounded-input border border-cimuning-border bg-white px-4 text-base text-cimuning-charcoal focus:border-cimuning-red focus:outline-2">
+        <label for="per-page-filter-{{ $filterIdSuffix }}" class="text-sm font-semibold text-cimuning-charcoal">Jumlah per halaman</label>
+        <select id="per-page-filter-{{ $filterIdSuffix }}" wire:model.live="perPage" class="mt-2 min-h-11 w-full rounded-input border border-cimuning-border bg-white px-4 text-base text-cimuning-charcoal focus:border-cimuning-red focus:outline-2">
             <option value="9">9 UMKM</option>
             <option value="18">18 UMKM</option>
             <option value="27">27 UMKM</option>

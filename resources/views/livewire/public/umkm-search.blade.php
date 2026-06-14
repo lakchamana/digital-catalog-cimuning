@@ -1,4 +1,18 @@
-<div x-data="{ filtersOpen: false }" class="bg-white py-10 md:py-16">
+<div
+    x-data="{
+        filtersOpen: false,
+        openFilters() {
+            this.filtersOpen = true;
+            this.$nextTick(() => this.$refs.filterTitle?.focus());
+        },
+        closeFilters() {
+            this.filtersOpen = false;
+        },
+    }"
+    x-effect="document.body.classList.toggle('overflow-hidden', filtersOpen)"
+    x-on:keydown.escape.window="closeFilters()"
+    class="bg-white py-10 md:py-16"
+>
     <div class="container-cimuning">
         <div class="rounded-card border border-cimuning-border bg-white p-4 shadow-card md:p-5">
             <label for="umkm-search" class="text-sm font-semibold text-cimuning-charcoal">Cari UMKM</label>
@@ -14,7 +28,9 @@
                 <div class="grid grid-cols-2 gap-3 sm:flex">
                     <button
                         type="button"
-                        x-on:click="filtersOpen = true"
+                        x-on:click="openFilters()"
+                        x-bind:aria-expanded="filtersOpen.toString()"
+                        aria-controls="umkm-filter-drawer"
                         class="inline-flex min-h-11 items-center justify-center rounded-button border border-cimuning-border bg-white px-5 py-3 text-sm font-semibold text-cimuning-charcoal transition hover:bg-cimuning-section focus:outline-2 lg:hidden"
                     >
                         Filter
@@ -39,15 +55,15 @@
         </div>
 
         <div class="mt-8 grid gap-8 lg:grid-cols-[280px_1fr] lg:items-start">
-            <aside class="hidden rounded-card border border-cimuning-border bg-cimuning-section p-5 lg:block">
-                @include('livewire.public.partials.umkm-filters')
+            <aside class="hidden rounded-card border border-cimuning-border bg-cimuning-section p-5 lg:block" aria-label="Filter UMKM">
+                @include('livewire.public.partials.umkm-filters', ['filterIdSuffix' => 'desktop'])
             </aside>
 
-            <section>
+            <section aria-labelledby="umkm-results-heading">
                 <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                     <div>
-                        <h2 class="text-2xl font-bold text-cimuning-charcoal">Hasil pencarian</h2>
-                        <p class="mt-2 text-base text-cimuning-slate">
+                        <h2 id="umkm-results-heading" class="text-2xl font-bold text-cimuning-charcoal">Hasil pencarian</h2>
+                        <p class="mt-2 text-base text-cimuning-slate" aria-live="polite" aria-atomic="true">
                             {{ $umkms->total() }} UMKM ditemukan.
                         </p>
                     </div>
@@ -66,7 +82,8 @@
                     </div>
                 </div>
 
-                <div wire:loading.delay class="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                <div wire:loading.delay class="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3" role="status" aria-label="Memuat hasil UMKM">
+                    <span class="sr-only">Memuat hasil UMKM.</span>
                     @for ($i = 0; $i < 6; $i++)
                         <div class="overflow-hidden rounded-card border border-cimuning-border bg-white shadow-card">
                             <div class="aspect-[4/3] animate-pulse bg-cimuning-section"></div>
@@ -80,7 +97,7 @@
                     @endfor
                 </div>
 
-                <div wire:loading.delay.remove>
+                <div wire:loading.delay.remove aria-live="polite">
                     @if ($umkms->isEmpty())
                         <div class="mt-8 rounded-card border border-dashed border-cimuning-border bg-cimuning-section p-8 text-center">
                             <h3 class="text-xl font-bold text-cimuning-charcoal">UMKM belum ditemukan.</h3>
@@ -123,8 +140,9 @@
         </div>
     </div>
 
-    <div x-cloak x-show="filtersOpen" x-transition.opacity class="fixed inset-0 z-50 bg-cimuning-charcoal/40 lg:hidden" x-on:click="filtersOpen = false"></div>
+    <div x-cloak x-show="filtersOpen" x-transition.opacity class="fixed inset-0 z-50 bg-cimuning-charcoal/40 lg:hidden" x-on:click="closeFilters()"></div>
     <aside
+        id="umkm-filter-drawer"
         x-cloak
         x-show="filtersOpen"
         x-transition:enter="transition ease-out duration-200"
@@ -133,21 +151,24 @@
         x-transition:leave="transition ease-in duration-150"
         x-transition:leave-start="translate-y-0"
         x-transition:leave-end="translate-y-full"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="umkm-filter-title"
         class="fixed inset-x-0 bottom-0 z-50 max-h-[86dvh] overflow-y-auto rounded-t-[24px] bg-white p-5 shadow-2xl lg:hidden"
     >
         <div class="mb-5 flex items-center justify-between">
             <div>
-                <h2 class="text-xl font-bold text-cimuning-charcoal">Filter UMKM</h2>
+                <h2 id="umkm-filter-title" x-ref="filterTitle" tabindex="-1" class="text-xl font-bold text-cimuning-charcoal">Filter UMKM</h2>
                 <p class="mt-1 text-sm text-cimuning-slate">Pilih kategori, RW, layanan, dan urutan.</p>
             </div>
-            <button type="button" x-on:click="filtersOpen = false" class="flex h-11 w-11 items-center justify-center rounded-button border border-cimuning-border text-2xl text-cimuning-slate" aria-label="Tutup filter">&times;</button>
+            <button type="button" x-on:click="closeFilters()" class="flex h-11 w-11 items-center justify-center rounded-button border border-cimuning-border text-2xl text-cimuning-slate focus:outline-2" aria-label="Tutup filter">&times;</button>
         </div>
 
-        @include('livewire.public.partials.umkm-filters')
+        @include('livewire.public.partials.umkm-filters', ['filterIdSuffix' => 'mobile'])
 
         <button
             type="button"
-            x-on:click="filtersOpen = false"
+            x-on:click="closeFilters()"
             class="mt-5 inline-flex min-h-11 w-full items-center justify-center rounded-button bg-cimuning-red px-5 py-3 text-sm font-semibold text-white transition hover:bg-cimuning-deep focus:outline-2"
         >
             Terapkan Filter

@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\Product;
+use App\Models\Umkm;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,9 +16,16 @@ class PublicDiscoveryNavigationTest extends TestCase
     {
         $this->get('/')
             ->assertOk()
+            ->assertSee('href="#main-content"', false)
+            ->assertSee('<main id="main-content"', false)
+            ->assertSee('Lewati ke konten utama')
             ->assertSee('action="'.route('products.index').'"', false)
             ->assertSee('name="search"', false)
-            ->assertSee('Cari produk, jasa, atau UMKM Cimuning');
+            ->assertSee('Cari produk, jasa, atau UMKM Cimuning')
+            ->assertSee('aria-current="page"', false)
+            ->assertSee('aria-controls="mobile-navigation-drawer"', false)
+            ->assertSee('role="dialog"', false)
+            ->assertSee('aria-modal="true"', false);
     }
 
     public function test_homepage_renders_carousel_and_category_shortcuts(): void
@@ -59,5 +68,89 @@ class PublicDiscoveryNavigationTest extends TestCase
             ->assertSee('Pendidikan')
             ->assertSee('Kursus dan layanan edukasi.')
             ->assertDontSee('Kategori Rahasia');
+    }
+
+    public function test_livewire_listing_pages_render_accessible_filter_and_result_regions(): void
+    {
+        $this->seedDirectoryContent();
+
+        $this->get(route('products.index'))
+            ->assertOk()
+            ->assertSee('aria-controls="product-filter-drawer"', false)
+            ->assertSee('id="product-filter-drawer"', false)
+            ->assertSee('aria-labelledby="product-filter-title"', false)
+            ->assertSee('aria-live="polite"', false)
+            ->assertSee('role="status"', false)
+            ->assertSee('product-category-filter-desktop', false)
+            ->assertSee('product-category-filter-mobile', false);
+
+        $this->get(route('umkm.index'))
+            ->assertOk()
+            ->assertSee('aria-controls="umkm-filter-drawer"', false)
+            ->assertSee('id="umkm-filter-drawer"', false)
+            ->assertSee('aria-labelledby="umkm-filter-title"', false)
+            ->assertSee('aria-live="polite"', false)
+            ->assertSee('role="status"', false)
+            ->assertSee('category-filter-desktop', false)
+            ->assertSee('category-filter-mobile', false);
+    }
+
+    public function test_public_routes_render_after_accessibility_polish(): void
+    {
+        $umkm = $this->seedDirectoryContent();
+
+        foreach ([
+            route('home'),
+            route('products.index'),
+            route('umkm.index'),
+            route('categories.index'),
+            route('categories.show', 'kuliner'),
+            route('umkm.show', $umkm->slug),
+            route('umkm.register'),
+            route('about'),
+            route('contact'),
+        ] as $url) {
+            $this->get($url)->assertOk();
+        }
+    }
+
+    private function seedDirectoryContent(): Umkm
+    {
+        $category = Category::query()->firstOrCreate(
+            ['slug' => 'kuliner'],
+            [
+                'name' => 'Kuliner',
+                'description' => 'Makanan dan minuman lokal.',
+                'is_active' => true,
+                'sort_order' => 1,
+            ],
+        );
+
+        $umkm = Umkm::query()->firstOrCreate(
+            ['slug' => 'dapur-aksesibel'],
+            [
+                'category_id' => $category->id,
+                'name' => 'Dapur Aksesibel',
+                'description' => 'Makanan rumahan untuk warga Cimuning.',
+                'status' => 'verified',
+                'is_active' => true,
+                'whatsapp' => '081234567890',
+                'address' => 'Cimuning, Kota Bekasi',
+            ],
+        );
+
+        Product::query()->firstOrCreate(
+            ['slug' => 'nasi-aksesibel'],
+            [
+                'umkm_id' => $umkm->id,
+                'category_id' => $category->id,
+                'name' => 'Nasi Aksesibel',
+                'description' => 'Nasi box rumahan.',
+                'price' => 25000,
+                'is_active' => true,
+            ],
+        );
+
+        return $umkm;
     }
 }

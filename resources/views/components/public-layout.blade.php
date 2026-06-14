@@ -15,9 +15,13 @@
         @livewireStyles
     </head>
     <body class="min-h-screen bg-cimuning-white font-sans text-base antialiased">
+        <a href="#main-content" class="sr-only z-[90] rounded-button bg-cimuning-red px-5 py-3 text-sm font-semibold text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
+            Lewati ke konten utama
+        </a>
+
         <x-navbar />
 
-        <main>
+        <main id="main-content" tabindex="-1">
             {{ $slot }}
         </main>
 

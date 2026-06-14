@@ -44,6 +44,10 @@
         }
 
         open = ! hasSeen;
+
+        if (open) {
+            $nextTick(() => $refs.walkthroughPanel?.focus());
+        }
     "
     x-effect="document.body.classList.toggle('overflow-hidden', open)"
     x-on:keydown.escape.window="close()"
@@ -69,6 +73,9 @@
         role="dialog"
         aria-modal="true"
         aria-labelledby="first-visit-walkthrough-title"
+        aria-describedby="first-visit-walkthrough-description"
+        tabindex="-1"
+        x-ref="walkthroughPanel"
         class="fixed inset-x-0 bottom-0 z-[80] mx-auto max-h-[88dvh] overflow-y-auto rounded-t-[24px] border border-cimuning-border bg-white p-5 shadow-2xl md:bottom-auto md:top-1/2 md:max-w-2xl md:-translate-y-1/2 md:rounded-card md:p-6"
     >
         <div class="flex items-start justify-between gap-4">
@@ -77,7 +84,7 @@
                 <h2 id="first-visit-walkthrough-title" class="mt-4 text-2xl font-bold leading-tight text-cimuning-charcoal md:text-3xl">
                     Panduan cepat Cimuning Digital Hub
                 </h2>
-                <p class="mt-3 text-base leading-7 text-cimuning-slate">
+                <p id="first-visit-walkthrough-description" class="mt-3 text-base leading-7 text-cimuning-slate">
                     Ikuti beberapa langkah singkat untuk mencari produk, membuka kategori, menghubungi UMKM, atau mendaftarkan usaha.
                 </p>
             </div>
@@ -98,7 +105,7 @@
             </template>
         </div>
 
-        <div class="mt-6">
+        <div class="mt-6" aria-live="polite">
             <div x-show="step === 0">
                 <div class="rounded-card border border-cimuning-border bg-cimuning-white p-5">
                     <h3 class="text-xl font-bold text-cimuning-charcoal">Mulai dari pencarian</h3>

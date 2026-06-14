@@ -3,12 +3,13 @@
 ## Flow Public User
 
 1. User membuka homepage.
-2. Jika pertama kali berkunjung, user melihat interactive walkthrough dan bisa melewati kapan saja.
-3. User mencari produk, jasa, kategori, lokasi/RW, atau nama UMKM melalui search utama di navbar.
-4. User melihat listing UMKM atau produk/jasa.
-5. User membuka detail UMKM.
-6. User menghubungi pemilik usaha lewat WhatsApp, telepon, maps, website, atau media sosial.
-7. Transaksi dilakukan langsung di luar website.
+2. User dapat memakai skip link untuk langsung menuju konten utama jika menavigasi dengan keyboard.
+3. Jika pertama kali berkunjung, user melihat interactive walkthrough dan bisa melewati kapan saja.
+4. User mencari produk, jasa, kategori, lokasi/RW, atau nama UMKM melalui search utama di navbar.
+5. User melihat listing UMKM atau produk/jasa dengan hasil yang diumumkan melalui live region.
+6. User membuka detail UMKM.
+7. User menghubungi pemilik usaha lewat WhatsApp, telepon, maps, website, atau media sosial.
+8. Transaksi dilakukan langsung di luar website.
 
 ## Flow UMKM Owner
 
@@ -35,7 +36,8 @@
 2. Livewire menjalankan pencarian dengan debounce sekitar 400-600ms.
 3. User dapat memfilter berdasarkan kategori, lokasi/RW, verified, layanan, dan sort.
 4. Query search disimpan di URL agar bisa dibagikan.
-5. Jika tidak ada hasil, tampilkan empty state yang ramah.
+5. Total hasil, loading, dan empty state tersedia sebagai live region untuk assistive technology.
+6. Jika tidak ada hasil, tampilkan empty state yang ramah.
 
 ## Flow Pendaftaran UMKM
 

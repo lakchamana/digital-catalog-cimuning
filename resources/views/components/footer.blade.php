@@ -1,4 +1,4 @@
-<footer class="border-t border-cimuning-border bg-white">
+<footer role="contentinfo" class="border-t border-cimuning-border bg-white">
     <div class="container-cimuning grid gap-8 py-10 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
             <div class="flex items-center gap-3">

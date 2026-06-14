@@ -56,6 +56,8 @@
 - Additional seed categories: Pendidikan, Kesehatan, Laundry, Elektronik, Agribisnis, Properti/Rumah, Event & Catering, and Anak & Bayi.
 - Interactive public walkthrough with step-by-step actions and localStorage key `cimuning_walkthrough_seen_v1`.
 - Feature tests for navbar search, homepage carousel, category shortcuts, category index visibility, and walkthrough markup.
+- Public accessibility polish for skip links, visible focus rings, nav current state, dialog ARIA attributes, and Livewire result announcements.
+- Feature tests for public accessibility landmarks, filter drawers, live regions, and route rendering.
 
 ### Changed
 - Replaced default Laravel welcome route with Cimuning UMKM homepage.
@@ -82,6 +84,8 @@
 - Homepage discovery now starts with a carousel and category icons under the search-centric navbar, closer to OLX-style browsing while staying directory-only.
 - Public first-visit onboarding now behaves as an interactive walkthrough instead of a static intro dialog.
 - Homepage carousel now uses horizontal-only `scrollTo` movement and pauses auto-advance when the carousel is outside the viewport.
+- Public filter panels now avoid duplicate form control IDs between desktop and mobile variants.
+- Public mobile drawer, filter bottom sheets, and walkthrough now expose clearer dialog semantics for assistive technology.
 
 ### Fixed
 - PHPUnit dev dependency is now installed successfully after PHP `zip` became available, so `php artisan test` can run.

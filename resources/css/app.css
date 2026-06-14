@@ -48,6 +48,16 @@
         outline-color: rgba(230, 0, 18, 0.35);
         outline-offset: 2px;
     }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    [tabindex]:focus-visible {
+        outline: 3px solid rgba(230, 0, 18, 0.45);
+        outline-offset: 3px;
+    }
 }
 
 @layer components {
