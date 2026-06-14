@@ -149,7 +149,9 @@ class UmkmForm
                         Toggle::make('is_active')
                             ->label('Aktif')
                             ->default(true)
-                            ->required(),
+                            ->required()
+                            ->disabled(fn () => ! Filament::auth()->user()?->isAdmin())
+                            ->dehydrated(),
                         Toggle::make('is_featured')
                             ->label('UMKM pilihan')
                             ->default(false)

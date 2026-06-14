@@ -38,6 +38,14 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Digital', 'description' => 'Desain, percetakan, konten, dan jasa berbasis digital.'],
             ['name' => 'Otomotif', 'description' => 'Bengkel, servis kendaraan, dan perlengkapan motor.'],
             ['name' => 'Produk Kreatif', 'description' => 'Kerajinan, souvenir, hampers, dan produk custom.'],
+            ['name' => 'Pendidikan', 'description' => 'Kursus, les, bimbingan belajar, dan layanan edukasi.'],
+            ['name' => 'Kesehatan', 'description' => 'Klinik, terapi, herbal, alat kesehatan, dan layanan kebugaran.'],
+            ['name' => 'Laundry', 'description' => 'Cuci setrika, dry clean, laundry kiloan, dan layanan kebersihan pakaian.'],
+            ['name' => 'Elektronik', 'description' => 'Servis gadget, komputer, perangkat elektronik, dan aksesoris.'],
+            ['name' => 'Agribisnis', 'description' => 'Tanaman, hasil kebun, pangan lokal, dan kebutuhan pertanian rumahan.'],
+            ['name' => 'Properti/Rumah', 'description' => 'Kontrakan, renovasi, perbaikan rumah, dan kebutuhan properti.'],
+            ['name' => 'Event & Catering', 'description' => 'Katering, dekorasi, dokumentasi, dan kebutuhan acara.'],
+            ['name' => 'Anak & Bayi', 'description' => 'Perlengkapan anak, mainan, dan kebutuhan bayi.'],
         ])->mapWithKeys(function (array $category, int $index) {
             $model = Category::query()->updateOrCreate(
                 ['slug' => Str::slug($category['name'])],

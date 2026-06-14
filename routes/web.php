@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\LeadRedirectController;
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\Umkm;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
@@ -23,6 +24,7 @@ $hasTables = static function (array $tables): bool {
 Route::get('/', function () use ($hasTables) {
     $categories = collect();
     $featuredUmkms = collect();
+    $featuredProducts = collect();
 
     if ($hasTables(['categories', 'umkms'])) {
         $categories = Category::query()
@@ -30,7 +32,7 @@ Route::get('/', function () use ($hasTables) {
             ->withCount(['umkms' => fn ($query) => $query->where('is_active', true)->where('status', 'verified')])
             ->orderBy('sort_order')
             ->orderBy('name')
-            ->limit(6)
+            ->limit(11)
             ->get();
 
         $featuredUmkms = Umkm::query()
@@ -43,7 +45,21 @@ Route::get('/', function () use ($hasTables) {
             ->get();
     }
 
-    return view('home', compact('categories', 'featuredUmkms'));
+    if ($hasTables(['categories', 'umkms', 'products'])) {
+        $featuredProducts = Product::query()
+            ->with([
+                'category',
+                'umkm',
+                'images' => fn ($query) => $query->orderBy('sort_order')->orderBy('id'),
+            ])
+            ->where('is_active', true)
+            ->whereHas('umkm', fn ($query) => $query->where('is_active', true)->where('status', 'verified'))
+            ->latest()
+            ->limit(8)
+            ->get();
+    }
+
+    return view('home', compact('categories', 'featuredUmkms', 'featuredProducts'));
 })->name('home');
 
 Route::get('/umkm', function () use ($hasTables) {
@@ -59,6 +75,23 @@ Route::get('/produk', function () use ($hasTables) {
 
     return view('products.index');
 })->name('products.index');
+
+Route::get('/kategori', function () use ($hasTables) {
+    if (! $hasTables(['categories', 'umkms'])) {
+        return view('categories.index', [
+            'categories' => collect(),
+        ]);
+    }
+
+    $categories = Category::query()
+        ->where('is_active', true)
+        ->withCount(['umkms' => fn ($query) => $query->where('is_active', true)->where('status', 'verified')])
+        ->orderBy('sort_order')
+        ->orderBy('name')
+        ->get();
+
+    return view('categories.index', compact('categories'));
+})->name('categories.index');
 
 Route::get('/kategori/{slug}', function (string $slug) use ($hasTables) {
     if (! $hasTables(['categories', 'umkms'])) {
@@ -96,9 +129,7 @@ Route::get('/umkm/{slug}', function (string $slug) use ($hasTables) {
     return view('umkm.show', compact('umkm'));
 })->name('umkm.show');
 
-Route::get('/daftar-umkm', function () use ($hasTables) {
-    abort_unless($hasTables(['categories', 'umkms']), 503);
-
+Route::get('/daftar-umkm', function () {
     return view('umkm.register');
 })->name('umkm.register');
 

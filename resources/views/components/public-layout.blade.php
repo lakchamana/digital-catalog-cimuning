@@ -22,6 +22,7 @@
         </main>
 
         <x-footer />
+        <x-first-visit-onboarding />
 
         @livewireScripts
     </body>

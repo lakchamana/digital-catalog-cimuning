@@ -3,20 +3,23 @@
 ## Flow Public User
 
 1. User membuka homepage.
-2. User mencari produk, jasa, kategori, lokasi/RW, atau nama UMKM.
-3. User melihat listing UMKM atau produk/jasa.
-4. User membuka detail UMKM.
-5. User menghubungi pemilik usaha lewat WhatsApp, telepon, maps, website, atau media sosial.
-6. Transaksi dilakukan langsung di luar website.
+2. Jika pertama kali berkunjung, user melihat interactive walkthrough dan bisa melewati kapan saja.
+3. User mencari produk, jasa, kategori, lokasi/RW, atau nama UMKM melalui search utama di navbar.
+4. User melihat listing UMKM atau produk/jasa.
+5. User membuka detail UMKM.
+6. User menghubungi pemilik usaha lewat WhatsApp, telepon, maps, website, atau media sosial.
+7. Transaksi dilakukan langsung di luar website.
 
 ## Flow UMKM Owner
 
-1. Owner login ke dashboard.
-2. Owner mengisi atau memperbarui profil UMKM miliknya.
-3. Owner menambah produk/jasa dan foto.
-4. Owner mengirim data untuk diverifikasi.
-5. Owner melihat status pending, verified, rejected, atau need revision.
-6. Owner memperbaiki data jika admin meminta revisi.
+1. Calon owner membuka `/daftar-umkm`.
+2. Owner membuat akun melalui `/admin/register`.
+3. Owner login ke dashboard.
+4. Owner mengisi atau memperbarui profil UMKM miliknya.
+5. UMKM baru tersimpan sebagai pending dan belum tampil publik.
+6. Owner menambah produk/jasa dan foto setelah profil UMKM tersedia.
+7. Owner melihat status pending, verified, rejected, atau need revision.
+8. Owner memperbaiki data jika admin meminta revisi.
 
 ## Flow Admin
 
@@ -37,12 +40,40 @@
 ## Flow Pendaftaran UMKM
 
 1. User membuka `/daftar-umkm`.
-2. User mengisi data usaha, kategori, kontak, alamat, layanan, dan foto.
-3. Sistem memvalidasi input dan upload.
-4. Sistem membuat slug unik dan menyimpan data dengan status pending serta belum aktif.
-5. Sistem mengirim notifikasi dashboard ke admin.
-6. Akun owner tidak dibuat otomatis pada tahap ini.
-7. Admin melakukan verifikasi dari dashboard.
+2. User membaca manfaat dan langkah pendaftaran account-first.
+3. User membuat akun owner dari `/admin/register`.
+4. Setelah login, owner melengkapi data usaha, kategori, kontak, alamat, layanan, dan foto dari dashboard.
+5. Sistem memvalidasi input dan upload.
+6. Sistem membuat slug unik dan menyimpan data dengan status pending serta belum aktif.
+7. Sistem mengirim notifikasi dashboard ke admin.
+8. Admin melakukan verifikasi dari dashboard.
+
+## Flow Homepage Product-Led
+
+1. User membuka homepage.
+2. User langsung melihat search besar di navbar sebagai navigasi utama discovery.
+3. User melihat carousel jumbotron informatif berisi produk lokal, UMKM verified, akun owner, dan katalog digital.
+4. User memilih ikon kategori cepat, termasuk "Lihat Semua" untuk membuka `/kategori`.
+5. User melihat produk/jasa terbaru dan dapat membuka profil UMKM atau bertanya lewat WhatsApp.
+6. Website mencatat klik WhatsApp/Maps sebagai lead anonim.
+7. Tidak ada cart, checkout, payment, ongkir, atau transaksi internal.
+
+## Flow Semua Kategori
+
+1. User menekan ikon atau link "Lihat Semua" pada kategori homepage.
+2. Sistem membuka `/kategori`.
+3. User melihat semua kategori aktif dalam grid ikon, deskripsi singkat, dan jumlah UMKM verified.
+4. User memilih kategori.
+5. Sistem membuka `/produk?category={slug}` untuk menampilkan produk/jasa sesuai kategori.
+
+## Flow First-Visit Tutorial
+
+1. Visitor baru membuka halaman publik yang memakai public layout.
+2. Sistem mengecek localStorage `cimuning_walkthrough_seen_v1`.
+3. Jika belum pernah melihat tutorial, modal/bottom sheet membuka interactive walkthrough.
+4. User dapat memulai panduan, mencoba search produk/jasa, membuka kategori/produk, atau menuju pendaftaran UMKM.
+5. User dapat memilih "Skip", "Selesai", atau tombol tutup kapan saja.
+6. Setelah ditutup, sistem menyimpan status di browser agar walkthrough tidak muncul lagi.
 
 ## Flow Verifikasi UMKM
 

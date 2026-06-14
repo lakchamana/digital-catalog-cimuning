@@ -18,6 +18,7 @@
             <div class="mt-3 space-y-2 text-sm text-cimuning-slate">
                 <a class="block hover:text-cimuning-red" href="{{ route('umkm.index') }}">Direktori UMKM</a>
                 <a class="block hover:text-cimuning-red" href="{{ route('products.index') }}">Produk dan Jasa</a>
+                <a class="block hover:text-cimuning-red" href="{{ route('categories.index') }}">Semua Kategori</a>
                 <a class="block hover:text-cimuning-red" href="{{ route('umkm.register') }}">Daftarkan UMKM</a>
             </div>
         </div>

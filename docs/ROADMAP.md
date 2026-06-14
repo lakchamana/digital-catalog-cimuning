@@ -20,6 +20,10 @@
 - Filter lanjutan berdasarkan RW dan layanan.
 - Pendaftaran UMKM lebih lengkap dengan status revisi.
 - Notifikasi dashboard untuk status verifikasi.
+- Account-first onboarding untuk owner UMKM.
+- Homepage search-centric dengan carousel jumbotron dan kategori ikon.
+- Halaman semua kategori `/kategori`.
+- Interactive walkthrough first-visit publik.
 - Polishing responsive dan accessibility.
 
 ## Phase 3
@@ -28,6 +32,7 @@
 - Artikel atau cerita UMKM.
 - Export data UMKM untuk admin.
 - Optimasi SEO halaman detail.
+- Tutorial/dashboard guidance khusus owner bila dibutuhkan.
 - PWA ringan untuk pengalaman mobile.
 
 ## Future Improvement
@@ -36,6 +41,7 @@
 - Dashboard analytics klik kontak.
 - Multi-admin approval flow.
 - Featured banner dan campaign UMKM lokal.
+- Manajemen banner carousel dari dashboard admin.
 - Import data UMKM dari spreadsheet dengan validasi.
 
 ## Fitur Yang Belum Boleh Dibuat Dulu

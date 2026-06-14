@@ -44,6 +44,18 @@
 - Lead event tracking for public WhatsApp and Google Maps CTA clicks.
 - Filament lead analytics widgets for contact click totals and recent lead activity.
 - Feature tests for lead redirects, public visibility protection, product lead relation, and owner lead scoping.
+- Account-first UMKM owner registration through Filament `/admin/register`.
+- Product-led homepage layout with product/service discovery prioritized above UMKM profile sections.
+- Owner dashboard empty state action for completing a UMKM profile.
+- Feature tests for owner registration, owner UMKM creation defaults, and homepage verified product visibility.
+- First-visit public onboarding tutorial with Alpine.js and localStorage.
+- Feature tests for onboarding markup on public pages and exclusion from lead redirect routes.
+- Search-centric public navbar with large product/service search, compact discovery nav, and secondary informational links.
+- Homepage carousel jumbotron with Alpine.js controls, dots, and mobile horizontal snap behavior.
+- Category icon component and `/kategori` public index page for browsing all active categories.
+- Additional seed categories: Pendidikan, Kesehatan, Laundry, Elektronik, Agribisnis, Properti/Rumah, Event & Catering, and Anak & Bayi.
+- Interactive public walkthrough with step-by-step actions and localStorage key `cimuning_walkthrough_seen_v1`.
+- Feature tests for navbar search, homepage carousel, category shortcuts, category index visibility, and walkthrough markup.
 
 ### Changed
 - Replaced default Laravel welcome route with Cimuning UMKM homepage.
@@ -63,15 +75,27 @@
 - Public UMKM registration now notifies admin users after a pending submission is created.
 - Filament UMKM verification table actions now use a shared workflow service and notify owners when an owner account is assigned.
 - Public WhatsApp and Maps CTA links now pass through a lightweight tracking redirect before opening the external target.
+- `/daftar-umkm` now acts as an account-first owner onboarding landing page instead of a guest submission form.
+- New owner-created UMKMs are forced to pending and inactive until admin verification.
+- Owner access can fill and revise their own UMKM profile, but cannot activate public visibility.
+- Public layout now renders a lightweight onboarding dialog for first-time visitors.
+- Homepage discovery now starts with a carousel and category icons under the search-centric navbar, closer to OLX-style browsing while staying directory-only.
+- Public first-visit onboarding now behaves as an interactive walkthrough instead of a static intro dialog.
+- Homepage carousel now uses horizontal-only `scrollTo` movement and pauses auto-advance when the carousel is outside the viewport.
 
 ### Fixed
 - PHPUnit dev dependency is now installed successfully after PHP `zip` became available, so `php artisan test` can run.
+- Homepage carousel no longer jumps the page back up while users are scrolling through catalog sections.
+- Homepage carousel prev/next controls are now positioned as cleaner floating controls with safer spacing from slide edges.
 
 ### Notes
 - MVP remains a directory/catalog platform. Payment, checkout, cart, and transaction flows are intentionally excluded.
 - MySQL/XAMPP is now active and user confirmed `php artisan migrate --seed` was run successfully.
 - Local PHP CLI has required extensions for Filament install: `intl`, `zip`, `fileinfo`, `mbstring`, `openssl`, and `pdo_mysql`.
-- Google Maps on public detail pages uses public Maps links/embed without an API key; click tracking is deferred.
+- Google Maps on public detail pages uses public Maps links/embed without an API key.
 - Public UMKM registrations do not create owner accounts automatically; admin can assign an owner later from Filament.
 - Dashboard notifications are database-only for this MVP; email, WhatsApp, and realtime broadcast notifications are deferred.
 - Lead tracking records anonymous contact intent only; checkout, cart, payment, shipping, and internal transaction flows remain excluded.
+- Guest UMKM submission is intentionally replaced by account-first onboarding; the old Livewire guest form is no longer rendered publicly.
+- First-visit tutorial is available on public pages only; custom dashboard onboarding remains deferred.
+- `/kategori` is the index for all active categories, while `/kategori/{slug}` remains the category-filtered UMKM listing.

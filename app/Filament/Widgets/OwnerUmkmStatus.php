@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Filament\Resources\Umkms\UmkmResource;
 use App\Models\Umkm;
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -65,6 +66,12 @@ class OwnerUmkmStatus extends TableWidget
             ])
             ->recordUrl(fn (Umkm $record): string => UmkmResource::getUrl('edit', ['record' => $record]))
             ->emptyStateHeading('Belum ada UMKM yang terhubung')
-            ->emptyStateDescription('Admin dapat menghubungkan akun Anda dengan data UMKM dari halaman edit UMKM.');
+            ->emptyStateDescription('Lengkapi profil UMKM Anda agar admin bisa meninjau dan memverifikasi sebelum tampil publik.')
+            ->emptyStateActions([
+                Action::make('createUmkm')
+                    ->label('Lengkapi Profil UMKM')
+                    ->url(UmkmResource::getUrl('create'))
+                    ->icon('heroicon-o-plus-circle'),
+            ]);
     }
 }
