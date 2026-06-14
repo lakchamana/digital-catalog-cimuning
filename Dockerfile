@@ -31,12 +31,18 @@ RUN npm run build && npm prune --omit=dev
 
 # Laravel storage setup
 RUN mkdir -p storage/framework/{sessions,views,cache,testing} storage/logs bootstrap/cache \
-    && chmod -R a+rw storage
+    && chmod -R a+rw storage bootstrap/cache
 
 # Optimise autoloader after full source copy
+# JANGAN jalankan config:cache/route:cache di sini — env vars Railway belum tersedia saat build
 RUN COMPOSER_ALLOW_SUPERUSER=1 composer dump-autoload --optimize
+
+# Copy dan set permission entrypoint
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 8080
 ENV PORT=8080
 
-CMD ["php", "-S", "0.0.0.0:8080", "-t", "public"]
+# Entrypoint akan: clear cache -> cache config -> migrate -> seed -> start server
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
