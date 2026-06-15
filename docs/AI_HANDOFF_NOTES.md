@@ -8,8 +8,6 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 
 - `prompt-pertama.md`
 - `DESIGN-CIMUNING-UMKM-DIRECTORY.md`
-- `www.indonetwork.co.id-DESIGN.md`
-- `www.bridestory.com-DESIGN.md`
 - `docs/PROJECT_CONTEXT.md`
 - `docs/WEB_APP_FLOW.md`
 - `docs/ROADMAP.md`
@@ -32,6 +30,8 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - View publik tetap memiliki fallback aman ketika database belum dimigrasi atau MySQL belum aktif.
 - Listing `/umkm` menyimpan filter di query string: `search`, `category`, `rw`, `verified`, `services`, `sort`, `perPage`, dan `page`.
 - Listing `/produk` menyimpan filter di query string: `search`, `category`, `umkm`, `price`, `sort`, `perPage`, dan `page`.
+- Filter `/umkm` menormalisasi nilai query string yang tidak valid untuk kategori, RW, layanan, sort, dan jumlah per halaman.
+- UX `/umkm` dibuat eksplisit seperti `/produk`: search box memiliki tombol utama "Cari", reset hanya muncul saat filter aktif, filter aktif tampil sebagai chip yang bisa dihapus satu per satu, dan drawer mobile memakai tombol "Lihat hasil".
 - Filter `/produk` menormalisasi nilai query string yang tidak valid; kategori produk juga fallback ke kategori UMKM jika `products.category_id` kosong.
 - UX `/produk` dibuat eksplisit: search box memiliki tombol utama "Cari", reset hanya muncul saat filter aktif, filter aktif tampil sebagai chip yang bisa dihapus satu per satu, dan drawer mobile memakai tombol "Lihat hasil".
 - Pendaftaran publik `/daftar-umkm` memakai Livewire `App\Livewire\Public\UmkmRegistrationForm`.
@@ -118,6 +118,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Seeder membuat admin `admin@cimuning.test` dan owner dummy dengan password `password`.
 - User sudah mengaktifkan XAMPP/MySQL/Apache dan menjalankan `php artisan migrate --seed`.
 - Livewire UMKM search/filter sudah dibuat dengan keyword, kategori, RW, verified, layanan, sort, pagination, loading skeleton, empty state, dan mobile bottom sheet.
+- Livewire UMKM search/filter sudah dipoles agar alurnya jelas untuk user awam: tombol utama "Cari", heading hasil kontekstual, chip filter yang bisa dihapus satu per satu, drawer mobile "Lihat hasil", dan query invalid kembali ke default aman.
 - Branding sudah diganti menjadi Cimuning Digital Hub di UI utama, metadata, `.env`, dan `.env.example`.
 - Livewire produk search/filter sudah dibuat dengan keyword, kategori, UMKM, harga, sort, pagination, loading skeleton, empty state, dan mobile bottom sheet.
 - Livewire produk search/filter sudah diperkuat: query invalid kembali ke default, filter kategori memakai fallback kategori UMKM, harga `0` dianggap "Hubungi UMKM", dan test khusus `ProductSearchTest` menjaga perilaku ini.

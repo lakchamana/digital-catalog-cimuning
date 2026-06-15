@@ -35,20 +35,30 @@ class UmkmSearch extends Component
     public string $sort = 'latest';
 
     #[Url(as: 'perPage', except: 9)]
-    public int $perPage = 9;
+    public int|string $perPage = 9;
 
     public function mount(?string $initialCategory = null): void
     {
         if ($this->category === '' && $initialCategory) {
             $this->category = $initialCategory;
         }
+
+        $this->normalizeFilters();
     }
 
     public function updated(string $property): void
     {
+        $this->normalizeFilters();
+
         if ($property !== 'page') {
             $this->resetPage();
         }
+    }
+
+    public function submitSearch(): void
+    {
+        $this->normalizeFilters();
+        $this->resetPage();
     }
 
     public function resetFilters(): void
@@ -60,13 +70,45 @@ class UmkmSearch extends Component
         $this->resetPage();
     }
 
+    public function clearFilter(string $filter): void
+    {
+        if (str_starts_with($filter, 'service:')) {
+            $service = substr($filter, strlen('service:'));
+            $this->services = collect($this->services)
+                ->reject(fn ($value) => $value === $service)
+                ->values()
+                ->all();
+        } else {
+            match ($filter) {
+                'search' => $this->search = '',
+                'category' => $this->category = '',
+                'rw' => $this->rw = '',
+                'verified' => $this->verified = true,
+                'sort' => $this->sort = 'latest',
+                'perPage' => $this->perPage = 9,
+                default => null,
+            };
+        }
+
+        $this->normalizeFilters();
+        $this->resetPage();
+    }
+
     public function render(): View
     {
+        $this->normalizeFilters();
+
+        $categories = $this->categories();
+        $rws = $this->rws();
+        $umkms = $this->umkms();
+
         return view('livewire.public.umkm-search', [
-            'categories' => $this->categories(),
-            'rws' => $this->rws(),
-            'umkms' => $this->umkms(),
+            'categories' => $categories,
+            'rws' => $rws,
+            'umkms' => $umkms,
             'activeFilterCount' => $this->activeFilterCount(),
+            'activeFilters' => $this->activeFilters($categories),
+            'resultHeading' => $this->resultHeading($categories),
         ]);
     }
 
@@ -94,10 +136,7 @@ class UmkmSearch extends Component
     {
         $search = trim($this->search);
         $allowedServices = $this->allowedServices();
-        $services = collect($this->services)
-            ->filter(fn ($service) => array_key_exists($service, $allowedServices))
-            ->values()
-            ->all();
+        $services = $this->validatedServices();
 
         return Umkm::query()
             ->with('category')
@@ -143,7 +182,9 @@ class UmkmSearch extends Component
 
     protected function validatedPerPage(): int
     {
-        return in_array($this->perPage, [9, 18, 27], true) ? $this->perPage : 9;
+        $perPage = (int) $this->perPage;
+
+        return in_array($perPage, [9, 18, 27], true) ? $perPage : 9;
     }
 
     protected function allowedServices(): array
@@ -163,9 +204,143 @@ class UmkmSearch extends Component
             $this->category !== '',
             $this->rw !== '',
             $this->sort !== 'latest',
-            $this->perPage !== 9,
-            count($this->services) > 0,
+            (int) $this->perPage !== 9,
+            count($this->validatedServices()) > 0,
             ! $this->verified,
         ])->filter()->count();
+    }
+
+    /**
+     * @return array<int, array{key: string, label: string, value: string}>
+     */
+    protected function activeFilters(Collection $categories): array
+    {
+        return collect([
+            $this->search !== '' ? [
+                'key' => 'search',
+                'label' => 'Kata kunci',
+                'value' => $this->search,
+            ] : null,
+            $this->category !== '' ? [
+                'key' => 'category',
+                'label' => 'Kategori',
+                'value' => $categories->firstWhere('slug', $this->category)?->name ?? $this->category,
+            ] : null,
+            $this->rw !== '' ? [
+                'key' => 'rw',
+                'label' => 'RW',
+                'value' => $this->rw,
+            ] : null,
+            ! $this->verified ? [
+                'key' => 'verified',
+                'label' => 'Status',
+                'value' => 'Semua yang tampil publik',
+            ] : null,
+            ...collect($this->validatedServices())->map(fn (string $service) => [
+                'key' => 'service:'.$service,
+                'label' => 'Layanan',
+                'value' => $this->serviceLabels()[$service] ?? $service,
+            ])->all(),
+            $this->sort !== 'latest' ? [
+                'key' => 'sort',
+                'label' => 'Urutan',
+                'value' => match ($this->sort) {
+                    'az' => 'A-Z',
+                    'popular' => 'Populer',
+                    default => 'Terbaru',
+                },
+            ] : null,
+            (int) $this->perPage !== 9 ? [
+                'key' => 'perPage',
+                'label' => 'Jumlah',
+                'value' => $this->perPage.' per halaman',
+            ] : null,
+        ])->filter()->values()->all();
+    }
+
+    protected function resultHeading(Collection $categories): string
+    {
+        if ($this->search !== '') {
+            return 'Hasil untuk "'.$this->search.'"';
+        }
+
+        if ($this->category !== '') {
+            return 'UMKM kategori '.($categories->firstWhere('slug', $this->category)?->name ?? $this->category);
+        }
+
+        if ($this->rw !== '') {
+            return 'UMKM di '.$this->rw;
+        }
+
+        if (count($this->validatedServices()) > 0) {
+            return 'UMKM sesuai layanan';
+        }
+
+        return 'Semua UMKM verified';
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function serviceLabels(): array
+    {
+        return [
+            'delivery' => 'Delivery',
+            'cod' => 'COD',
+            'custom_order' => 'Custom order',
+            'physical_store' => 'Toko fisik',
+        ];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function validatedServices(): array
+    {
+        return collect($this->services)
+            ->filter(fn ($service) => is_string($service) && array_key_exists($service, $this->allowedServices()))
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    protected function normalizeFilters(): void
+    {
+        $this->search = trim($this->search);
+
+        if (! in_array($this->sort, ['latest', 'az', 'popular'], true)) {
+            $this->sort = 'latest';
+        }
+
+        $this->perPage = $this->validatedPerPage();
+        $this->services = $this->validatedServices();
+
+        if ($this->category !== '' && ! $this->validCategorySlug($this->category)) {
+            $this->category = '';
+        }
+
+        if ($this->rw !== '' && ! $this->validRw($this->rw)) {
+            $this->rw = '';
+        }
+    }
+
+    protected function validCategorySlug(string $slug): bool
+    {
+        return Category::query()
+            ->where('slug', $slug)
+            ->where('is_active', true)
+            ->whereHas('umkms', fn (Builder $umkmQuery) => $umkmQuery
+                ->where('is_active', true)
+                ->where('status', 'verified'))
+            ->exists();
+    }
+
+    protected function validRw(string $rw): bool
+    {
+        return Umkm::query()
+            ->where('is_active', true)
+            ->where('status', 'verified')
+            ->where('rw', $rw)
+            ->exists();
     }
 }

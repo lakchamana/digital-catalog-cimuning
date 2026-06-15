@@ -82,6 +82,7 @@
 - Product search reliability tests for keyword, category fallback, UMKM, price, invalid filter state, and reset behavior.
 - Tokenized local CAPTCHA support for owner registration to reduce false failures across refreshes or multiple browser tabs.
 - Product search UX tests for explicit search submit, contextual result headings, mobile filter copy, and individual filter chip removal.
+- UMKM search UX tests for explicit search submit, contextual result headings, mobile filter copy, safe query fallback, and individual filter chip removal.
 
 ### Changed
 - Replaced default Laravel welcome route with Cimuning UMKM homepage.
@@ -130,6 +131,9 @@
 - Owner registration honeypot now uses a less autofill-prone hidden field.
 - `/produk` search UI now uses a clear primary "Cari" action, contextual result headings, removable active filter chips, and secondary reset actions only when filters are active.
 - Mobile product filter drawer now uses "Lihat hasil" instead of "Terapkan Filter" because filters apply live.
+- `/umkm` search UI now follows the same explicit UX pattern as `/produk`: primary "Cari" action, contextual result headings, removable active filter chips, and reset actions only when filters are active.
+- Mobile UMKM filter drawer now uses "Lihat hasil" instead of "Terapkan Filter" because filters apply live.
+- `/umkm` filters now sanitize invalid query string values for category, RW, services, sort, and pagination size.
 
 ### Fixed
 - PHPUnit dev dependency is now installed successfully after PHP `zip` became available, so `php artisan test` can run.
