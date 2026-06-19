@@ -98,6 +98,10 @@ Semua upload disimpan di folder `cimuning/` di Cloudinary. Public ID dibuat dari
 
 Commit `c79da7b` menghapus fitur tracking kontak dan berhasil aktif di Railway. Migration runtime menghapus tabel `lead_events`; route perantara WhatsApp/Maps dan QR tracking sudah mengembalikan 404. CTA production sekarang menuju WhatsApp/Google Maps langsung, sedangkan QR menuju profil UMKM langsung. Runbook dan bukti verifikasi ada di `docs/CONTACT_TRACKING_REMOVAL.md`.
 
+### Polish Owner dan Penghapusan Counter Kunjungan (19 Juni 2026)
+
+Commit `a89103b` menghapus kolom `umkms.view_count` beserta sort "Populer", merapikan wizard owner, menyediakan RW 01-26, dan menghilangkan ruang kosong honeypot register. Deployment Railway terverifikasi sehat: `/produk` langsung menampilkan filter, register memakai heading/copy baru, dan query lama `sort=popular` tetap aman tanpa menampilkan opsi yang sudah dihapus.
+
 ### 6. `nixpacks.toml`
 
 File konfigurasi Nixpacks untuk Railway (alternatif jika tidak pakai Dockerfile). Saat ini **tidak digunakan** karena Railway memprioritaskan Dockerfile jika keduanya ada. File ini tetap ada sebagai referensi. Nixpacks.toml akan dihapus dari remote oleh Railway auto-fix branch sebelumnya, tapi masih bisa dipakai jika Dockerfile dihapus.

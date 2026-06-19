@@ -43,3 +43,4 @@ Migration penghapusan sengaja tidak membuat ulang tabel pada method `down()`. Ro
 - Detail UMKM production berhasil membuka WhatsApp dan Google Maps langsung.
 - QR SVG production memuat URL profil `/umkm/{slug}` secara langsung.
 - Container production berhasil start setelah tahap `php artisan migrate --force`; entrypoint memakai `set -e`, sehingga migration yang gagal akan menghentikan startup.
+- Follow-up commit `a89103b` menghapus counter `umkms.view_count` dan sort "Populer" agar tidak ada sisa analytics kunjungan profil.

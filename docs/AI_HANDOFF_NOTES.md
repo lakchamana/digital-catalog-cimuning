@@ -173,6 +173,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Test SEO public sudah ditambahkan untuk meta detail UMKM, fallback social image, sitemap, dan robots.
 - Owner onboarding sudah dipoles: form UMKM owner berupa wizard, slug tidak perlu diisi owner, koordinat bisa dibantu dari Geolocation atau teks Maps, dan social media boleh berupa username atau URL.
 - Form owner memakai RW 01-26, field wajib minimum, konfirmasi ringkas, serta tidak lagi menampilkan `view_count` atau pengaturan teknis publik.
+- Polish onboarding dan penghapusan `view_count` sudah aktif di Railway sejak 19 Juni 2026 melalui commit `a89103b`; `/produk`, register CAPTCHA, dan fallback query `sort=popular` sudah diverifikasi di production.
 - Test owner onboarding sudah diperluas untuk CAPTCHA, honeypot, slug otomatis, koordinat Maps, dan normalisasi Instagram/TikTok.
 - Deployment Railway + Cloudinary sudah ditambahkan oleh AI agent lain dan didokumentasikan di `docs/DEPLOYMENT_UPDATE.md`.
 - File deployment yang sudah ada: `Dockerfile`, `docker-entrypoint.sh`, `server.php`, `config/cloudinary.php`, dan `App\Support\CloudinaryStorage`.
