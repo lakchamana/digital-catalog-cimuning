@@ -575,7 +575,7 @@ Admin dapat:
 - Memverifikasi UMKM
 - Mengelola produk/jasa
 - Mengelola banner
-- Melihat data kontak/leads sederhana
+- Mengelola data UMKM, produk, dan status verifikasi tanpa tracking kontak pengunjung
 
 ### UMKM Owner Role
 UMKM owner dapat:

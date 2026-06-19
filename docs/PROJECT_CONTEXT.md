@@ -8,6 +8,8 @@ Cimuning Digital Hub adalah web app katalog online untuk membantu masyarakat men
 
 Platform ini adalah online directory/katalog digital. Fokus utama aplikasi adalah pencarian UMKM, profil usaha, produk/jasa, status verifikasi, lokasi Google Maps, dan jalur kontak langsung seperti WhatsApp, telepon, website, dan media sosial.
 
+CTA WhatsApp dan Google Maps mengarah langsung ke layanan eksternal, sedangkan QR mengarah langsung ke profil UMKM. Platform tidak menyimpan event klik, scan QR, IP, user agent, referer, atau analytics kontak di database.
+
 ## Target User
 
 - Public user atau warga yang mencari produk, jasa, toko, atau nama UMKM.
@@ -92,7 +94,8 @@ Cache config/route dilakukan saat runtime di `docker-entrypoint.sh`, bukan saat 
 - Review/rating kompleks.
 - Mobile app native.
 - Multi-vendor transaction system.
+- Tracking klik WhatsApp/Maps atau scan QR.
 
 ## Catatan Untuk AI Berikutnya
 
-Jangan mengubah arah platform menjadi e-commerce. Prioritaskan search, direktori, profil UMKM, mobile-first UI, keamanan role, validasi form, dan kontak langsung ke UMKM. Update `docs/CHANGELOG.md` dan `docs/AI_HANDOFF_NOTES.md` setiap selesai task besar.
+Jangan mengubah arah platform menjadi e-commerce dan jangan menambahkan kembali tracking kontak/QR tanpa keputusan produk baru. Prioritaskan search, direktori, profil UMKM, mobile-first UI, keamanan role, validasi form, dan kontak langsung ke UMKM. Update `docs/CHANGELOG.md` dan `docs/AI_HANDOFF_NOTES.md` setiap selesai task besar.

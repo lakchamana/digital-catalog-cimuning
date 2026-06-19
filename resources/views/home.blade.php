@@ -338,13 +338,8 @@
                         $productImageUrl = $imageUrl($product);
                         $umkm = $product->umkm;
                         $detailUrl = $umkm?->slug ? route('umkm.show', $umkm->slug) : route('products.index');
-                        $whatsappUrl = $umkm?->whatsapp_url && $umkm?->slug
-                            ? route('leads.redirect', [
-                                'umkm' => $umkm->slug,
-                                'type' => 'whatsapp',
-                                'product' => $product->id ?? null,
-                                'source' => 'product_card',
-                            ])
+                        $whatsappUrl = $umkm?->whatsapp_url
+                            ? $umkm->whatsapp_url.'?text='.urlencode("Halo, saya ingin bertanya tentang {$product->name}.")
                             : null;
                     @endphp
                     <article class="overflow-hidden rounded-card border border-cimuning-border bg-white shadow-card transition hover:-translate-y-0.5 hover:shadow-card-hover">
@@ -395,7 +390,7 @@
                         :image-class="$umkm->imageClass ?? 'from-cimuning-soft to-white'"
                         :verified="$umkm->is_verified ?? true"
                         :slug="$umkm->slug"
-                        :whatsapp-url="$umkm->whatsapp_url ? route('leads.redirect', ['umkm' => $umkm->slug, 'type' => 'whatsapp', 'source' => 'card']) : null"
+                        :whatsapp-url="$umkm->whatsapp_url ? $umkm->whatsapp_url.'?text='.urlencode('Halo, saya melihat profil '.$umkm->name.' di Cimuning Digital Hub.') : null"
                     />
                 @endforeach
             </div>

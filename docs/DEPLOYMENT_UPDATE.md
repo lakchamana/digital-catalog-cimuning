@@ -92,7 +92,7 @@ Method yang diimplementasikan secara fungsional:
 
 Method lain dikembalikan dengan nilai default aman (empty array, false, null) karena tidak dipakai oleh fitur upload project ini.
 
-Semua upload disimpan di folder `cimuning/` di Cloudinary. Public ID dibuat dari nama file tanpa ekstensi. IP lead di-hash, bukan raw IP.
+Semua upload disimpan di folder `cimuning/` di Cloudinary. Public ID dibuat dari nama file tanpa ekstensi. Aplikasi tidak lagi menyimpan data tracking klik/scan atau IP pengunjung.
 
 ### 6. `nixpacks.toml`
 

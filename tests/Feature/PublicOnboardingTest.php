@@ -38,26 +38,6 @@ class PublicOnboardingTest extends TestCase
             ->assertSee('Daftarkan UMKM');
     }
 
-    public function test_lead_redirect_route_does_not_render_onboarding_markup(): void
-    {
-        $category = $this->category();
-        $umkm = Umkm::query()->create([
-            'category_id' => $category->id,
-            'name' => 'Dapur Lead',
-            'slug' => 'dapur-lead',
-            'status' => 'verified',
-            'is_active' => true,
-            'whatsapp' => '081234567890',
-        ]);
-
-        $this->get(route('leads.redirect', [
-            'umkm' => $umkm->slug,
-            'type' => 'whatsapp',
-        ]))
-            ->assertRedirect()
-            ->assertDontSee('data-onboarding="interactive-walkthrough"', false);
-    }
-
     private function seedDirectoryTables(): void
     {
         $category = $this->category();

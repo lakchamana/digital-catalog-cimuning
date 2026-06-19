@@ -16,7 +16,6 @@
 ## Phase 2
 
 - Dashboard statistik sederhana.
-- Tracking klik WhatsApp/maps sebagai leads.
 - Filter lanjutan berdasarkan RW dan layanan.
 - Pendaftaran UMKM lebih lengkap dengan status revisi.
 - Notifikasi dashboard untuk status verifikasi.
@@ -27,7 +26,7 @@
 - Polishing responsive dan accessibility.
 - Deployment testing internal ke Railway dengan Railway MySQL dan Cloudinary upload storage.
 - Dokumentasi deployment Railway/Cloudinary dan runtime caveats.
-- QR profile UMKM dengan SVG download dan tracking scan anonim.
+- QR profile UMKM dengan SVG download langsung ke profil publik.
 
 ## Phase 3
 
@@ -42,7 +41,6 @@
 ## Future Improvement
 
 - Laravel Scout/Meilisearch saat jumlah data membesar.
-- Dashboard analytics klik kontak.
 - Multi-admin approval flow.
 - Featured banner dan campaign UMKM lokal.
 - Manajemen banner carousel dari dashboard admin.
@@ -59,3 +57,4 @@
 - Review/rating kompleks.
 - Mobile app native.
 - Multi-vendor transaction system.
+- Tracking klik kontak, lokasi, atau scan QR.

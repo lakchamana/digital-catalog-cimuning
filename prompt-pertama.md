@@ -246,7 +246,7 @@ Minimal tabel:
 * `umkm_social_links`
 * `umkm_contacts`
 * `banners` optional
-* `leads` optional untuk tracking klik kontak nanti
+* Tidak menyimpan tracking klik kontak, scan QR, IP, user agent, atau referer pengunjung
 
 Relasi utama:
 

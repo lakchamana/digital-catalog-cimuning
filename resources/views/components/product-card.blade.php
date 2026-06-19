@@ -4,13 +4,8 @@
     $imagePath = $product->image ?: $product->images->first()?->path;
     $imageUrl = $imagePath ? (\Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://']) ? $imagePath : asset('storage/'.$imagePath)) : null;
     $galleryCount = $product->relationLoaded('images') ? $product->images->count() : $product->images()->count();
-    $whatsappUrl = $product->umkm?->whatsapp_url && $product->umkm?->slug
-        ? route('leads.redirect', [
-            'umkm' => $product->umkm->slug,
-            'type' => 'whatsapp',
-            'product' => $product->id,
-            'source' => 'product_card',
-        ])
+    $whatsappUrl = $product->umkm?->whatsapp_url
+        ? $product->umkm->whatsapp_url.'?text='.urlencode("Halo, saya ingin bertanya tentang {$product->name}.")
         : null;
 @endphp
 

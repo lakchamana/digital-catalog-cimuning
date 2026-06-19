@@ -81,7 +81,7 @@
 3. User melihat carousel jumbotron informatif berisi produk lokal, UMKM verified, akun owner, dan katalog digital.
 4. User memilih ikon kategori cepat, termasuk "Lihat Semua" untuk membuka `/kategori`.
 5. User melihat produk/jasa terbaru dan dapat membuka profil UMKM atau bertanya lewat WhatsApp.
-6. Website mencatat klik WhatsApp/Maps sebagai lead anonim.
+6. CTA membuka WhatsApp atau Google Maps secara langsung tanpa tracking database.
 7. Tidak ada cart, checkout, payment, ongkir, atau transaksi internal.
 
 ## Flow Semua Kategori
@@ -134,9 +134,8 @@
 
 1. User membuka detail UMKM.
 2. User menekan CTA WhatsApp atau Lihat Lokasi.
-3. Website mencatat klik sebagai lead anonim.
-4. Website mengarahkan user ke WhatsApp atau maps.
-5. Transaksi tetap dilakukan langsung di luar website.
+3. Website membuka WhatsApp atau Google Maps secara langsung tanpa route perantara dan tanpa menyimpan event.
+4. Transaksi tetap dilakukan langsung di luar website.
 
 ## Flow SEO Public Discovery
 
@@ -144,24 +143,15 @@
 2. Layout public menyediakan canonical URL, meta description, Open Graph, dan Twitter card.
 3. Detail UMKM verified menyediakan JSON-LD `LocalBusiness` dari data usaha, lokasi, kontak, dan katalog produk.
 4. `/sitemap.xml` memuat halaman public, kategori aktif, dan UMKM aktif + verified.
-5. `/admin`, `/leads/...`, UMKM pending/rejected/inactive, dan fitur transaksi tidak masuk sitemap.
-
-## Flow Analytics Lead
-
-1. Admin atau owner login ke `/admin`.
-2. Dashboard menampilkan ringkasan klik WhatsApp, klik Maps, scan QR, klik 7 hari terakhir, dan UMKM paling diminati.
-3. Admin melihat semua aktivitas lead terbaru.
-4. Owner hanya melihat aktivitas lead dari UMKM miliknya.
-5. Data lead dipakai sebagai indikator minat kontak/lokasi, bukan transaksi internal.
+5. `/admin`, UMKM pending/rejected/inactive, dan fitur transaksi tidak masuk sitemap.
 
 ## Flow QR Profil UMKM
 
 1. User membuka detail UMKM verified.
-2. Halaman menampilkan QR profil yang mengarah ke route tracking internal.
+2. Halaman menampilkan QR profil yang mengarah langsung ke URL profil publik.
 3. User dapat scan atau download SVG QR untuk dibagikan offline.
-4. Saat QR discan, website mencatat event anonim `qr_scan`.
-5. Website mengarahkan user ke profil UMKM publik.
-6. QR hanya aktif untuk UMKM yang sudah verified dan active.
+4. Scan QR tidak dicatat atau disimpan di database.
+5. QR hanya aktif untuk UMKM yang sudah verified dan active.
 
 ## Flow Deployment Railway
 

@@ -179,7 +179,7 @@
                                     :location="$umkm->rw ?? 'Cimuning'"
                                     :verified="$umkm->is_verified"
                                     :slug="$umkm->slug"
-                                    :whatsapp-url="$umkm->whatsapp_url ? route('leads.redirect', ['umkm' => $umkm->slug, 'type' => 'whatsapp', 'source' => 'card']) : null"
+                                    :whatsapp-url="$umkm->whatsapp_url ? $umkm->whatsapp_url.'?text='.urlencode('Halo, saya melihat profil '.$umkm->name.' di Cimuning Digital Hub.') : null"
                                     :services="[
                                         'delivery' => $umkm->service_delivery,
                                         'cod' => $umkm->service_cod,

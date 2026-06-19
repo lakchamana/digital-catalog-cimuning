@@ -41,15 +41,12 @@
 - Admin dashboard widget for UMKM that need review.
 - Owner dashboard widget for assigned UMKM status.
 - Feature tests for dashboard notifications and UMKM verification status changes.
-- Lead event tracking for public WhatsApp and Google Maps CTA clicks.
-- Filament lead analytics widgets for contact click totals and recent lead activity.
-- Feature tests for lead redirects, public visibility protection, product lead relation, and owner lead scoping.
 - Account-first UMKM owner registration through Filament `/admin/register`.
 - Product-led homepage layout with product/service discovery prioritized above UMKM profile sections.
 - Owner dashboard empty state action for completing a UMKM profile.
 - Feature tests for owner registration, owner UMKM creation defaults, and homepage verified product visibility.
 - First-visit public onboarding tutorial with Alpine.js and localStorage.
-- Feature tests for onboarding markup on public pages and exclusion from lead redirect routes.
+- Feature tests for onboarding markup on public pages.
 - Search-centric public navbar with large product/service search, compact discovery nav, and secondary informational links.
 - Homepage carousel jumbotron with Alpine.js controls, dots, and mobile horizontal snap behavior.
 - Category icon component and `/kategori` public index page for browsing all active categories.
@@ -71,9 +68,8 @@
 - Cloudinary production storage support through `cloudinary/cloudinary_php`, `config/cloudinary.php`, and custom `App\Support\CloudinaryStorage`.
 - Deployment documentation handoff in `docs/DEPLOYMENT_UPDATE.md`.
 - QR profile SVG generation for verified active UMKM profiles.
-- QR scan tracking via `lead_events.type = qr_scan` with anonymous metadata.
 - Public QR share card on UMKM detail pages and Filament QR download actions for public UMKMs.
-- Feature tests for QR SVG rendering, QR scan redirect tracking, public visibility protection, and owner lead scoping.
+- Feature tests for QR SVG rendering, direct profile targets, and public visibility protection.
 - Dedicated public About and Contact/Help pages replacing MVP placeholders.
 - Feature tests for public information pages, metadata, CTA links, and footer information navigation.
 - Filament product gallery management using the existing `product_images` relation.
@@ -83,6 +79,7 @@
 - Tokenized local CAPTCHA support for owner registration to reduce false failures across refreshes or multiple browser tabs.
 - Product search UX tests for explicit search submit, contextual result headings, mobile filter copy, and individual filter chip removal.
 - UMKM search UX tests for explicit search submit, contextual result headings, mobile filter copy, safe query fallback, and individual filter chip removal.
+- Production removal runbook in `docs/CONTACT_TRACKING_REMOVAL.md`.
 
 ### Changed
 - Replaced default Laravel welcome route with Cimuning UMKM homepage.
@@ -101,7 +98,7 @@
 - UMKM admin verification workflow now includes a reject action and deactivates rejected/revision records.
 - Public UMKM registration now notifies admin users after a pending submission is created.
 - Filament UMKM verification table actions now use a shared workflow service and notify owners when an owner account is assigned.
-- Public WhatsApp and Maps CTA links now pass through a lightweight tracking redirect before opening the external target.
+- Public WhatsApp and Maps CTA links open their external targets directly without tracking or an internal redirect.
 - `/daftar-umkm` now acts as an account-first owner onboarding landing page instead of a guest submission form.
 - New owner-created UMKMs are forced to pending and inactive until admin verification.
 - Owner access can fill and revise their own UMKM profile, but cannot activate public visibility.
@@ -119,8 +116,7 @@
 - Production URL generation now forces HTTPS and trusts Railway proxy headers to avoid mixed-content asset loading.
 - Runtime container startup now handles cache clear/cache rebuild, storage link, migrations, seeders, and server start in `docker-entrypoint.sh`.
 - Production uploads now use the `cloudinary` filesystem disk instead of ephemeral local Railway storage.
-- Lead event recording is now centralized through `App\Support\LeadEventRecorder` for WhatsApp, Maps, and QR scan events.
-- Lead analytics widgets now label QR scans as “Scan QR” and include them in recent activity.
+- QR SVG payload now points directly to the public UMKM profile.
 - Footer navigation now includes “Tentang Kami” and “Kontak/Bantuan” links.
 - `/tentang` and `/kontak` now render complete public information views instead of the shared placeholder page.
 - Product upload fields, UMKM logo/cover fields, and Filament image columns now use the configured upload disk instead of hardcoding `public`.
@@ -134,6 +130,11 @@
 - `/umkm` search UI now follows the same explicit UX pattern as `/produk`: primary "Cari" action, contextual result headings, removable active filter chips, and reset actions only when filters are active.
 - Mobile UMKM filter drawer now uses "Lihat hasil" instead of "Terapkan Filter" because filters apply live.
 - `/umkm` filters now sanitize invalid query string values for category, RW, services, sort, and pagination size.
+
+### Removed
+- Contact and QR tracking feature, including the `LeadEvent` model, event recorder, redirect controller, intermediary routes, model relations, Filament analytics widgets, and tracking-specific tests.
+- `lead_events` database table through a forward migration that runs automatically on the deployed Railway database.
+- Storage of visitor IP hashes, user agents, referrers, WhatsApp/Maps clicks, and QR scans.
 
 ### Fixed
 - PHPUnit dev dependency is now installed successfully after PHP `zip` became available, so `php artisan test` can run.
@@ -152,11 +153,10 @@
 - Google Maps on public detail pages uses public Maps links/embed without an API key.
 - Public UMKM registrations do not create owner accounts automatically; admin can assign an owner later from Filament.
 - Dashboard notifications are database-only for this MVP; email, WhatsApp, and realtime broadcast notifications are deferred.
-- Lead tracking records anonymous contact intent only; checkout, cart, payment, shipping, and internal transaction flows remain excluded.
 - Guest UMKM submission is intentionally replaced by account-first onboarding; the old Livewire guest form is no longer rendered publicly.
 - First-visit tutorial is available on public pages only; custom dashboard onboarding remains deferred.
 - `/kategori` is the index for all active categories, while `/kategori/{slug}` remains the category-filtered UMKM listing.
-- SEO improvements are for public discovery pages only; admin, lead redirect, checkout, payment, cart, and transaction flows remain excluded from sitemap/indexing.
+- SEO improvements are for public discovery pages only; admin, checkout, payment, cart, and transaction flows remain excluded from sitemap/indexing.
 - Owner onboarding CAPTCHA is local and free; it is meant as a lightweight spam barrier, not a full bot-defense service.
 - Owner onboarding CAPTCHA is tokenized per form render; opening a second register tab should not invalidate the first tab's answer.
 - UMKM geotagging does not use a paid Google Maps API. Owners can use browser location, paste coordinates/Maps text, or open Google Maps manually.

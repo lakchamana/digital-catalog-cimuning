@@ -21,19 +21,9 @@
     $whatsappUrl = $umkm->whatsapp_url
         ? $umkm->whatsapp_url.'?text='.urlencode("Halo, saya melihat profil {$umkm->name} di Cimuning Digital Hub.")
         : null;
-    $leadUrl = fn (string $type, string $source) => route('leads.redirect', [
-        'umkm' => $umkm->slug,
-        'type' => $type,
-        'source' => $source,
-    ]);
-    $whatsappLeadUrl = $whatsappUrl ? $leadUrl('whatsapp', 'detail') : null;
-    $mapsLeadUrl = $mapsUrl ? $leadUrl('maps', 'detail') : null;
-    $stickyWhatsappLeadUrl = $whatsappUrl ? $leadUrl('whatsapp', 'sticky') : null;
-    $stickyMapsLeadUrl = $mapsUrl ? $leadUrl('maps', 'sticky') : null;
-    $mapsSectionLeadUrl = $mapsUrl ? $leadUrl('maps', 'maps_section') : null;
     $qrSvgUrl = route('qr.umkm.svg', $umkm->slug);
     $qrDownloadUrl = $qrSvgUrl.'?download=1';
-    $qrOpenUrl = route('qr.umkm.open', $umkm->slug);
+    $profileUrl = route('umkm.show', $umkm->slug);
     $services = [
         'Delivery' => $umkm->service_delivery,
         'COD' => $umkm->service_cod,
@@ -157,11 +147,11 @@
                     <p><span class="font-semibold text-cimuning-charcoal">Alamat:</span> {{ $umkm->address ?? 'Alamat belum dilengkapi.' }}</p>
                 </div>
                 <div class="mt-5 grid gap-3">
-                    @if ($whatsappLeadUrl)
-                        <x-whatsapp-button href="{{ $whatsappLeadUrl }}" target="_blank" rel="noopener" class="w-full">Chat WhatsApp</x-whatsapp-button>
+                    @if ($whatsappUrl)
+                        <x-whatsapp-button :href="$whatsappUrl" target="_blank" rel="noopener" class="w-full">Chat WhatsApp</x-whatsapp-button>
                     @endif
-                    @if ($mapsLeadUrl)
-                        <x-secondary-button href="{{ $mapsLeadUrl }}" target="_blank" rel="noopener" class="w-full">Buka Maps</x-secondary-button>
+                    @if ($mapsUrl)
+                        <x-secondary-button :href="$mapsUrl" target="_blank" rel="noopener" class="w-full">Buka Maps</x-secondary-button>
                     @endif
                 </div>
                 <p class="mt-4 text-sm leading-6 text-cimuning-slate">Transaksi dilakukan langsung dengan pemilik usaha. Website ini tidak menyediakan checkout atau pembayaran.</p>
@@ -169,10 +159,10 @@
                 <div class="mt-6 rounded-card border border-cimuning-border bg-cimuning-section p-4">
                     <h2 class="text-lg font-bold text-cimuning-charcoal">Bagikan Profil UMKM</h2>
                     <p class="mt-2 text-sm leading-6 text-cimuning-slate">Scan QR ini untuk membuka profil, katalog produk, lokasi, dan kontak {{ $umkm->name }}.</p>
-                    <a href="{{ $qrOpenUrl }}" class="mt-4 block rounded-card border border-cimuning-border bg-white p-3 shadow-card" aria-label="Buka profil {{ $umkm->name }} dari QR">
+                    <a href="{{ $profileUrl }}" class="mt-4 block rounded-card border border-cimuning-border bg-white p-3 shadow-card" aria-label="Buka profil {{ $umkm->name }}">
                         <img src="{{ $qrSvgUrl }}" alt="QR profil {{ $umkm->name }}" class="mx-auto h-48 w-48">
                     </a>
-                    <x-secondary-button href="{{ $qrDownloadUrl }}" class="mt-4 w-full" download>Download QR</x-secondary-button>
+                    <x-secondary-button :href="$qrDownloadUrl" class="mt-4 w-full" download>Download QR</x-secondary-button>
                 </div>
             </aside>
         </div>
@@ -193,8 +183,8 @@
                 @if ($hasCoordinates)
                     <p class="mt-2 text-sm text-cimuning-slate">{{ $umkm->latitude }}, {{ $umkm->longitude }}</p>
                 @endif
-                @if ($mapsSectionLeadUrl)
-                    <x-secondary-button href="{{ $mapsSectionLeadUrl }}" target="_blank" rel="noopener" class="mt-4 w-full">Buka di Google Maps</x-secondary-button>
+                @if ($mapsUrl)
+                    <x-secondary-button :href="$mapsUrl" target="_blank" rel="noopener" class="mt-4 w-full">Buka di Google Maps</x-secondary-button>
                 @endif
             </div>
         </div>
@@ -244,14 +234,14 @@
         </div>
     </section>
 
-    @if ($stickyWhatsappLeadUrl || $stickyMapsLeadUrl)
+    @if ($whatsappUrl || $mapsUrl)
         <div class="fixed inset-x-0 bottom-0 z-40 border-t border-cimuning-border bg-white/95 px-4 py-3 shadow-[0_-8px_24px_rgba(16,24,40,0.12)] backdrop-blur lg:hidden">
-            <div class="mx-auto grid max-w-xl gap-2 {{ $stickyWhatsappLeadUrl && $stickyMapsLeadUrl ? 'grid-cols-2' : 'grid-cols-1' }}">
-                @if ($stickyWhatsappLeadUrl)
-                    <x-whatsapp-button href="{{ $stickyWhatsappLeadUrl }}" target="_blank" rel="noopener" class="w-full px-3">Chat WhatsApp</x-whatsapp-button>
+            <div class="mx-auto grid max-w-xl gap-2 {{ $whatsappUrl && $mapsUrl ? 'grid-cols-2' : 'grid-cols-1' }}">
+                @if ($whatsappUrl)
+                    <x-whatsapp-button :href="$whatsappUrl" target="_blank" rel="noopener" class="w-full px-3">Chat WhatsApp</x-whatsapp-button>
                 @endif
-                @if ($stickyMapsLeadUrl)
-                    <x-secondary-button href="{{ $stickyMapsLeadUrl }}" target="_blank" rel="noopener" class="w-full px-3">Buka Maps</x-secondary-button>
+                @if ($mapsUrl)
+                    <x-secondary-button :href="$mapsUrl" target="_blank" rel="noopener" class="w-full px-3">Buka Maps</x-secondary-button>
                 @endif
             </div>
         </div>

@@ -39,9 +39,10 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Notifikasi dashboard memakai Laravel database notifications dan Filament notification bell dengan polling 30 detik.
 - Perubahan status verifikasi UMKM dipusatkan di `App\Support\UmkmVerificationWorkflow`.
 - Pembuatan UMKM pending menotifikasi semua user role `admin`; action verifikasi/revisi/tolak menotifikasi owner jika UMKM memiliki `user_id`.
-- Tracking klik WhatsApp/Maps memakai event detail di `lead_events` dan redirect route `/leads/{umkm:slug}/{type}`.
-- Lead analytics di Filament memakai scope `LeadEvent::visibleTo($user)`: admin melihat semua, owner hanya UMKM miliknya.
-- IP lead disimpan sebagai hash, bukan raw IP.
+- CTA WhatsApp dan Google Maps membuka URL eksternal secara langsung tanpa route tracking atau penyimpanan event.
+- Fitur tracking kontak telah dihapus total: model/controller/recorder/widget analytics dan route perantara tidak lagi tersedia; migration terbaru menghapus tabel `lead_events` dari database deployment.
+- Aplikasi tidak menyimpan IP, user agent, referer, klik kontak, atau scan QR pengunjung.
+- Runbook deployment penghapusan tersedia di `docs/CONTACT_TRACKING_REMOVAL.md`.
 - Pendaftaran UMKM sekarang account-first: calon owner membuat akun di `/admin/register`, lalu mengisi profil UMKM dari panel.
 - `/daftar-umkm` adalah landing onboarding owner, bukan form guest submission.
 - Owner baru otomatis mendapat role `umkm_owner`; UMKM yang dibuat owner dipaksa `pending` dan `is_active = false`.
@@ -58,7 +59,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Public layout menerima props SEO: `description`, `canonical`, `image`, `type`, dan `structuredData`.
 - Detail UMKM public merender canonical, Open Graph, Twitter card, dan JSON-LD `LocalBusiness` dari data UMKM verified.
 - Sitemap dinamis tersedia di `/sitemap.xml`; hanya memuat homepage, listing public, kategori aktif, dan UMKM aktif + verified.
-- `robots.txt` menolak `/admin` dan mereferensikan sitemap; route `/leads/...` tidak dimasukkan ke sitemap.
+- `robots.txt` menolak `/admin` dan mereferensikan sitemap.
 - Registrasi owner `/admin/register` memakai CAPTCHA matematika lokal berbasis session dan honeypot tersembunyi, tanpa layanan eksternal.
 - CAPTCHA owner registration memakai token per form render yang disimpan di session agar beberapa tab register tidak saling membatalkan jawaban.
 - Form UMKM Filament sekarang memakai wizard bertahap agar owner awam tidak melihat seluruh field teknis sekaligus.
@@ -75,10 +76,9 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Dependency Cloudinary memakai SDK resmi `cloudinary/cloudinary_php`, bukan package `cloudinary-labs/cloudinary-laravel`, karena kompatibilitas Laravel 13.
 - `.env.example` sudah diarahkan production-ready dengan variable Cloudinary, MySQL Railway, `SESSION_DRIVER=database`, dan `CACHE_STORE=database`.
 - QR profil UMKM memakai package `endroid/qr-code` dan dirender sebagai SVG agar tidak bergantung pada extension GD/Imagick.
-- Route QR public: `/qr/umkm/{umkm:slug}.svg` untuk SVG dan `/qr/umkm/{umkm:slug}/open` untuk tracking scan lalu redirect ke profil.
+- Route QR public hanya `/qr/umkm/{umkm:slug}.svg`; payload QR langsung memakai URL profil `/umkm/{slug}`.
 - QR hanya tersedia untuk UMKM `is_active = true` dan `status = verified`.
-- Scan QR dicatat sebagai `lead_events.type = qr_scan` dengan `source = qr_profile`, lalu diarahkan ke `route('umkm.show', $slug)`.
-- Pencatatan lead dipusatkan di `App\Support\LeadEventRecorder` dan dipakai oleh redirect WhatsApp/Maps serta QR scan.
+- Scan QR tidak dicatat ke database.
 - Halaman `/tentang` dan `/kontak` sudah memakai view khusus, bukan placeholder MVP.
 - Kontak v1 tidak menampilkan nomor/email dummy dan tidak menyimpan pesan ke database; halaman mengarahkan user ke pencarian, direktori, daftar owner, dan login owner.
 
@@ -106,6 +106,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Jangan menghapus `server.php` selama production masih memakai PHP built-in server/router ini.
 - Jangan mengganti production upload ke `public`/`local` disk di Railway karena file upload akan hilang saat redeploy.
 - Jangan mengubah QR menjadi langsung WhatsApp untuk v1; target default adalah profil UMKM agar katalog, lokasi, dan kontak tetap terlihat.
+- Jangan menambahkan kembali tracking klik WhatsApp/Maps, scan QR, atau analytics kontak tanpa keputusan produk baru.
 
 ## Status Pekerjaan Terakhir
 
@@ -147,9 +148,9 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Dashboard admin memiliki widget `UMKM perlu ditinjau` untuk status `pending` dan `need_revision`.
 - Dashboard owner memiliki widget status UMKM miliknya.
 - Test notifikasi dashboard sudah ditambahkan untuk pendaftaran publik dan action verifikasi/revisi/tolak.
-- Tracking klik WhatsApp dan Maps sudah ditambahkan untuk detail UMKM, sticky CTA mobile, Maps section, product card, UMKM listing, dan UMKM pilihan homepage.
-- Dashboard Filament memiliki widget statistik lead dan aktivitas lead terbaru.
-- Test lead tracking sudah ditambahkan untuk redirect, target kosong, UMKM non-public, relasi produk, dan scoping owner.
+- CTA WhatsApp dan Maps pada detail, sticky mobile, product card, listing, dan homepage sekarang memakai URL langsung tanpa pencatatan database.
+- Dashboard Filament tidak lagi memiliki statistik atau aktivitas tracking kontak.
+- Tabel `lead_events` dihapus melalui migration production-safe; route `/leads/...` dan route QR tracking juga sudah dihapus.
 - Filament registration sudah aktif di `/admin/register` dengan custom page owner registration.
 - Setelah register, owner diarahkan ke halaman create UMKM.
 - Homepage sudah dirombak menjadi search-centric dengan navbar search besar, carousel jumbotron ala OLX, kategori ikon termasuk "Lihat Semua", produk terbaru, dan UMKM pilihan.
@@ -169,8 +170,8 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Railway MySQL digunakan untuk production testing; migration dan seeder dijalankan otomatis saat container start dengan `--force`.
 - `nixpacks.toml` disebut di deployment update sebagai alternatif lama, tetapi file tersebut tidak ada di workspace saat catatan ini diperbarui; Railway memprioritaskan Dockerfile.
 - QR profil UMKM sudah ditambahkan untuk UMKM verified + active, termasuk public QR card di detail UMKM dan action download QR di Filament.
-- Lead analytics sudah mengenali `qr_scan` sebagai “Scan QR”.
-- Test QR profil sudah ditambahkan untuk SVG, tracking redirect, proteksi UMKM non-public, dan scoping owner lead.
+- QR profil langsung memuat URL profil UMKM tanpa route tracking.
+- Test QR profil menjaga SVG, target profil langsung, download, dan proteksi UMKM non-public.
 - Halaman Tentang dan Kontak/Bantuan publik sudah dilengkapi dengan SEO metadata, CTA, footer links, dan copy tanpa kontak palsu.
 - Test halaman informasi publik sudah ditambahkan untuk mencegah regresi ke placeholder.
 
@@ -184,7 +185,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 6. Pertimbangkan template poster/stiker QR setelah kebutuhan desain cetak final tersedia.
 7. Uji manual upload gambar di Railway/Cloudinary untuk memastikan URL yang tersimpan tampil di public card dan tabel Filament.
 8. Pertimbangkan email notification dan password reset flow setelah konfigurasi mail siap.
-9. Tambahkan export data lead/UMKM untuk admin bila sudah dibutuhkan operasional.
+9. Tambahkan export data UMKM untuk admin bila sudah dibutuhkan operasional.
 10. Uji manual wizard UMKM owner di perangkat mobile, terutama tombol "Gunakan lokasi saya" dan "Buka Google Maps".
 11. Pertimbangkan dashboard tutorial khusus owner jika wizard Filament masih terasa membingungkan untuk pengguna awam.
 12. Uji manual production Railway setelah setiap perubahan besar: homepage, `/produk`, `/umkm`, `/admin`, Livewire JS, Filament asset, upload Cloudinary, dan mixed-content console.

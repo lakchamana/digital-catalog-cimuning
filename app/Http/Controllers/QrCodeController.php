@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Umkm;
-use App\Support\LeadEventRecorder;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Color\Color;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\SvgWriter;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
@@ -21,7 +19,7 @@ class QrCodeController extends Controller
     {
         $this->ensurePublicUmkm($umkm);
 
-        $targetUrl = route('qr.umkm.open', $umkm->slug);
+        $targetUrl = route('umkm.show', $umkm->slug);
         $result = Builder::create()
             ->writer(new SvgWriter)
             ->writerOptions([
@@ -49,23 +47,6 @@ class QrCodeController extends Controller
         }
 
         return response($this->accessibleSvg($result->getString(), $umkm, $targetUrl), 200, $headers);
-    }
-
-    public function open(Request $request, Umkm $umkm, LeadEventRecorder $leadEventRecorder): RedirectResponse
-    {
-        $this->ensurePublicUmkm($umkm);
-
-        $targetUrl = route('umkm.show', $umkm->slug);
-
-        $leadEventRecorder->record(
-            request: $request,
-            umkm: $umkm,
-            type: 'qr_scan',
-            targetUrl: $targetUrl,
-            source: 'qr_profile',
-        );
-
-        return redirect()->to($targetUrl);
     }
 
     private function ensurePublicUmkm(Umkm $umkm): void

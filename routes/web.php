@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\LeadRedirectController;
 use App\Http\Controllers\QrCodeController;
 use App\Models\Category;
 use App\Models\Product;
@@ -110,9 +109,6 @@ Route::get('/kategori/{slug}', function (string $slug) use ($hasTables) {
 Route::get('/qr/umkm/{umkm:slug}.svg', [QrCodeController::class, 'svg'])
     ->name('qr.umkm.svg');
 
-Route::get('/qr/umkm/{umkm:slug}/open', [QrCodeController::class, 'open'])
-    ->name('qr.umkm.open');
-
 Route::get('/umkm/{slug}', function (string $slug) use ($hasTables) {
     if (! $hasTables(['umkms', 'products', 'categories'])) {
         abort(404);
@@ -183,9 +179,6 @@ Route::get('/sitemap.xml', function () use ($hasTables) {
 Route::get('/daftar-umkm', function () {
     return view('umkm.register');
 })->name('umkm.register');
-
-Route::get('/leads/{umkm:slug}/{type}', LeadRedirectController::class)
-    ->name('leads.redirect');
 
 Route::view('/tentang', 'pages.about')->name('about');
 
