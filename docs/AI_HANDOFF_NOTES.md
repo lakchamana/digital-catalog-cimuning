@@ -43,6 +43,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Fitur tracking kontak telah dihapus total: model/controller/recorder/widget analytics dan route perantara tidak lagi tersedia; migration terbaru menghapus tabel `lead_events` dari database deployment.
 - Aplikasi tidak menyimpan IP, user agent, referer, klik kontak, atau scan QR pengunjung.
 - Runbook deployment penghapusan tersedia di `docs/CONTACT_TRACKING_REMOVAL.md`.
+- Penghapusan tracking sudah aktif di Railway sejak 19 Juni 2026 melalui commit `c79da7b`; endpoint lama terverifikasi 404 dan CTA production memakai URL langsung.
 - Pendaftaran UMKM sekarang account-first: calon owner membuat akun di `/admin/register`, lalu mengisi profil UMKM dari panel.
 - `/daftar-umkm` adalah landing onboarding owner, bukan form guest submission.
 - Owner baru otomatis mendapat role `umkm_owner`; UMKM yang dibuat owner dipaksa `pending` dan `is_active = false`.

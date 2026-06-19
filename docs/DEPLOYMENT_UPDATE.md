@@ -94,6 +94,10 @@ Method lain dikembalikan dengan nilai default aman (empty array, false, null) ka
 
 Semua upload disimpan di folder `cimuning/` di Cloudinary. Public ID dibuat dari nama file tanpa ekstensi. Aplikasi tidak lagi menyimpan data tracking klik/scan atau IP pengunjung.
 
+### Penghapusan Tracking Kontak (19 Juni 2026)
+
+Commit `c79da7b` menghapus fitur tracking kontak dan berhasil aktif di Railway. Migration runtime menghapus tabel `lead_events`; route perantara WhatsApp/Maps dan QR tracking sudah mengembalikan 404. CTA production sekarang menuju WhatsApp/Google Maps langsung, sedangkan QR menuju profil UMKM langsung. Runbook dan bukti verifikasi ada di `docs/CONTACT_TRACKING_REMOVAL.md`.
+
 ### 6. `nixpacks.toml`
 
 File konfigurasi Nixpacks untuk Railway (alternatif jika tidak pakai Dockerfile). Saat ini **tidak digunakan** karena Railway memprioritaskan Dockerfile jika keduanya ada. File ini tetap ada sebagai referensi. Nixpacks.toml akan dihapus dari remote oleh Railway auto-fix branch sebelumnya, tapi masih bisa dipakai jika Dockerfile dihapus.

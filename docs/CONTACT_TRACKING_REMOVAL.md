@@ -34,3 +34,12 @@ Dokumen ini menjadi panduan deployment penghapusan fitur tracking kontak dari Ci
 ## Catatan Rollback
 
 Migration penghapusan sengaja tidak membuat ulang tabel pada method `down()`. Rollback source code tidak boleh dipakai untuk mengaktifkan tracking kembali. Jika keputusan produk berubah di masa depan, fitur analytics harus dirancang ulang melalui migration dan persetujuan privasi yang baru.
+
+## Status Pelaksanaan
+
+- Dideploy ke Railway pada 19 Juni 2026 melalui commit `c79da7b`.
+- Homepage production tidak lagi memuat link `/leads/...` dan sudah memakai `wa.me` langsung.
+- Route lama `/leads/{slug}/{type}` dan `/qr/umkm/{slug}/open` mengembalikan `404`.
+- Detail UMKM production berhasil membuka WhatsApp dan Google Maps langsung.
+- QR SVG production memuat URL profil `/umkm/{slug}` secara langsung.
+- Container production berhasil start setelah tahap `php artisan migrate --force`; entrypoint memakai `set -e`, sehingga migration yang gagal akan menghentikan startup.
