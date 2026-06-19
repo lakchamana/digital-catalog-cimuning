@@ -19,21 +19,21 @@ class UmkmPolicy
 
     public function create(User $user): bool
     {
-        return $user->isAdmin() || ($user->isUmkmOwner() && ! $user->umkm()->exists());
+        return $user->isUmkmOwner() && ! $user->umkm()->exists();
     }
 
     public function update(User $user, Umkm $umkm): bool
     {
-        return $user->isAdmin() || $umkm->user_id === $user->id;
+        return $user->isUmkmOwner() && $umkm->user_id === $user->id;
     }
 
     public function delete(User $user, Umkm $umkm): bool
     {
-        return $user->isAdmin();
+        return false;
     }
 
     public function deleteAny(User $user): bool
     {
-        return $user->isAdmin();
+        return false;
     }
 }

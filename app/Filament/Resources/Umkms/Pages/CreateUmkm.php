@@ -5,7 +5,7 @@ namespace App\Filament\Resources\Umkms\Pages;
 use App\Filament\Resources\Umkms\UmkmResource;
 use App\Models\Umkm;
 use App\Support\OwnerFormHelper;
-use App\Support\UmkmVerificationWorkflow;
+use App\Support\UmkmSubmissionWorkflow;
 use App\Support\UniqueSlug;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
@@ -34,7 +34,11 @@ class CreateUmkm extends CreateRecord
     protected function afterCreate(): void
     {
         if (Filament::auth()->user()?->isUmkmOwner()) {
-            UmkmVerificationWorkflow::notifyAdminsOfRegistration($this->record);
+            UmkmSubmissionWorkflow::submit(
+                $this->record,
+                Filament::auth()->user(),
+                UmkmSubmissionWorkflow::payloadFromUmkm($this->record),
+            );
 
             Notification::make()
                 ->title('Profil usaha berhasil dikirim')

@@ -6,9 +6,11 @@ use App\Http\Responses\OwnerRegistrationResponse;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Umkm;
+use App\Models\UmkmSubmission;
 use App\Policies\CategoryPolicy;
 use App\Policies\ProductPolicy;
 use App\Policies\UmkmPolicy;
+use App\Policies\UmkmSubmissionPolicy;
 use App\Support\CloudinaryStorage;
 use Filament\Auth\Http\Responses\Contracts\RegistrationResponse;
 use Illuminate\Support\Facades\Gate;
@@ -40,6 +42,7 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::policy(Category::class, CategoryPolicy::class);
         Gate::policy(Umkm::class, UmkmPolicy::class);
+        Gate::policy(UmkmSubmission::class, UmkmSubmissionPolicy::class);
         Gate::policy(Product::class, ProductPolicy::class);
 
         // Daftarkan Cloudinary sebagai custom filesystem disk.

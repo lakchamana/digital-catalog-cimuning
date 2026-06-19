@@ -28,6 +28,7 @@
 - Dokumentasi deployment Railway/Cloudinary dan runtime caveats.
 - QR profile UMKM dengan SVG download langsung ke profil publik.
 - Polish onboarding owner dengan RW 01-26, copy publik, dan penghapusan field analytics lama.
+- Workflow verifikasi profesional dengan submission draft, review admin read-only, audit keputusan, dan moderasi produk.
 
 ## Phase 3
 

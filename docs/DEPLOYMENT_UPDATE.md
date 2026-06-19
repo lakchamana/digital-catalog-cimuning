@@ -102,6 +102,10 @@ Commit `c79da7b` menghapus fitur tracking kontak dan berhasil aktif di Railway. 
 
 Commit `a89103b` menghapus kolom `umkms.view_count` beserta sort "Populer", merapikan wizard owner, menyediakan RW 01-26, dan menghilangkan ruang kosong honeypot register. Deployment Railway terverifikasi sehat: `/produk` langsung menampilkan filter, register memakai heading/copy baru, dan query lama `sort=popular` tetap aman tanpa menampilkan opsi yang sudah dihapus.
 
+### Workflow Verifikasi Profesional (19 Juni 2026)
+
+Workflow verifikasi memakai tabel `umkm_submissions` untuk snapshot pengajuan awal dan perubahan profil. Admin meninjau submission melalui halaman read-only, sedangkan perubahan profil verified tidak menggantikan data publik sebelum approval. Migration juga menambahkan state blokir produk serta audit moderasi; data pending/revisi existing dibackfill otomatis menjadi submission. Runtime Railway tetap menjalankan migration melalui `docker-entrypoint.sh` saat deployment.
+
 ### 6. `nixpacks.toml`
 
 File konfigurasi Nixpacks untuk Railway (alternatif jika tidak pakai Dockerfile). Saat ini **tidak digunakan** karena Railway memprioritaskan Dockerfile jika keduanya ada. File ini tetap ada sebagai referensi. Nixpacks.toml akan dihapus dari remote oleh Railway auto-fix branch sebelumnya, tapi masih bisa dipakai jika Dockerfile dihapus.

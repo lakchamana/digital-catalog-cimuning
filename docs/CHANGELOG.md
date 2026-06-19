@@ -3,6 +3,10 @@
 ## [Unreleased]
 
 ### Added
+- UMKM submission snapshots for initial registrations and verified-profile changes, including reviewer, notes, checklist, and decision timestamps.
+- Dedicated read-only Filament `Verifikasi UMKM` resource with mandatory review checklist and revision/rejection reasons.
+- Audited UMKM featured curation and product blocking/unblocking actions.
+- Owner dashboard feedback for the latest submission status and admin review notes.
 - Initial Laravel project scaffold.
 - Tailwind CSS theme tokens for Cimuning UMKM visual system.
 - Livewire and Alpine.js setup target for interactive UI.
@@ -83,6 +87,10 @@
 - Feature tests for the hidden registration honeypot, RW validation, owner/admin field visibility, removed UMKM analytics column, and seeder compatibility.
 
 ### Changed
+- Admin access to owner UMKM and product records is now read-only; content correction remains the owner's responsibility.
+- Verified profile edits stay as pending drafts while the previously approved profile remains public.
+- Admin and owner notifications now link to their respective review and editing surfaces.
+- Public product queries exclude products blocked by admin moderation.
 - Replaced default Laravel welcome route with Cimuning UMKM homepage.
 - Homepage now reads categories and featured UMKMs from the database when tables are available, with static fallback for pre-migration development.
 - `/umkm` and `/produk` now support simple database-backed keyword search when seeded data is available.
@@ -138,6 +146,8 @@
 - Owner UMKM registration now requires category, business name, description, contact person, WhatsApp, RW, and address.
 
 ### Removed
+- Quick verification actions and destructive admin actions from owner UMKM/product tables.
+- Obsolete guest UMKM registration Livewire component and the legacy direct verification workflow.
 - Contact and QR tracking feature, including the `LeadEvent` model, event recorder, redirect controller, intermediary routes, model relations, Filament analytics widgets, and tracking-specific tests.
 - `lead_events` database table through a forward migration that runs automatically on the deployed Railway database.
 - Storage of visitor IP hashes, user agents, referrers, WhatsApp/Maps clicks, and QR scans.

@@ -4,9 +4,10 @@ namespace App\Filament\Resources\Products\Tables;
 
 use App\Models\Product;
 use App\Support\UploadDisk;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
+use App\Support\ContentModeration;
+use Filament\Actions\Action;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
@@ -14,6 +15,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Filament\Forms\Components\Textarea;
 use Illuminate\Database\Eloquent\Builder;
 
 class ProductsTable
@@ -52,6 +54,10 @@ class ProductsTable
                 IconColumn::make('is_active')
                     ->label('Aktif')
                     ->boolean(),
+                IconColumn::make('is_admin_blocked')
+                    ->label('Diblokir admin')
+                    ->boolean()
+                    ->color(fn (bool $state): string => $state ? 'danger' : 'gray'),
                 TextColumn::make('created_at')
                     ->label('Dibuat')
                     ->dateTime()
@@ -85,14 +91,30 @@ class ProductsTable
                 TernaryFilter::make('is_active')
                     ->label('Aktif'),
             ])
+            ->recordUrl(fn (Product $record): string => Filament::auth()->user()?->isAdmin()
+                ? \App\Filament\Resources\Products\ProductResource::getUrl('view', ['record' => $record])
+                : \App\Filament\Resources\Products\ProductResource::getUrl('edit', ['record' => $record]))
             ->recordActions([
-                EditAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make()
-                        ->visible(fn (): bool => Filament::auth()->user()?->isAdmin()),
-                ]),
+                Action::make('block')
+                    ->label('Nonaktifkan')
+                    ->icon('heroicon-o-no-symbol')
+                    ->color('danger')
+                    ->schema([
+                        Textarea::make('reason')->label('Alasan penonaktifan')->required()->minLength(10)->maxLength(2000),
+                    ])
+                    ->visible(fn (Product $record): bool => Filament::auth()->user()?->isAdmin() && ! $record->is_admin_blocked)
+                    ->action(fn (Product $record, array $data) => ContentModeration::blockProduct($record, Filament::auth()->user(), $data['reason'])),
+                Action::make('unblock')
+                    ->label('Aktifkan kembali')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->schema([
+                        Textarea::make('reason')->label('Catatan pengaktifan')->required()->minLength(10)->maxLength(2000),
+                    ])
+                    ->visible(fn (Product $record): bool => Filament::auth()->user()?->isAdmin() && $record->is_admin_blocked)
+                    ->action(fn (Product $record, array $data) => ContentModeration::unblockProduct($record, Filament::auth()->user(), $data['reason'])),
+                ViewAction::make()->visible(fn (): bool => Filament::auth()->user()?->isAdmin() ?? false),
+                EditAction::make()->visible(fn (): bool => Filament::auth()->user()?->isUmkmOwner() ?? false),
             ]);
     }
 }

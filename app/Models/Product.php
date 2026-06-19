@@ -7,8 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
-#[Fillable(['umkm_id', 'category_id', 'name', 'slug', 'description', 'price', 'image', 'is_active'])]
+#[Fillable([
+    'umkm_id', 'category_id', 'name', 'slug', 'description', 'price', 'image', 'is_active',
+    'is_admin_blocked', 'admin_block_reason', 'admin_blocked_at', 'admin_blocked_by',
+])]
 class Product extends Model
 {
     use HasFactory;
@@ -18,6 +22,8 @@ class Product extends Model
         return [
             'price' => 'integer',
             'is_active' => 'boolean',
+            'is_admin_blocked' => 'boolean',
+            'admin_blocked_at' => 'datetime',
         ];
     }
 
@@ -34,6 +40,16 @@ class Product extends Model
     public function images(): HasMany
     {
         return $this->hasMany(ProductImage::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    public function blockedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'admin_blocked_by');
+    }
+
+    public function moderationActions(): MorphMany
+    {
+        return $this->morphMany(ModerationAction::class, 'subject')->latest();
     }
 
 }

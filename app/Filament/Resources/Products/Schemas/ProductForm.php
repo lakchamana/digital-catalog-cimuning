@@ -8,6 +8,7 @@ use App\Support\UniqueSlug;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -25,6 +26,14 @@ class ProductForm
     {
         return $schema
             ->components([
+                Section::make('Produk dinonaktifkan admin')
+                    ->description('Produk tidak tampil ke publik sampai admin membuka blokir setelah perbaikan ditinjau.')
+                    ->visible(fn (?Product $record): bool => $record?->is_admin_blocked ?? false)
+                    ->schema([
+                        Placeholder::make('admin_block_reason_display')
+                            ->label('Alasan')
+                            ->content(fn (?Product $record): string => $record?->admin_block_reason ?: '-'),
+                    ]),
                 Section::make('Informasi produk')
                     ->schema([
                         Select::make('umkm_id')
@@ -60,13 +69,7 @@ class ProductForm
                                 'slug',
                                 UniqueSlug::make((string) $state, Product::class, ignoreId: $record?->getKey()),
                             )),
-                        TextInput::make('slug')
-                            ->required()
-                            ->maxLength(255)
-                            ->helperText('Untuk admin: bagian URL/SEO produk.')
-                            ->visible(fn () => Filament::auth()->user()?->isAdmin()),
-                        Hidden::make('slug')
-                            ->visible(fn () => Filament::auth()->user()?->isUmkmOwner()),
+                        Hidden::make('slug'),
                         TextInput::make('price')
                             ->label('Harga')
                             ->numeric()

@@ -5,12 +5,13 @@ namespace App\Filament\Resources\Umkms\Pages;
 use App\Filament\Resources\Umkms\UmkmResource;
 use App\Models\Umkm;
 use App\Support\OwnerFormHelper;
+use App\Support\UmkmSubmissionWorkflow;
 use App\Support\UniqueSlug;
 use Filament\Actions\Action;
-use Filament\Actions\DeleteAction;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Model;
 
 class EditUmkm extends EditRecord
 {
@@ -29,9 +30,16 @@ class EditUmkm extends EditRecord
                 ]))
                 ->visible(fn (): bool => $this->record->is_active && $this->record->status === 'verified')
                 ->openUrlInNewTab(),
-            DeleteAction::make()
-                ->visible(fn (): bool => Filament::auth()->user()?->isAdmin()),
         ];
+    }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        if (Filament::auth()->user()?->isUmkmOwner()) {
+            return UmkmSubmissionWorkflow::formData($this->record);
+        }
+
+        return $data;
     }
 
     protected function mutateFormDataBeforeSave(array $data): array
@@ -41,24 +49,38 @@ class EditUmkm extends EditRecord
 
         if ($user?->isUmkmOwner()) {
             unset($data['user_id']);
-            $data['slug'] = UniqueSlug::make((string) ($data['name'] ?? 'umkm'), Umkm::class, ignoreId: $this->record->getKey());
-            $data['status'] = $this->record->status;
-            $data['is_featured'] = $this->record->is_featured;
+            $data['slug'] = $this->record->slug;
+            unset($data['status'], $data['is_active'], $data['is_featured']);
         }
 
         return $data;
     }
 
-    protected function afterSave(): void
+    protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        if (! Filament::auth()->user()?->isUmkmOwner()) {
-            return;
+        $user = Filament::auth()->user();
+
+        if ($user?->isUmkmOwner()) {
+            UmkmSubmissionWorkflow::submit($this->record, $user, $data);
+
+            return $record;
         }
 
-        Notification::make()
-            ->title('Perubahan berhasil disimpan')
-            ->success()
-            ->send();
+        return parent::handleRecordUpdate($record, $data);
+    }
+
+    protected function getSavedNotification(): ?Notification
+    {
+        if (! Filament::auth()->user()?->isUmkmOwner()) {
+            return parent::getSavedNotification();
+        }
+
+        return Notification::make()
+            ->title('Perubahan dikirim untuk ditinjau')
+            ->body($this->record->status === 'verified'
+                ? 'Profil yang sedang tayang tetap digunakan sampai perubahan disetujui admin.'
+                : 'Kami akan memberi tahu Anda setelah pengajuan selesai diperiksa.')
+            ->success();
     }
 
     private function prepareOwnerFriendlyData(array $data): array

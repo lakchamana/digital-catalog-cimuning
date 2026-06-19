@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable([
     'user_id',
@@ -80,6 +82,21 @@ class Umkm extends Model
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function submissions(): HasMany
+    {
+        return $this->hasMany(UmkmSubmission::class)->latest('submitted_at')->latest('id');
+    }
+
+    public function latestSubmission(): HasOne
+    {
+        return $this->hasOne(UmkmSubmission::class)->latestOfMany('submitted_at');
+    }
+
+    public function moderationActions(): MorphMany
+    {
+        return $this->morphMany(ModerationAction::class, 'subject')->latest();
     }
 
     public function contacts(): HasMany

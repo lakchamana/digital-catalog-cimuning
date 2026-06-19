@@ -19,21 +19,21 @@ class ProductPolicy
 
     public function create(User $user): bool
     {
-        return $user->isAdmin() || $user->umkm()->exists();
+        return $user->isUmkmOwner() && $user->umkm()->exists();
     }
 
     public function update(User $user, Product $product): bool
     {
-        return $user->isAdmin() || $product->umkm?->user_id === $user->id;
+        return $user->isUmkmOwner() && $product->umkm?->user_id === $user->id;
     }
 
     public function delete(User $user, Product $product): bool
     {
-        return $user->isAdmin() || $product->umkm?->user_id === $user->id;
+        return $user->isUmkmOwner() && $product->umkm?->user_id === $user->id;
     }
 
     public function deleteAny(User $user): bool
     {
-        return $user->isAdmin();
+        return false;
     }
 }

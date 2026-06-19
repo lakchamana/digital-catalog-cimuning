@@ -303,7 +303,7 @@ class OwnerOnboardingTest extends TestCase
         $this->assertDatabaseMissing('umkms', ['name' => 'Usaha RW Salah']);
     }
 
-    public function test_owner_form_hides_technical_fields_while_admin_keeps_public_controls(): void
+    public function test_owner_form_hides_technical_fields_and_admin_cannot_open_owner_form(): void
     {
         $owner = User::query()->create([
             'name' => 'Owner Form',
@@ -330,12 +330,7 @@ class OwnerOnboardingTest extends TestCase
 
         $this->actingAs($admin);
 
-        Livewire::test(CreateUmkm::class)
-            ->assertSee('Slug URL publik')
-            ->assertSee('Latitude')
-            ->assertSee('Longitude')
-            ->assertSee('Pengaturan publik')
-            ->assertDontSee('Jumlah dilihat');
+        $this->get(UmkmResource::getUrl('create'))->assertForbidden();
     }
 
     public function test_maps_text_parser_accepts_coordinates_from_google_maps_text(): void

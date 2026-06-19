@@ -14,7 +14,7 @@ CTA WhatsApp dan Google Maps mengarah langsung ke layanan eksternal, sedangkan Q
 
 - Public user atau warga yang mencari produk, jasa, toko, atau nama UMKM.
 - UMKM owner yang ingin mempromosikan profil usaha dan produk/jasanya.
-- Admin/pengelola yang memverifikasi dan mengelola data UMKM.
+- Admin/pengelola yang meninjau pengajuan UMKM, mengelola kategori, dan menjalankan moderasi tanpa menulis ulang data owner.
 
 ## Tidak Ada Payment Gateway
 
@@ -47,15 +47,15 @@ Mayoritas user diasumsikan memakai smartphone. Semua halaman harus nyaman diguna
 
 ## Role User
 
-- Admin: mengelola kategori, UMKM, produk/jasa, foto, dan status verifikasi.
+- Admin: mengelola kategori, meninjau submission UMKM secara read-only, melakukan kurasi featured, dan memblokir produk bermasalah dengan alasan tercatat.
 - UMKM Owner: mengelola profil dan produk miliknya sendiri.
 - Public User/Guest: melihat homepage, mencari UMKM, melihat produk/jasa, dan menghubungi UMKM tanpa login.
 
 ## Dashboard Back Office
 
-Panel `/admin` memakai Laravel Filament 5. Public pages tetap Blade + Livewire dan tidak dipindahkan ke Filament. Admin dapat mengelola kategori, semua UMKM, semua produk, upload foto, dan status verifikasi. UMKM owner dapat masuk panel tetapi query resource dibatasi ke UMKM dan produk miliknya sendiri.
+Panel `/admin` memakai Laravel Filament 5. Public pages tetap Blade + Livewire dan tidak dipindahkan ke Filament. Owner mengelola profil serta produknya sendiri. Admin melihat data owner secara read-only dan mengambil keputusan melalui resource `Verifikasi UMKM`; koreksi konten harus dilakukan owner. Perubahan profil verified disimpan sebagai draft submission sehingga versi publik lama tetap tayang sampai perubahan disetujui.
 
-Form UMKM owner menggunakan wizard dengan bahasa publik yang sederhana. RW wajib dipilih dari `RW 01` sampai `RW 26`; slug, koordinat mentah, status, active flag, dan featured flag hanya menjadi urusan admin/sistem. Aplikasi tidak menyimpan jumlah kunjungan profil atau menyediakan sort popularitas berbasis tracking.
+Form UMKM owner menggunakan wizard dengan bahasa publik yang sederhana. RW wajib dipilih dari `RW 01` sampai `RW 26`; slug dan koordinat mentah ditangani sistem, sedangkan status publik serta featured hanya berubah melalui workflow admin yang terkontrol. Aplikasi tidak menyimpan jumlah kunjungan profil atau menyediakan sort popularitas berbasis tracking.
 
 Upload gambar di lokal memakai public disk Laravel dan storage link `public/storage`. Di production Railway, upload diarahkan ke Cloudinary melalui custom filesystem disk karena filesystem Railway bersifat ephemeral. Gambar yang didukung pada tahap ini adalah JPG, PNG, dan WEBP dengan batas konservatif 2 MB.
 

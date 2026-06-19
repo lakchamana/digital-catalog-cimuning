@@ -155,6 +155,7 @@ class UmkmSearch extends Component
                         ->orWhereHas('category', fn (Builder $categoryQuery) => $categoryQuery->where('name', 'like', "%{$search}%"))
                         ->orWhereHas('products', function (Builder $productQuery) use ($search) {
                             $productQuery->where('is_active', true)
+                                ->where('is_admin_blocked', false)
                                 ->where(function (Builder $productNested) use ($search) {
                                     $productNested->where('name', 'like', "%{$search}%")
                                         ->orWhere('description', 'like', "%{$search}%");

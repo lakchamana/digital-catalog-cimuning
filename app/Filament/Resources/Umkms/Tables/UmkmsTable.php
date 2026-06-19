@@ -4,11 +4,10 @@ namespace App\Filament\Resources\Umkms\Tables;
 
 use App\Models\Umkm;
 use App\Support\UploadDisk;
-use App\Support\UmkmVerificationWorkflow;
+use App\Support\ContentModeration;
 use Filament\Actions\Action;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
@@ -123,28 +122,21 @@ class UmkmsTable
                 TernaryFilter::make('service_cod')
                     ->label('COD'),
             ])
+            ->recordUrl(fn (Umkm $record): string => Filament::auth()->user()?->isAdmin()
+                ? \App\Filament\Resources\Umkms\UmkmResource::getUrl('view', ['record' => $record])
+                : \App\Filament\Resources\Umkms\UmkmResource::getUrl('edit', ['record' => $record]))
             ->recordActions([
-                Action::make('verify')
-                    ->label('Verifikasi')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('success')
+                Action::make('toggleFeatured')
+                    ->label(fn (Umkm $record): string => $record->is_featured ? 'Hapus dari pilihan' : 'Jadikan pilihan')
+                    ->icon('heroicon-o-star')
+                    ->color('info')
                     ->requiresConfirmation()
-                    ->visible(fn (Umkm $record): bool => Filament::auth()->user()?->isAdmin() && $record->status !== 'verified')
-                    ->action(fn (Umkm $record) => UmkmVerificationWorkflow::verify($record)),
-                Action::make('requestRevision')
-                    ->label('Minta revisi')
-                    ->icon('heroicon-o-exclamation-triangle')
-                    ->color('warning')
-                    ->requiresConfirmation()
-                    ->visible(fn (Umkm $record): bool => Filament::auth()->user()?->isAdmin() && $record->status !== 'need_revision')
-                    ->action(fn (Umkm $record) => UmkmVerificationWorkflow::requestRevision($record)),
-                Action::make('reject')
-                    ->label('Tolak')
-                    ->icon('heroicon-o-x-circle')
-                    ->color('danger')
-                    ->requiresConfirmation()
-                    ->visible(fn (Umkm $record): bool => Filament::auth()->user()?->isAdmin() && $record->status !== 'rejected')
-                    ->action(fn (Umkm $record) => UmkmVerificationWorkflow::reject($record)),
+                    ->visible(fn (Umkm $record): bool => Filament::auth()->user()?->isAdmin() && $record->status === 'verified')
+                    ->action(fn (Umkm $record) => ContentModeration::setFeatured(
+                        $record,
+                        Filament::auth()->user(),
+                        ! $record->is_featured,
+                    )),
                 Action::make('downloadQr')
                     ->label('Download QR')
                     ->icon('heroicon-o-qr-code')
@@ -155,13 +147,8 @@ class UmkmsTable
                     ]))
                     ->visible(fn (Umkm $record): bool => $record->is_active && $record->status === 'verified')
                     ->openUrlInNewTab(),
-                EditAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make()
-                        ->visible(fn (): bool => Filament::auth()->user()?->isAdmin()),
-                ]),
+                ViewAction::make()->visible(fn (): bool => Filament::auth()->user()?->isAdmin() ?? false),
+                EditAction::make()->visible(fn (): bool => Filament::auth()->user()?->isUmkmOwner() ?? false),
             ]);
     }
 }

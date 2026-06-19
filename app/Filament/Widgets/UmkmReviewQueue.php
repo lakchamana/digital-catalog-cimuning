@@ -2,8 +2,8 @@
 
 namespace App\Filament\Widgets;
 
-use App\Filament\Resources\Umkms\UmkmResource;
-use App\Models\Umkm;
+use App\Filament\Resources\UmkmSubmissions\UmkmSubmissionResource;
+use App\Models\UmkmSubmission;
 use Filament\Facades\Filament;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -26,34 +26,33 @@ class UmkmReviewQueue extends TableWidget
             ->heading('UMKM perlu ditinjau')
             ->description('Pendaftaran baru dan profil yang membutuhkan tindak lanjut admin.')
             ->query(
-                Umkm::query()
-                    ->with(['category', 'owner'])
-                    ->whereIn('status', ['pending', 'need_revision'])
-                    ->latest(),
+                UmkmSubmission::query()
+                    ->with(['umkm.category', 'umkm.owner'])
+                    ->where('status', 'pending')
+                    ->latest('submitted_at'),
             )
             ->columns([
-                TextColumn::make('name')
+                TextColumn::make('umkm.name')
                     ->label('UMKM')
                     ->searchable(),
-                TextColumn::make('category.name')
+                TextColumn::make('umkm.category.name')
                     ->label('Kategori'),
-                TextColumn::make('owner_name')
+                TextColumn::make('umkm.owner_name')
                     ->label('Penanggung jawab')
                     ->toggleable(),
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'need_revision' => 'Perlu revisi',
-                        default => 'Menunggu',
+                        default => 'Menunggu review',
                     })
-                    ->color(fn (string $state): string => $state === 'need_revision' ? 'warning' : 'gray'),
-                TextColumn::make('created_at')
+                    ->color('gray'),
+                TextColumn::make('submitted_at')
                     ->label('Masuk')
                     ->since()
                     ->sortable(),
             ])
-            ->recordUrl(fn (Umkm $record): string => UmkmResource::getUrl('edit', ['record' => $record]))
+            ->recordUrl(fn (UmkmSubmission $record): string => UmkmSubmissionResource::getUrl('view', ['record' => $record]))
             ->emptyStateHeading('Tidak ada UMKM yang perlu ditinjau')
             ->emptyStateDescription('Pendaftaran baru dan revisi akan muncul di sini.');
     }

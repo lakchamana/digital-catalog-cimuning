@@ -32,7 +32,7 @@ class OwnerUmkmStatus extends TableWidget
             ->description('Lengkapi profil UMKM, tunggu verifikasi admin, lalu tambahkan produk atau jasa agar warga mudah menemukan usaha Anda.')
             ->query(
                 Umkm::query()
-                    ->with('category')
+                    ->with(['category', 'latestSubmission'])
                     ->where('user_id', $user?->id)
                     ->latest(),
             )
@@ -45,26 +45,38 @@ class OwnerUmkmStatus extends TableWidget
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
+                    ->state(fn (Umkm $record): string => $record->latestSubmission?->status ?? $record->status)
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'verified' => 'Terverifikasi',
+                        'approved', 'verified' => 'Terverifikasi',
                         'rejected' => 'Ditolak',
                         'need_revision' => 'Perlu revisi',
-                        default => 'Menunggu',
+                        'superseded' => 'Diperbarui',
+                        default => 'Menunggu review',
                     })
                     ->color(fn (string $state): string => match ($state) {
-                        'verified' => 'success',
+                        'approved', 'verified' => 'success',
                         'rejected' => 'danger',
                         'need_revision' => 'warning',
                         default => 'gray',
                     }),
                 TextColumn::make('owner_guidance')
                     ->label('Arahan')
-                    ->state(fn (Umkm $record): string => match ($record->status) {
-                        'verified' => 'Profil sudah tampil. Tambahkan produk/jasa agar katalog lebih lengkap.',
-                        'need_revision' => 'Perbaiki data profil sesuai arahan admin, lalu simpan ulang.',
-                        'rejected' => 'Data belum bisa ditampilkan. Periksa kembali profil dan kontak usaha.',
-                        default => 'Menunggu admin meninjau data usaha Anda.',
+                    ->state(function (Umkm $record): string {
+                        $submission = $record->latestSubmission;
+
+                        return match ($submission?->status ?? $record->status) {
+                            'approved', 'verified' => 'Profil sudah tampil di direktori publik.',
+                            'need_revision' => 'Perbaiki profil sesuai catatan admin, lalu kirim kembali.',
+                            'rejected' => 'Pengajuan ditolak, tetapi Anda dapat memperbaiki dan mengajukan kembali.',
+                            default => $submission?->type === 'update'
+                                ? 'Perubahan sedang ditinjau. Profil lama tetap tayang.'
+                                : 'Menunggu admin meninjau data usaha Anda.',
+                        };
                     })
+                    ->wrap(),
+                TextColumn::make('latestSubmission.review_notes')
+                    ->label('Catatan admin')
+                    ->placeholder('-')
                     ->wrap(),
                 IconColumn::make('is_active')
                     ->label('Tampil publik')

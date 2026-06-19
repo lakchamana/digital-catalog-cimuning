@@ -6,7 +6,6 @@ use App\Models\Umkm;
 use App\Support\OwnerFormHelper;
 use App\Support\UploadDisk;
 use App\Support\UniqueSlug;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -56,19 +55,6 @@ class UmkmForm
         return [
             Section::make('Informasi usaha')
                 ->schema([
-                    Select::make('user_id')
-                        ->label('Pemilik akun')
-                        ->relationship(
-                            'owner',
-                            'name',
-                            modifyQueryUsing: fn ($query) => $query->where('role', 'umkm_owner')->orderBy('name'),
-                        )
-                        ->searchable()
-                        ->preload()
-                        ->default(fn () => Filament::auth()->user()?->isUmkmOwner() ? Filament::auth()->id() : null)
-                        ->disabled(fn () => Filament::auth()->user()?->isUmkmOwner())
-                        ->dehydrated()
-                        ->visible(fn () => Filament::auth()->user()?->isAdmin()),
                     Select::make('category_id')
                         ->label('Kategori')
                         ->relationship('category', 'name', modifyQueryUsing: fn ($query) => $query->where('is_active', true)->orderBy('name'))
@@ -85,14 +71,7 @@ class UmkmForm
                             'slug',
                             UniqueSlug::make((string) $state, Umkm::class, ignoreId: $record?->getKey()),
                         )),
-                    TextInput::make('slug')
-                        ->label('Slug URL publik')
-                        ->required()
-                        ->maxLength(255)
-                        ->helperText('Untuk admin: bagian URL publik, contoh: dapur-ibu-sari.')
-                        ->visible(fn () => Filament::auth()->user()?->isAdmin()),
-                    Hidden::make('slug')
-                        ->visible(fn () => Filament::auth()->user()?->isUmkmOwner()),
+                    Hidden::make('slug'),
                     Textarea::make('description')
                         ->label('Tentang usaha')
                         ->placeholder('Ceritakan produk atau jasa utama, jam buka, dan keunggulan usaha Anda.')
@@ -173,18 +152,8 @@ class UmkmForm
                         }),
                     View::make('filament.forms.components.location-helper')
                         ->columnSpanFull(),
-                    TextInput::make('latitude')
-                        ->label('Latitude')
-                        ->numeric()
-                        ->visible(fn () => Filament::auth()->user()?->isAdmin()),
-                    Hidden::make('latitude')
-                        ->visible(fn () => Filament::auth()->user()?->isUmkmOwner()),
-                    TextInput::make('longitude')
-                        ->label('Longitude')
-                        ->numeric()
-                        ->visible(fn () => Filament::auth()->user()?->isAdmin()),
-                    Hidden::make('longitude')
-                        ->visible(fn () => Filament::auth()->user()?->isUmkmOwner()),
+                    Hidden::make('latitude'),
+                    Hidden::make('longitude'),
                     Textarea::make('address')
                         ->label('Alamat lengkap')
                         ->placeholder('Tulis nama jalan, nomor, dan patokan yang mudah ditemukan.')
@@ -286,32 +255,6 @@ class UmkmForm
     private static function reviewSchema(): array
     {
         return [
-            Section::make('Pengaturan publik')
-                ->visible(fn () => Filament::auth()->user()?->isAdmin())
-                ->schema([
-                    Select::make('status')
-                        ->options([
-                            'pending' => 'Menunggu verifikasi',
-                            'verified' => 'Terverifikasi',
-                            'rejected' => 'Ditolak',
-                            'need_revision' => 'Perlu revisi',
-                        ])
-                        ->default('pending')
-                        ->required()
-                        ->disabled(fn () => ! Filament::auth()->user()?->isAdmin())
-                        ->dehydrated(),
-                    Toggle::make('is_active')
-                        ->label('Aktif')
-                        ->default(true)
-                        ->required()
-                        ->disabled(fn () => ! Filament::auth()->user()?->isAdmin())
-                        ->dehydrated(),
-                    Toggle::make('is_featured')
-                        ->label('UMKM pilihan')
-                        ->default(false)
-                        ->dehydrated(),
-                ])
-                ->columns(2),
             Section::make('Konfirmasi')
                 ->schema([
                     View::make('filament.forms.components.umkm-submit-note'),

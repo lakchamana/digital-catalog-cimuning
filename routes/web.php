@@ -53,6 +53,7 @@ Route::get('/', function () use ($hasTables) {
                 'images' => fn ($query) => $query->orderBy('sort_order')->orderBy('id'),
             ])
             ->where('is_active', true)
+            ->where('is_admin_blocked', false)
             ->whereHas('umkm', fn ($query) => $query->where('is_active', true)->where('status', 'verified'))
             ->latest()
             ->limit(8)
@@ -120,6 +121,7 @@ Route::get('/umkm/{slug}', function (string $slug) use ($hasTables) {
             'products' => fn ($query) => $query
                 ->with(['category', 'images' => fn ($query) => $query->orderBy('sort_order')->orderBy('id')])
                 ->where('is_active', true)
+                ->where('is_admin_blocked', false)
                 ->latest(),
             'contacts',
             'socialLinks',

@@ -36,11 +36,13 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - UX `/produk` dibuat eksplisit: search box memiliki tombol utama "Cari", reset hanya muncul saat filter aktif, filter aktif tampil sebagai chip yang bisa dihapus satu per satu, dan drawer mobile memakai tombol "Lihat hasil".
 - `/produk` tidak memiliki jumbotron/hero lagi; filter dan daftar produk/jasa menjadi konten pertama yang terlihat, dengan H1 tetap tersedia secara `sr-only`.
 - `/umkm` juga tidak memiliki hero visual; search/filter dan daftar UMKM menjadi konten pertama, dengan H1 tetap tersedia secara `sr-only`.
-- Pendaftaran publik `/daftar-umkm` memakai Livewire `App\Livewire\Public\UmkmRegistrationForm`.
+- `/daftar-umkm` memakai account-first onboarding; form guest Livewire lama sudah dihapus.
 - Slug unik dibuat lewat helper `App\Support\UniqueSlug` dan dipakai pada pendaftaran publik serta auto-fill form Filament.
 - Notifikasi dashboard memakai Laravel database notifications dan Filament notification bell dengan polling 30 detik.
-- Perubahan status verifikasi UMKM dipusatkan di `App\Support\UmkmVerificationWorkflow`.
-- Pembuatan UMKM pending menotifikasi semua user role `admin`; action verifikasi/revisi/tolak menotifikasi owner jika UMKM memiliki `user_id`.
+- Pengajuan dan keputusan verifikasi dipusatkan di `App\Support\UmkmSubmissionWorkflow` dengan snapshot field owner yang diizinkan.
+- Admin meninjau submission melalui resource `Verifikasi UMKM` yang read-only; keputusan menyimpan reviewer, catatan, checklist, dan timestamp.
+- Perubahan pada UMKM verified tidak langsung mengubah profil publik. Versi lama tetap tayang sampai submission update disetujui.
+- Admin tidak dapat create/edit/delete profil atau produk owner melalui policy. Kurasi featured dan blokir produk memakai action terpisah yang diaudit.
 - CTA WhatsApp dan Google Maps membuka URL eksternal secara langsung tanpa route tracking atau penyimpanan event.
 - Fitur tracking kontak telah dihapus total: model/controller/recorder/widget analytics dan route perantara tidak lagi tersedia; migration terbaru menghapus tabel `lead_events` dari database deployment.
 - Aplikasi tidak menyimpan IP, user agent, referer, klik kontak, atau scan QR pengunjung.
@@ -67,7 +69,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Registrasi owner `/admin/register` memakai CAPTCHA matematika lokal berbasis session dan honeypot tersembunyi, tanpa layanan eksternal.
 - CAPTCHA owner registration memakai token per form render yang disimpan di session agar beberapa tab register tidak saling membatalkan jawaban.
 - Form UMKM Filament sekarang memakai wizard bertahap agar owner awam tidak melihat seluruh field teknis sekaligus.
-- Field slug disembunyikan dari owner untuk UMKM dan produk; sistem tetap membuat slug unik dari nama, sedangkan admin masih bisa mengedit slug sebagai field advanced.
+- Field slug disembunyikan dari owner dan tidak dapat diubah admin melalui review; sistem membuat slug awal dan mempertahankan URL UMKM verified saat nama usaha berubah.
 - Wizard owner memakai bahasa ringkas, menyembunyikan koordinat/status/active/featured dari owner, dan mewajibkan data minimum profil publik.
 - Field RW memakai searchable Select wajib dengan pilihan konsisten `RW 01` sampai `RW 26`.
 - Honeypot register memakai komponen `Hidden`, sehingga tidak membuat baris kosong setelah CAPTCHA tetapi validasi server-side tetap aktif.
@@ -135,7 +137,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Halaman `/produk` langsung dimulai dari filter dan hasil katalog tanpa jumbotron pengantar.
 - Filament v5.6.7 sudah terpasang dan panel `/admin` sudah dibuat.
 - Resource admin tersedia untuk kategori, UMKM, dan produk.
-- Admin bisa melakukan verifikasi UMKM melalui action cepat di tabel UMKM.
+- Aksi verifikasi cepat dari tabel UMKM sudah dihapus agar admin wajib membuka halaman review submission.
 - Owner UMKM bisa masuk panel dan hanya melihat/mengelola data miliknya sendiri.
 - Owner registration kini memiliki CAPTCHA lokal dan honeypot; jika gagal, pesan validasi dibuat ramah.
 - Owner registration kini memakai CAPTCHA tokenized dan honeypot yang lebih tahan autofill untuk mengurangi kegagalan palsu saat jawaban hitungan benar.
@@ -147,16 +149,16 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Halaman detail UMKM `/umkm/{slug}` sudah dipoles dengan hero gambar, logo UMKM, badge layanan, Maps embed/link, sticky contact panel desktop, sticky CTA mobile, dan katalog produk berbasis gambar upload.
 - Route detail UMKM sudah eager-load `products.images` untuk menghindari N+1 pada galeri produk.
 - Placeholder `/daftar-umkm` sempat diganti dengan form pendaftaran publik, lalu diganti lagi menjadi account-first onboarding landing.
-- Form guest Livewire lama masih ada di kode tetapi tidak dirender publik pada flow terbaru.
+- Form guest Livewire lama sudah dihapus karena alur pendaftaran sepenuhnya account-first.
 - Owner mengisi logo/cover UMKM dari Filament public disk dengan validasi JPG/PNG/WEBP maksimal 2 MB.
 - Filament form kategori, UMKM, dan produk sudah auto-fill slug dari nama.
-- Tabel UMKM Filament memiliki action admin: Verifikasi, Minta revisi, dan Tolak.
+- Tabel UMKM admin bersifat read-only; Verifikasi, Minta revisi, dan Tolak hanya tersedia di detail submission pending.
 - Test pendaftaran publik sudah ditambahkan, termasuk slug unik, upload invalid, dan proteksi UMKM pending dari public listing/detail.
 - Migration `notifications` sudah ditambahkan untuk database notifications.
 - Filament notification bell sudah aktif di panel `/admin`.
-- Dashboard admin memiliki widget `UMKM perlu ditinjau` untuk status `pending` dan `need_revision`.
+- Dashboard admin memiliki widget `UMKM perlu ditinjau` berbasis submission pending.
 - Dashboard owner memiliki widget status UMKM miliknya.
-- Test notifikasi dashboard sudah ditambahkan untuk pendaftaran publik dan action verifikasi/revisi/tolak.
+- Test verifikasi profesional menjaga draft publik, audit reviewer, alasan revisi/penolakan, policy read-only admin, kurasi featured, dan blokir produk.
 - CTA WhatsApp dan Maps pada detail, sticky mobile, product card, listing, dan homepage sekarang memakai URL langsung tanpa pencatatan database.
 - Dashboard Filament tidak lagi memiliki statistik atau aktivitas tracking kontak.
 - Tabel `lead_events` dihapus melalui migration production-safe; route `/leads/...` dan route QR tracking juga sudah dihapus.

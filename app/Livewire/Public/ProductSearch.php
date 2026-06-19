@@ -108,7 +108,9 @@ class ProductSearch extends Component
                     ->orWhereHas('umkms', fn (Builder $umkmQuery) => $umkmQuery
                         ->where('is_active', true)
                         ->where('status', 'verified')
-                        ->whereHas('products', fn (Builder $productQuery) => $productQuery->where('is_active', true)));
+                        ->whereHas('products', fn (Builder $productQuery) => $productQuery
+                            ->where('is_active', true)
+                            ->where('is_admin_blocked', false)));
             })
             ->orderBy('sort_order')
             ->orderBy('name')
@@ -120,7 +122,9 @@ class ProductSearch extends Component
         return Umkm::query()
             ->where('is_active', true)
             ->where('status', 'verified')
-            ->whereHas('products', fn (Builder $query) => $query->where('is_active', true))
+            ->whereHas('products', fn (Builder $query) => $query
+                ->where('is_active', true)
+                ->where('is_admin_blocked', false))
             ->orderBy('name')
             ->get(['id', 'name', 'slug']);
     }
@@ -253,6 +257,7 @@ class ProductSearch extends Component
     {
         return $query
             ->where('is_active', true)
+            ->where('is_admin_blocked', false)
             ->whereHas('umkm', fn (Builder $umkmQuery) => $umkmQuery->where('is_active', true)->where('status', 'verified'));
     }
 
@@ -290,7 +295,9 @@ class ProductSearch extends Component
                     ->orWhereHas('umkms', fn (Builder $umkmQuery) => $umkmQuery
                         ->where('is_active', true)
                         ->where('status', 'verified')
-                        ->whereHas('products', fn (Builder $productQuery) => $productQuery->where('is_active', true)));
+                        ->whereHas('products', fn (Builder $productQuery) => $productQuery
+                            ->where('is_active', true)
+                            ->where('is_admin_blocked', false)));
             })
             ->exists();
     }
@@ -301,7 +308,9 @@ class ProductSearch extends Component
             ->where('slug', $slug)
             ->where('is_active', true)
             ->where('status', 'verified')
-            ->whereHas('products', fn (Builder $query) => $query->where('is_active', true))
+            ->whereHas('products', fn (Builder $query) => $query
+                ->where('is_active', true)
+                ->where('is_admin_blocked', false))
             ->exists();
     }
 }
