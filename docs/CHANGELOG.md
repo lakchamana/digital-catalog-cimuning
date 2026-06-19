@@ -155,6 +155,7 @@
 - Obsolete partial contact-tracking removal report and its documentation references.
 
 ### Fixed
+- Sitemap XML declaration now compiles safely during production Blade view caching.
 - PHPUnit dev dependency is now installed successfully after PHP `zip` became available, so `php artisan test` can run.
 - Homepage carousel no longer jumps the page back up while users are scrolling through catalog sections.
 - Homepage carousel prev/next controls are now positioned as cleaner floating controls with safer spacing from slide edges.
