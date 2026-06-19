@@ -29,23 +29,17 @@ class UmkmForm
         return $schema
             ->components([
                 Wizard::make([
-                    Step::make('Profil usaha')
-                        ->description('Isi informasi dasar yang akan tampil di website.')
+                    Step::make('Informasi usaha')
                         ->schema(self::profileSchema()),
                     Step::make('Kontak')
-                        ->description('Tambahkan kontak yang bisa dihubungi warga.')
                         ->schema(self::contactSchema()),
                     Step::make('Lokasi')
-                        ->description('Isi alamat dan bantu sistem menemukan titik Maps.')
                         ->schema(self::locationSchema()),
                     Step::make('Media sosial')
-                        ->description('Opsional, boleh isi username atau link.')
                         ->schema(self::socialSchema()),
                     Step::make('Foto & layanan')
-                        ->description('Lengkapi tampilan profil dan layanan usaha.')
                         ->schema(self::mediaAndServicesSchema()),
-                    Step::make('Tinjauan')
-                        ->description('Pastikan data siap dikirim untuk ditinjau admin.')
+                    Step::make('Konfirmasi')
                         ->schema(self::reviewSchema()),
                 ])
                     ->columnSpanFull()
@@ -60,7 +54,7 @@ class UmkmForm
     private static function profileSchema(): array
     {
         return [
-            Section::make('Profil usaha')
+            Section::make('Informasi usaha')
                 ->schema([
                     Select::make('user_id')
                         ->label('Pemilik akun')
@@ -80,13 +74,12 @@ class UmkmForm
                         ->relationship('category', 'name', modifyQueryUsing: fn ($query) => $query->where('is_active', true)->orderBy('name'))
                         ->searchable()
                         ->preload()
-                        ->required()
-                        ->helperText('Pilih kategori yang paling dekat dengan usaha Anda.'),
+                        ->required(),
                     TextInput::make('name')
-                        ->label('Nama UMKM')
+                        ->label('Nama usaha')
                         ->required()
                         ->maxLength(255)
-                        ->helperText('Nama usaha yang akan tampil di website.')
+                        ->placeholder('Contoh: Dapur Ibu Sari')
                         ->live(onBlur: true)
                         ->afterStateUpdated(fn (Set $set, ?string $state, ?Model $record) => $set(
                             'slug',
@@ -101,8 +94,9 @@ class UmkmForm
                     Hidden::make('slug')
                         ->visible(fn () => Filament::auth()->user()?->isUmkmOwner()),
                     Textarea::make('description')
-                        ->label('Deskripsi')
-                        ->helperText('Ceritakan produk/jasa utama, jam layanan, atau keunggulan usaha.')
+                        ->label('Tentang usaha')
+                        ->placeholder('Ceritakan produk atau jasa utama, jam buka, dan keunggulan usaha Anda.')
+                        ->required()
                         ->rows(5)
                         ->columnSpanFull(),
                 ])
@@ -119,21 +113,26 @@ class UmkmForm
             Section::make('Kontak')
                 ->schema([
                     TextInput::make('owner_name')
-                        ->label('Nama penanggung jawab')
-                        ->helperText('Nama orang yang bisa dihubungi admin atau warga.')
+                        ->label('Nama pemilik atau penanggung jawab')
+                        ->placeholder('Nama lengkap')
+                        ->required()
                         ->maxLength(255),
                     TextInput::make('phone')
                         ->label('Telepon')
                         ->tel()
+                        ->placeholder('Contoh: 02182601234')
                         ->maxLength(255),
                     TextInput::make('whatsapp')
                         ->label('WhatsApp')
                         ->tel()
+                        ->required()
                         ->maxLength(255)
-                        ->helperText('Gunakan nomor aktif, contoh: 081234567890. Tombol publik akan mengarah ke WhatsApp.'),
+                        ->placeholder('Contoh: 081234567890')
+                        ->helperText('Gunakan nomor yang aktif menerima pesan WhatsApp.'),
                     TextInput::make('email')
                         ->label('Email usaha')
                         ->email()
+                        ->placeholder('Contoh: usaha@email.com')
                         ->maxLength(255),
                 ])
                 ->columns(2),
@@ -148,14 +147,20 @@ class UmkmForm
         return [
             Section::make('Lokasi usaha')
                 ->schema([
-                    TextInput::make('rw')
+                    Select::make('rw')
                         ->label('RW')
-                        ->maxLength(10)
-                        ->placeholder('RW 03'),
+                        ->options(Umkm::rwOptions())
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->searchPrompt('Ketik nomor RW')
+                        ->noSearchResultsMessage('RW tidak ditemukan')
+                        ->required(),
                     TextInput::make('maps_link')
-                        ->label('Tempel link Google Maps atau koordinat')
+                        ->label('Link lokasi Google Maps')
+                        ->placeholder('Tempel link lokasi usaha dari Google Maps')
                         ->live(onBlur: true)
-                        ->helperText('Contoh koordinat: -6.312345, 107.012345. Jika menempel link Google Maps pendek, buka link dulu lalu salin alamat lengkap dari browser.')
+                        ->helperText('Buka lokasi usaha di Google Maps, lalu salin dan tempel linknya di sini.')
                         ->afterStateUpdated(function (Set $set, ?string $state): void {
                             $coordinates = OwnerFormHelper::coordinatesFromMapsText($state);
 
@@ -169,16 +174,21 @@ class UmkmForm
                     View::make('filament.forms.components.location-helper')
                         ->columnSpanFull(),
                     TextInput::make('latitude')
-                        ->label('Latitude Google Maps')
+                        ->label('Latitude')
                         ->numeric()
-                        ->helperText('Terisi otomatis jika memakai tombol lokasi atau link Maps.'),
+                        ->visible(fn () => Filament::auth()->user()?->isAdmin()),
+                    Hidden::make('latitude')
+                        ->visible(fn () => Filament::auth()->user()?->isUmkmOwner()),
                     TextInput::make('longitude')
-                        ->label('Longitude Google Maps')
+                        ->label('Longitude')
                         ->numeric()
-                        ->helperText('Terisi otomatis jika memakai tombol lokasi atau link Maps.'),
+                        ->visible(fn () => Filament::auth()->user()?->isAdmin()),
+                    Hidden::make('longitude')
+                        ->visible(fn () => Filament::auth()->user()?->isUmkmOwner()),
                     Textarea::make('address')
-                        ->label('Alamat')
-                        ->helperText('Tulis alamat yang mudah dipahami warga. Contoh: dekat masjid, sekolah, atau patokan sekitar.')
+                        ->label('Alamat lengkap')
+                        ->placeholder('Tulis nama jalan, nomor, dan patokan yang mudah ditemukan.')
+                        ->required()
                         ->rows(4)
                         ->columnSpanFull(),
                 ])
@@ -196,15 +206,16 @@ class UmkmForm
                 ->schema([
                     TextInput::make('instagram')
                         ->label('Instagram')
-                        ->helperText('Boleh isi username, contoh: dapurcimuning, atau link lengkap.')
+                        ->placeholder('Contoh: @dapurcimuning')
                         ->maxLength(255),
                     TextInput::make('tiktok')
                         ->label('TikTok')
-                        ->helperText('Boleh isi username, contoh: dapurcimuning, atau link lengkap.')
+                        ->placeholder('Contoh: @dapurcimuning')
                         ->maxLength(255),
                     TextInput::make('website')
                         ->label('Website')
                         ->url()
+                        ->placeholder('https://contohusaha.id')
                         ->maxLength(255),
                 ])
                 ->columns(2),
@@ -275,7 +286,8 @@ class UmkmForm
     private static function reviewSchema(): array
     {
         return [
-            Section::make('Status publik')
+            Section::make('Pengaturan publik')
+                ->visible(fn () => Filament::auth()->user()?->isAdmin())
                 ->schema([
                     Select::make('status')
                         ->options([
@@ -297,18 +309,10 @@ class UmkmForm
                     Toggle::make('is_featured')
                         ->label('UMKM pilihan')
                         ->default(false)
-                        ->visible(fn () => Filament::auth()->user()?->isAdmin())
-                        ->dehydrated(),
-                    TextInput::make('view_count')
-                        ->label('Jumlah dilihat')
-                        ->required()
-                        ->numeric()
-                        ->default(0)
-                        ->disabled(fn () => ! Filament::auth()->user()?->isAdmin())
                         ->dehydrated(),
                 ])
                 ->columns(2),
-            Section::make('Sebelum dikirim')
+            Section::make('Konfirmasi')
                 ->schema([
                     View::make('filament.forms.components.umkm-submit-note'),
                 ]),

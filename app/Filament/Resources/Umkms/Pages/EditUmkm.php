@@ -44,7 +44,6 @@ class EditUmkm extends EditRecord
             $data['slug'] = UniqueSlug::make((string) ($data['name'] ?? 'umkm'), Umkm::class, ignoreId: $this->record->getKey());
             $data['status'] = $this->record->status;
             $data['is_featured'] = $this->record->is_featured;
-            $data['view_count'] = $this->record->view_count;
         }
 
         return $data;
@@ -57,8 +56,7 @@ class EditUmkm extends EditRecord
         }
 
         Notification::make()
-            ->title('Perubahan profil UMKM tersimpan')
-            ->body('Admin dapat meninjau data terbaru sebelum status publik berubah.')
+            ->title('Perubahan berhasil disimpan')
             ->success()
             ->send();
     }

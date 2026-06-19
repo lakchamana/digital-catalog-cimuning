@@ -40,6 +40,9 @@ class ProductSearchTest extends TestCase
             ->assertSee('Cari')
             ->assertSee('Saring hasil')
             ->assertSee('Lihat hasil')
+            ->assertSee('<h1 class="sr-only">Produk dan jasa UMKM Cimuning</h1>', false)
+            ->assertDontSee('Katalog Produk/Jasa')
+            ->assertDontSee('Temukan katalog produk digital')
             ->assertDontSee('>Reset</button>', false)
             ->assertDontSee('Terapkan Filter');
     }

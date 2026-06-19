@@ -34,11 +34,24 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'service_cod',
     'service_custom_order',
     'has_physical_store',
-    'view_count',
 ])]
 class Umkm extends Model
 {
     use HasFactory;
+
+    /**
+     * @return array<string, string>
+     */
+    public static function rwOptions(): array
+    {
+        return collect(range(1, 26))
+            ->mapWithKeys(function (int $number): array {
+                $rw = sprintf('RW %02d', $number);
+
+                return [$rw => $rw];
+            })
+            ->all();
+    }
 
     protected function casts(): array
     {
@@ -51,7 +64,6 @@ class Umkm extends Model
             'service_cod' => 'boolean',
             'service_custom_order' => 'boolean',
             'has_physical_store' => 'boolean',
-            'view_count' => 'integer',
         ];
     }
 

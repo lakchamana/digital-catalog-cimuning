@@ -129,7 +129,7 @@ class UmkmSearchTest extends TestCase
             ->set('category', 'kuliner')
             ->set('rw', 'RW 07')
             ->set('services', ['delivery'])
-            ->set('sort', 'popular')
+            ->set('sort', 'az')
             ->set('perPage', 18)
             ->call('resetFilters')
             ->assertSet('search', '')
@@ -140,6 +140,16 @@ class UmkmSearchTest extends TestCase
             ->assertSet('sort', 'latest')
             ->assertSet('perPage', 9)
             ->assertDontSee('UMKM Pending Cimuning');
+    }
+
+    public function test_removed_popular_sort_falls_back_to_latest(): void
+    {
+        $this->seedUmkms();
+
+        Livewire::test(UmkmSearch::class)
+            ->set('sort', 'popular')
+            ->assertSet('sort', 'latest')
+            ->assertDontSee('Populer');
     }
 
     private function seedUmkms(): void
@@ -168,7 +178,6 @@ class UmkmSearchTest extends TestCase
             'is_active' => true,
             'service_delivery' => true,
             'service_cod' => true,
-            'view_count' => 10,
         ]);
 
         Umkm::query()->create([
@@ -181,7 +190,6 @@ class UmkmSearchTest extends TestCase
             'is_active' => true,
             'service_delivery' => false,
             'service_cod' => false,
-            'view_count' => 4,
         ]);
 
         Umkm::query()->create([

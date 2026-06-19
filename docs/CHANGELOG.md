@@ -80,6 +80,8 @@
 - Product search UX tests for explicit search submit, contextual result headings, mobile filter copy, and individual filter chip removal.
 - UMKM search UX tests for explicit search submit, contextual result headings, mobile filter copy, safe query fallback, and individual filter chip removal.
 - Production removal runbook in `docs/CONTACT_TRACKING_REMOVAL.md`.
+- Searchable RW selector with the complete `RW 01` through `RW 26` options for UMKM onboarding.
+- Feature tests for the hidden registration honeypot, RW validation, owner/admin field visibility, removed UMKM analytics column, and seeder compatibility.
 
 ### Changed
 - Replaced default Laravel welcome route with Cimuning UMKM homepage.
@@ -130,11 +132,16 @@
 - `/umkm` search UI now follows the same explicit UX pattern as `/produk`: primary "Cari" action, contextual result headings, removable active filter chips, and reset actions only when filters are active.
 - Mobile UMKM filter drawer now uses "Lihat hasil" instead of "Terapkan Filter" because filters apply live.
 - `/umkm` filters now sanitize invalid query string values for category, RW, services, sort, and pagination size.
+- `/produk` now opens directly on its search/filter and product results without a visible jumbotron.
+- Owner registration honeypot now uses a true hidden field, removing the empty visual row below CAPTCHA while preserving server-side bot validation.
+- UMKM onboarding copy now uses concise public-facing language; owner-visible technical controls are hidden and the final step is a simple confirmation.
+- Owner UMKM registration now requires category, business name, description, contact person, WhatsApp, RW, and address.
 
 ### Removed
 - Contact and QR tracking feature, including the `LeadEvent` model, event recorder, redirect controller, intermediary routes, model relations, Filament analytics widgets, and tracking-specific tests.
 - `lead_events` database table through a forward migration that runs automatically on the deployed Railway database.
 - Storage of visitor IP hashes, user agents, referrers, WhatsApp/Maps clicks, and QR scans.
+- Obsolete `umkms.view_count` column, admin form/table field, seeded counters, and the public UMKM "Populer" sort option.
 
 ### Fixed
 - PHPUnit dev dependency is now installed successfully after PHP `zip` became available, so `php artisan test` can run.

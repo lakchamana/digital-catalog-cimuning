@@ -175,7 +175,6 @@ class UmkmSearch extends Component
     {
         match ($this->sort) {
             'az' => $query->orderBy('name'),
-            'popular' => $query->orderByDesc('view_count')->latest(),
             default => $query->latest(),
         };
     }
@@ -246,7 +245,6 @@ class UmkmSearch extends Component
                 'label' => 'Urutan',
                 'value' => match ($this->sort) {
                     'az' => 'A-Z',
-                    'popular' => 'Populer',
                     default => 'Terbaru',
                 },
             ] : null,
@@ -308,7 +306,7 @@ class UmkmSearch extends Component
     {
         $this->search = trim($this->search);
 
-        if (! in_array($this->sort, ['latest', 'az', 'popular'], true)) {
+        if (! in_array($this->sort, ['latest', 'az'], true)) {
             $this->sort = 'latest';
         }
 

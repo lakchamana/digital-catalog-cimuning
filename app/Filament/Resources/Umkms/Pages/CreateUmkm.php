@@ -26,7 +26,6 @@ class CreateUmkm extends CreateRecord
             $data['status'] = 'pending';
             $data['is_active'] = false;
             $data['is_featured'] = false;
-            $data['view_count'] = 0;
         }
 
         return $data;
@@ -38,8 +37,8 @@ class CreateUmkm extends CreateRecord
             UmkmVerificationWorkflow::notifyAdminsOfRegistration($this->record);
 
             Notification::make()
-                ->title('Profil UMKM berhasil dikirim')
-                ->body('Status masih menunggu verifikasi admin sebelum tampil di website publik.')
+                ->title('Profil usaha berhasil dikirim')
+                ->body('Kami akan memberi tahu Anda setelah profil selesai diperiksa.')
                 ->success()
                 ->send();
         }

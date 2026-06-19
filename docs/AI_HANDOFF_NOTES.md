@@ -34,6 +34,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - UX `/umkm` dibuat eksplisit seperti `/produk`: search box memiliki tombol utama "Cari", reset hanya muncul saat filter aktif, filter aktif tampil sebagai chip yang bisa dihapus satu per satu, dan drawer mobile memakai tombol "Lihat hasil".
 - Filter `/produk` menormalisasi nilai query string yang tidak valid; kategori produk juga fallback ke kategori UMKM jika `products.category_id` kosong.
 - UX `/produk` dibuat eksplisit: search box memiliki tombol utama "Cari", reset hanya muncul saat filter aktif, filter aktif tampil sebagai chip yang bisa dihapus satu per satu, dan drawer mobile memakai tombol "Lihat hasil".
+- `/produk` tidak memiliki jumbotron/hero lagi; filter dan daftar produk/jasa menjadi konten pertama yang terlihat, dengan H1 tetap tersedia secara `sr-only`.
 - Pendaftaran publik `/daftar-umkm` memakai Livewire `App\Livewire\Public\UmkmRegistrationForm`.
 - Slug unik dibuat lewat helper `App\Support\UniqueSlug` dan dipakai pada pendaftaran publik serta auto-fill form Filament.
 - Notifikasi dashboard memakai Laravel database notifications dan Filament notification bell dengan polling 30 detik.
@@ -42,6 +43,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - CTA WhatsApp dan Google Maps membuka URL eksternal secara langsung tanpa route tracking atau penyimpanan event.
 - Fitur tracking kontak telah dihapus total: model/controller/recorder/widget analytics dan route perantara tidak lagi tersedia; migration terbaru menghapus tabel `lead_events` dari database deployment.
 - Aplikasi tidak menyimpan IP, user agent, referer, klik kontak, atau scan QR pengunjung.
+- Kolom `umkms.view_count` dan sort publik "Populer" juga dihapus karena tidak ada lagi pencatatan kunjungan.
 - Runbook deployment penghapusan tersedia di `docs/CONTACT_TRACKING_REMOVAL.md`.
 - Penghapusan tracking sudah aktif di Railway sejak 19 Juni 2026 melalui commit `c79da7b`; endpoint lama terverifikasi 404 dan CTA production memakai URL langsung.
 - Pendaftaran UMKM sekarang account-first: calon owner membuat akun di `/admin/register`, lalu mengisi profil UMKM dari panel.
@@ -65,6 +67,9 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - CAPTCHA owner registration memakai token per form render yang disimpan di session agar beberapa tab register tidak saling membatalkan jawaban.
 - Form UMKM Filament sekarang memakai wizard bertahap agar owner awam tidak melihat seluruh field teknis sekaligus.
 - Field slug disembunyikan dari owner untuk UMKM dan produk; sistem tetap membuat slug unik dari nama, sedangkan admin masih bisa mengedit slug sebagai field advanced.
+- Wizard owner memakai bahasa ringkas, menyembunyikan koordinat/status/active/featured dari owner, dan mewajibkan data minimum profil publik.
+- Field RW memakai searchable Select wajib dengan pilihan konsisten `RW 01` sampai `RW 26`.
+- Honeypot register memakai komponen `Hidden`, sehingga tidak membuat baris kosong setelah CAPTCHA tetapi validasi server-side tetap aktif.
 - Helper owner berada di `App\Support\OwnerFormHelper` untuk normalisasi Instagram/TikTok dan parsing koordinat dari teks/link Maps.
 - Pengambilan lokasi owner tidak memakai Google Maps API berbayar: UI menyediakan browser Geolocation, parsing koordinat, dan tombol membuka Google Maps dari alamat.
 - Production Railway memakai Dockerfile, `docker-entrypoint.sh`, dan `server.php`.
@@ -121,10 +126,12 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - User sudah mengaktifkan XAMPP/MySQL/Apache dan menjalankan `php artisan migrate --seed`.
 - Livewire UMKM search/filter sudah dibuat dengan keyword, kategori, RW, verified, layanan, sort, pagination, loading skeleton, empty state, dan mobile bottom sheet.
 - Livewire UMKM search/filter sudah dipoles agar alurnya jelas untuk user awam: tombol utama "Cari", heading hasil kontekstual, chip filter yang bisa dihapus satu per satu, drawer mobile "Lihat hasil", dan query invalid kembali ke default aman.
+- Sort UMKM hanya menyediakan "Terbaru" dan "A-Z"; query lama `sort=popular` dinormalisasi ke `latest`.
 - Branding sudah diganti menjadi Cimuning Digital Hub di UI utama, metadata, `.env`, dan `.env.example`.
 - Livewire produk search/filter sudah dibuat dengan keyword, kategori, UMKM, harga, sort, pagination, loading skeleton, empty state, dan mobile bottom sheet.
 - Livewire produk search/filter sudah diperkuat: query invalid kembali ke default, filter kategori memakai fallback kategori UMKM, harga `0` dianggap "Hubungi UMKM", dan test khusus `ProductSearchTest` menjaga perilaku ini.
 - Halaman `/produk` sekarang memiliki heading hasil kontekstual seperti `Hasil untuk "nasi"`, `Produk kategori Kuliner`, atau `Semua produk/jasa`.
+- Halaman `/produk` langsung dimulai dari filter dan hasil katalog tanpa jumbotron pengantar.
 - Filament v5.6.7 sudah terpasang dan panel `/admin` sudah dibuat.
 - Resource admin tersedia untuk kategori, UMKM, dan produk.
 - Admin bisa melakukan verifikasi UMKM melalui action cepat di tabel UMKM.
@@ -165,6 +172,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - SEO public tahap awal sudah ditambahkan untuk detail UMKM dan sitemap publik.
 - Test SEO public sudah ditambahkan untuk meta detail UMKM, fallback social image, sitemap, dan robots.
 - Owner onboarding sudah dipoles: form UMKM owner berupa wizard, slug tidak perlu diisi owner, koordinat bisa dibantu dari Geolocation atau teks Maps, dan social media boleh berupa username atau URL.
+- Form owner memakai RW 01-26, field wajib minimum, konfirmasi ringkas, serta tidak lagi menampilkan `view_count` atau pengaturan teknis publik.
 - Test owner onboarding sudah diperluas untuk CAPTCHA, honeypot, slug otomatis, koordinat Maps, dan normalisasi Instagram/TikTok.
 - Deployment Railway + Cloudinary sudah ditambahkan oleh AI agent lain dan didokumentasikan di `docs/DEPLOYMENT_UPDATE.md`.
 - File deployment yang sudah ada: `Dockerfile`, `docker-entrypoint.sh`, `server.php`, `config/cloudinary.php`, dan `App\Support\CloudinaryStorage`.

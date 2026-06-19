@@ -76,7 +76,7 @@ class OwnerUmkmStatus extends TableWidget
             ])
             ->recordUrl(fn (Umkm $record): string => UmkmResource::getUrl('edit', ['record' => $record]))
             ->emptyStateHeading('Belum ada UMKM yang terhubung')
-            ->emptyStateDescription('Mulai dari melengkapi profil UMKM. Anda tidak perlu mengatur URL/slug; sistem akan membuatnya otomatis.')
+            ->emptyStateDescription('Daftarkan profil usaha agar dapat diperiksa dan ditampilkan di direktori UMKM Cimuning.')
             ->emptyStateActions([
                 Action::make('createUmkm')
                     ->label('Lengkapi Profil UMKM')

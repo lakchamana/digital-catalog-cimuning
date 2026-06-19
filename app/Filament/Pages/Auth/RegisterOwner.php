@@ -31,17 +31,17 @@ class RegisterOwner extends Register
 
     public function getTitle(): string|Htmlable
     {
-        return 'Daftar Akun Owner UMKM';
+        return 'Daftar Akun UMKM';
     }
 
     public function getHeading(): string|Htmlable|null
     {
-        return 'Buat akun owner UMKM';
+        return 'Buat akun UMKM';
     }
 
     public function getSubheading(): string|Htmlable|null
     {
-        return new HtmlString('Setelah membuat akun, lengkapi profil UMKM Anda untuk ditinjau admin sebelum tampil di direktori publik. Sudah punya akun? '.$this->loginAction->toHtml());
+        return new HtmlString('Gunakan email aktif untuk mengelola profil dan produk usaha Anda. Sudah punya akun? '.$this->loginAction->toHtml());
     }
 
     protected function mutateFormDataBeforeRegister(#[SensitiveParameter] array $data): array
@@ -103,20 +103,13 @@ class RegisterOwner extends Register
             ->label('Verifikasi keamanan: '.Session::get(self::CURRENT_CAPTCHA_QUESTION_KEY))
             ->inputMode('numeric')
             ->required()
-            ->helperText('Jawab pertanyaan sederhana ini untuk memastikan pendaftaran bukan spam.');
+            ->helperText('Masukkan hasil perhitungan di atas.');
     }
 
     protected function getHoneypotFormComponent(): Component
     {
-        return TextInput::make('profile_confirmation')
-            ->label('Konfirmasi')
-            ->hiddenLabel()
-            ->autocomplete('new-password')
-            ->extraFieldWrapperAttributes(['class' => 'hidden'], merge: true)
-            ->extraAttributes([
-                'aria-hidden' => 'true',
-                'tabindex' => '-1',
-            ]);
+        return Hidden::make('profile_confirmation')
+            ->default('');
     }
 
     private function refreshCaptcha(): string

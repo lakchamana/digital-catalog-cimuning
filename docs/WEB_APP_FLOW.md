@@ -23,9 +23,9 @@
 1. Calon owner membuka `/daftar-umkm`.
 2. Owner membuat akun melalui `/admin/register` dan menjawab CAPTCHA lokal sederhana.
 3. Sistem membuat akun dengan role `umkm_owner` dan mengarahkan owner ke dashboard.
-4. Owner mengisi atau memperbarui profil UMKM miliknya melalui wizard bertahap.
+4. Owner mengisi atau memperbarui profil UMKM melalui wizard Informasi usaha, Kontak, Lokasi, Media sosial, Foto & layanan, dan Konfirmasi.
 5. Owner tidak perlu memahami slug/URL teknis karena sistem membuat slug otomatis.
-6. Owner dapat mengisi lokasi memakai alamat, tombol browser Geolocation, atau tempel koordinat/link Google Maps.
+6. Owner wajib memilih RW 01-RW 26 melalui dropdown pencarian, lalu mengisi alamat dan dapat memakai Geolocation atau link Google Maps.
 7. UMKM baru tersimpan sebagai pending dan belum tampil publik.
 8. Owner menambah produk/jasa dan foto setelah profil UMKM tersedia.
 9. Owner melihat status pending, verified, rejected, atau need revision.
@@ -66,13 +66,14 @@
 ## Flow Pencarian Produk/Jasa
 
 1. User membuka `/produk` atau mencari dari navbar.
-2. User mengetik kebutuhan dan dapat menekan tombol utama "Cari"; hasil tetap diperbarui oleh Livewire.
-3. User dapat membuka filter untuk kategori, UMKM, harga, urutan, dan jumlah per halaman.
-4. Filter aktif tampil sebagai chip dan bisa dihapus satu per satu tanpa menghapus semua pencarian.
-5. Nilai filter yang tidak valid dikembalikan ke default agar URL aneh tidak merusak halaman.
-6. Filter kategori mencocokkan kategori produk atau kategori UMKM sebagai fallback bila produk belum punya kategori sendiri.
-7. Filter harga membedakan produk dengan harga di atas 0 dan produk yang perlu menghubungi UMKM.
-8. Hasil hanya menampilkan produk aktif dari UMKM active dan verified.
+2. Halaman langsung menampilkan search/filter dan daftar produk tanpa jumbotron pengantar.
+3. User mengetik kebutuhan dan dapat menekan tombol utama "Cari"; hasil tetap diperbarui oleh Livewire.
+4. User dapat membuka filter untuk kategori, UMKM, harga, urutan, dan jumlah per halaman.
+5. Filter aktif tampil sebagai chip dan bisa dihapus satu per satu tanpa menghapus semua pencarian.
+6. Nilai filter yang tidak valid dikembalikan ke default agar URL aneh tidak merusak halaman.
+7. Filter kategori mencocokkan kategori produk atau kategori UMKM sebagai fallback bila produk belum punya kategori sendiri.
+8. Filter harga membedakan produk dengan harga di atas 0 dan produk yang perlu menghubungi UMKM.
+9. Hasil hanya menampilkan produk aktif dari UMKM active dan verified.
 
 ## Flow Homepage Product-Led
 

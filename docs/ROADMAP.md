@@ -27,6 +27,7 @@
 - Deployment testing internal ke Railway dengan Railway MySQL dan Cloudinary upload storage.
 - Dokumentasi deployment Railway/Cloudinary dan runtime caveats.
 - QR profile UMKM dengan SVG download langsung ke profil publik.
+- Polish onboarding owner dengan RW 01-26, copy publik, dan penghapusan field analytics lama.
 
 ## Phase 3
 
@@ -58,3 +59,4 @@
 - Mobile app native.
 - Multi-vendor transaction system.
 - Tracking klik kontak, lokasi, atau scan QR.
+- Counter kunjungan profil dan ranking popularitas berbasis tracking.

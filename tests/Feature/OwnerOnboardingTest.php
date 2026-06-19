@@ -10,6 +10,8 @@ use App\Models\Product;
 use App\Models\Umkm;
 use App\Models\User;
 use App\Support\OwnerFormHelper;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -22,8 +24,13 @@ class OwnerOnboardingTest extends TestCase
     {
         $this->get('/admin/register')
             ->assertOk()
-            ->assertSee('Buat akun owner UMKM')
-            ->assertSee('Verifikasi keamanan');
+            ->assertSee('Buat akun UMKM')
+            ->assertSee('Verifikasi keamanan')
+            ->assertSee('Masukkan hasil perhitungan di atas.')
+            ->assertDontSee('id="form.profile_confirmation" type="text"', false);
+
+        Livewire::test(RegisterOwner::class)
+            ->assertFormFieldExists('profile_confirmation', fn ($field): bool => $field instanceof Hidden);
     }
 
     public function test_owner_registration_creates_umkm_owner_user(): void
@@ -176,6 +183,7 @@ class OwnerOnboardingTest extends TestCase
                 'description' => 'Makanan rumahan untuk warga Cimuning.',
                 'owner_name' => 'Owner Baru',
                 'whatsapp' => '081234567890',
+                'rw' => 'RW 07',
                 'address' => 'Jl. Cimuning Raya',
                 'maps_link' => 'https://www.google.com/maps/place/Cimuning/@-6.3123456,107.0123456,17z',
                 'instagram' => '@dapur_owner',
@@ -223,7 +231,11 @@ class OwnerOnboardingTest extends TestCase
             ->fillForm([
                 'category_id' => $category->id,
                 'name' => 'Dapur Sama',
+                'description' => 'Makanan rumahan untuk warga Cimuning.',
+                'owner_name' => 'Owner Slug',
                 'whatsapp' => '081234567890',
+                'rw' => 'RW 08',
+                'address' => 'Jl. Cimuning Indah',
             ])
             ->call('create')
             ->assertHasNoFormErrors();
@@ -235,6 +247,95 @@ class OwnerOnboardingTest extends TestCase
             'status' => 'pending',
             'is_active' => false,
         ]);
+    }
+
+    public function test_owner_rw_field_is_searchable_required_and_limited_to_26_cimuning_rws(): void
+    {
+        $owner = User::query()->create([
+            'name' => 'Owner RW',
+            'email' => 'owner-rw@example.test',
+            'password' => 'password',
+            'role' => 'umkm_owner',
+        ]);
+
+        $this->actingAs($owner);
+
+        Livewire::test(CreateUmkm::class)
+            ->assertFormFieldExists('rw', function ($field): bool {
+                return $field instanceof Select
+                    && $field->isSearchable()
+                    && ! $field->isNative()
+                    && $field->isRequired()
+                    && $field->getOptions() === Umkm::rwOptions();
+            })
+            ->assertFormFieldDoesNotExist('view_count');
+
+        $this->assertCount(26, Umkm::rwOptions());
+        $this->assertSame('RW 01', Umkm::rwOptions()['RW 01']);
+        $this->assertSame('RW 26', Umkm::rwOptions()['RW 26']);
+    }
+
+    public function test_owner_cannot_submit_rw_outside_cimuning_options(): void
+    {
+        $category = $this->category();
+        $owner = User::query()->create([
+            'name' => 'Owner RW Salah',
+            'email' => 'owner-rw-salah@example.test',
+            'password' => 'password',
+            'role' => 'umkm_owner',
+        ]);
+
+        $this->actingAs($owner);
+
+        Livewire::test(CreateUmkm::class)
+            ->fillForm([
+                'category_id' => $category->id,
+                'name' => 'Usaha RW Salah',
+                'description' => 'Usaha lokal Cimuning.',
+                'owner_name' => 'Owner RW Salah',
+                'whatsapp' => '081234567890',
+                'rw' => 'RW 27',
+                'address' => 'Jl. Cimuning Raya',
+            ])
+            ->call('create')
+            ->assertHasFormErrors(['rw']);
+
+        $this->assertDatabaseMissing('umkms', ['name' => 'Usaha RW Salah']);
+    }
+
+    public function test_owner_form_hides_technical_fields_while_admin_keeps_public_controls(): void
+    {
+        $owner = User::query()->create([
+            'name' => 'Owner Form',
+            'email' => 'owner-form@example.test',
+            'password' => 'password',
+            'role' => 'umkm_owner',
+        ]);
+        $admin = User::query()->create([
+            'name' => 'Admin Form',
+            'email' => 'admin-form@example.test',
+            'password' => 'password',
+            'role' => 'admin',
+        ]);
+
+        $this->actingAs($owner);
+
+        Livewire::test(CreateUmkm::class)
+            ->assertDontSee('Slug URL publik')
+            ->assertDontSee('Latitude')
+            ->assertDontSee('Longitude')
+            ->assertDontSee('Pengaturan publik')
+            ->assertDontSee('Jumlah dilihat')
+            ->assertSee('Pastikan semua informasi sudah benar.');
+
+        $this->actingAs($admin);
+
+        Livewire::test(CreateUmkm::class)
+            ->assertSee('Slug URL publik')
+            ->assertSee('Latitude')
+            ->assertSee('Longitude')
+            ->assertSee('Pengaturan publik')
+            ->assertDontSee('Jumlah dilihat');
     }
 
     public function test_maps_text_parser_accepts_coordinates_from_google_maps_text(): void

@@ -93,7 +93,6 @@ class UmkmRegistrationForm extends Component
             'service_cod' => $validated['service_cod'],
             'service_custom_order' => $validated['service_custom_order'],
             'has_physical_store' => $validated['has_physical_store'],
-            'view_count' => 0,
         ]);
 
         UmkmVerificationWorkflow::notifyAdminsOfRegistration($umkm);

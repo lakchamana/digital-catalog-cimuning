@@ -85,10 +85,6 @@ class UmkmsTable
                 IconColumn::make('has_physical_store')
                     ->label('Toko')
                     ->boolean(),
-                TextColumn::make('view_count')
-                    ->label('Dilihat')
-                    ->numeric()
-                    ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Dibuat')
                     ->dateTime()

@@ -28,7 +28,6 @@
         <select id="sort-filter-{{ $filterIdSuffix }}" wire:model.live="sort" class="mt-2 min-h-11 w-full rounded-input border border-cimuning-border bg-white px-4 text-base text-cimuning-charcoal focus:border-cimuning-red focus:outline-2">
             <option value="latest">Terbaru</option>
             <option value="az">A-Z</option>
-            <option value="popular">Populer</option>
         </select>
     </div>
 

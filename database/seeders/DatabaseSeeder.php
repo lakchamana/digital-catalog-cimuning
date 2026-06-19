@@ -156,7 +156,6 @@ class DatabaseSeeder extends Seeder
                     'service_cod' => $row['services']['cod'],
                     'service_custom_order' => $row['services']['custom'],
                     'has_physical_store' => $row['services']['store'],
-                    'view_count' => $row['featured'] ? 40 : 12,
                 ],
             );
 
