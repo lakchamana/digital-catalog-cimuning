@@ -20,21 +20,27 @@
         : route('umkm.register');
 @endphp
 
-<header
+<div
     x-data="{
         open: false,
         openMenu() {
             this.open = true;
             this.$nextTick(() => this.$refs.mobileMenuTitle?.focus());
         },
-        closeMenu() {
+        closeMenu(restoreFocus = true) {
+            const wasOpen = this.open;
             this.open = false;
+            if (wasOpen && restoreFocus) {
+                this.$nextTick(() => this.$refs.mobileMenuButton?.focus());
+            }
         },
     }"
     x-effect="document.body.classList.toggle('overflow-hidden', open)"
     x-on:keydown.escape.window="closeMenu()"
-    class="sticky top-0 z-50 border-b border-cimuning-border bg-white/95 backdrop-blur"
+    x-on:resize.window="if (window.innerWidth >= 1024 && open) closeMenu(false)"
+    data-mobile-navigation
 >
+    <header class="sticky top-0 z-40 border-b border-cimuning-border bg-white/95 backdrop-blur">
     <div class="hidden border-b border-cimuning-border bg-cimuning-section/70 lg:block">
         <div class="container-cimuning flex min-h-9 items-center justify-between gap-4 text-xs font-medium text-cimuning-slate">
             <span>Direktori UMKM Cimuning berbasis katalog produk dan kontak langsung</span>
@@ -91,6 +97,7 @@
 
             <button
                 type="button"
+                x-ref="mobileMenuButton"
                 x-on:click="openMenu()"
                 x-bind:aria-expanded="open.toString()"
                 aria-controls="mobile-navigation-drawer"
@@ -137,7 +144,17 @@
         </nav>
     </div>
 
-    <div x-cloak x-show="open" x-transition.opacity class="fixed inset-0 z-50 bg-cimuning-charcoal/40 lg:hidden" x-on:click="closeMenu()"></div>
+    </header>
+
+    <div
+        x-cloak
+        x-show="open"
+        x-transition.opacity
+        class="fixed inset-0 z-[60] bg-cimuning-charcoal/40 lg:hidden"
+        data-mobile-navigation-backdrop
+        x-on:click="closeMenu()"
+        aria-hidden="true"
+    ></div>
     <aside
         id="mobile-navigation-drawer"
         x-cloak
@@ -151,7 +168,7 @@
         role="dialog"
         aria-modal="true"
         aria-labelledby="mobile-menu-title"
-        class="fixed right-0 top-0 z-50 h-dvh w-[86vw] max-w-sm overflow-y-auto bg-white shadow-2xl lg:hidden"
+        class="fixed inset-y-0 right-0 z-[70] h-dvh w-[min(86vw,22rem)] overflow-y-auto overscroll-contain bg-white shadow-2xl lg:hidden"
     >
         <div class="flex h-16 items-center justify-between border-b border-cimuning-border px-5">
             <h2 id="mobile-menu-title" x-ref="mobileMenuTitle" tabindex="-1" class="font-semibold text-cimuning-charcoal">Menu</h2>
@@ -162,7 +179,11 @@
                 <p class="text-xs font-semibold uppercase text-cimuning-muted">Jelajahi</p>
                 <div class="mt-2 space-y-1">
                     @foreach ($primaryLinks as $link)
-                        <a href="{{ route($link['route']) }}" class="flex min-h-11 items-center rounded-xl px-3 text-base font-medium text-cimuning-charcoal hover:bg-cimuning-section focus:outline-2" @if (request()->routeIs($link['route'])) aria-current="page" @endif>
+                        <a href="{{ route($link['route']) }}" x-on:click="closeMenu(false)" @class([
+                            'flex min-h-11 items-center rounded-xl px-3 text-base font-medium focus:outline-2',
+                            'bg-cimuning-soft text-cimuning-red' => request()->routeIs($link['route']),
+                            'text-cimuning-charcoal hover:bg-cimuning-section' => ! request()->routeIs($link['route']),
+                        ]) @if (request()->routeIs($link['route'])) aria-current="page" @endif>
                             {{ $link['label'] }}
                         </a>
                     @endforeach
@@ -173,7 +194,7 @@
                 <p class="text-xs font-semibold uppercase text-cimuning-muted">Informasi</p>
                 <div class="mt-2 space-y-1">
                     @foreach ($secondaryLinks as $link)
-                        <a href="{{ route($link['route']) }}" class="flex min-h-11 items-center rounded-xl px-3 text-base font-medium text-cimuning-charcoal hover:bg-cimuning-section focus:outline-2">
+                        <a href="{{ route($link['route']) }}" x-on:click="closeMenu(false)" class="flex min-h-11 items-center rounded-xl px-3 text-base font-medium text-cimuning-charcoal hover:bg-cimuning-section focus:outline-2">
                             {{ $link['label'] }}
                         </a>
                     @endforeach
@@ -181,13 +202,13 @@
             </div>
 
             <div class="grid gap-3">
-                <a href="{{ route('umkm.register') }}" class="flex min-h-11 items-center justify-center rounded-button bg-cimuning-red px-5 py-3 text-sm font-semibold text-white focus:outline-2">
+                <a href="{{ route('umkm.register') }}" x-on:click="closeMenu(false)" class="flex min-h-11 items-center justify-center rounded-button bg-cimuning-red px-5 py-3 text-sm font-semibold text-white focus:outline-2">
                     Daftarkan UMKM
                 </a>
-                <a href="{{ $ownerLoginUrl }}" class="flex min-h-11 items-center justify-center rounded-button border border-cimuning-border px-5 py-3 text-sm font-semibold text-cimuning-charcoal focus:outline-2">
+                <a href="{{ $ownerLoginUrl }}" x-on:click="closeMenu(false)" class="flex min-h-11 items-center justify-center rounded-button border border-cimuning-border px-5 py-3 text-sm font-semibold text-cimuning-charcoal focus:outline-2">
                     Masuk Owner
                 </a>
             </div>
         </div>
     </aside>
-</header>
+</div>

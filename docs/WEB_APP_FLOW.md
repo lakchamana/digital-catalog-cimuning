@@ -42,13 +42,14 @@
 ## Flow Pencarian UMKM
 
 1. User membuka `/umkm` atau masuk dari kategori tertentu.
-2. User mengetik kebutuhan lalu dapat menekan tombol utama "Cari"; hasil tetap diperbarui oleh Livewire.
-3. User dapat memfilter berdasarkan kategori, lokasi/RW, verified, layanan, urutan, dan jumlah per halaman.
-4. Filter aktif tampil sebagai chip dan bisa dihapus satu per satu tanpa menghapus semua pencarian.
-5. Nilai filter yang tidak valid dikembalikan ke default agar URL aneh tidak merusak halaman.
-6. Query search disimpan di URL agar bisa dibagikan.
-7. Total hasil, loading, dan empty state tersedia sebagai live region untuk assistive technology.
-8. Jika tidak ada hasil, tampilkan empty state yang ramah dengan aksi hapus filter atau cari produk/jasa.
+2. Halaman langsung menampilkan search/filter dan daftar UMKM tanpa hero pengantar.
+3. User mengetik kebutuhan lalu dapat menekan tombol utama "Cari"; hasil tetap diperbarui oleh Livewire.
+4. User dapat memfilter berdasarkan kategori, lokasi/RW, verified, layanan, urutan, dan jumlah per halaman.
+5. Filter aktif tampil sebagai chip dan bisa dihapus satu per satu tanpa menghapus semua pencarian.
+6. Nilai filter yang tidak valid dikembalikan ke default agar URL aneh tidak merusak halaman.
+7. Query search disimpan di URL agar bisa dibagikan.
+8. Total hasil, loading, dan empty state tersedia sebagai live region untuk assistive technology.
+9. Jika tidak ada hasil, tampilkan empty state yang ramah dengan aksi hapus filter atau cari produk/jasa.
 
 ## Flow Pendaftaran UMKM
 

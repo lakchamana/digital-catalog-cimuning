@@ -79,7 +79,6 @@
 - Tokenized local CAPTCHA support for owner registration to reduce false failures across refreshes or multiple browser tabs.
 - Product search UX tests for explicit search submit, contextual result headings, mobile filter copy, and individual filter chip removal.
 - UMKM search UX tests for explicit search submit, contextual result headings, mobile filter copy, safe query fallback, and individual filter chip removal.
-- Production removal runbook in `docs/CONTACT_TRACKING_REMOVAL.md`.
 - Searchable RW selector with the complete `RW 01` through `RW 26` options for UMKM onboarding.
 - Feature tests for the hidden registration honeypot, RW validation, owner/admin field visibility, removed UMKM analytics column, and seeder compatibility.
 
@@ -133,6 +132,7 @@
 - Mobile UMKM filter drawer now uses "Lihat hasil" instead of "Terapkan Filter" because filters apply live.
 - `/umkm` filters now sanitize invalid query string values for category, RW, services, sort, and pagination size.
 - `/produk` now opens directly on its search/filter and product results without a visible jumbotron.
+- `/umkm` now opens directly on its search/filter and directory results without a visible jumbotron.
 - Owner registration honeypot now uses a true hidden field, removing the empty visual row below CAPTCHA while preserving server-side bot validation.
 - UMKM onboarding copy now uses concise public-facing language; owner-visible technical controls are hidden and the final step is a simple confirmation.
 - Owner UMKM registration now requires category, business name, description, contact person, WhatsApp, RW, and address.
@@ -142,6 +142,7 @@
 - `lead_events` database table through a forward migration that runs automatically on the deployed Railway database.
 - Storage of visitor IP hashes, user agents, referrers, WhatsApp/Maps clicks, and QR scans.
 - Obsolete `umkms.view_count` column, admin form/table field, seeded counters, and the public UMKM "Populer" sort option.
+- Obsolete partial contact-tracking removal report and its documentation references.
 
 ### Fixed
 - PHPUnit dev dependency is now installed successfully after PHP `zip` became available, so `php artisan test` can run.
@@ -152,6 +153,7 @@
 - Build-time config cache issue by moving Laravel config/route caching to runtime.
 - Product category filters returning empty results when products relied on their UMKM category instead of `products.category_id`.
 - Owner registration false failures caused by CAPTCHA session replacement across multiple tabs or browser autofill touching the honeypot.
+- Mobile navigation drawer layout by moving viewport-fixed overlay elements outside the sticky backdrop-filter header.
 
 ### Notes
 - MVP remains a directory/catalog platform. Payment, checkout, cart, and transaction flows are intentionally excluded.

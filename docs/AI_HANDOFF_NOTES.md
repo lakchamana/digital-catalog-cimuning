@@ -35,6 +35,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Filter `/produk` menormalisasi nilai query string yang tidak valid; kategori produk juga fallback ke kategori UMKM jika `products.category_id` kosong.
 - UX `/produk` dibuat eksplisit: search box memiliki tombol utama "Cari", reset hanya muncul saat filter aktif, filter aktif tampil sebagai chip yang bisa dihapus satu per satu, dan drawer mobile memakai tombol "Lihat hasil".
 - `/produk` tidak memiliki jumbotron/hero lagi; filter dan daftar produk/jasa menjadi konten pertama yang terlihat, dengan H1 tetap tersedia secara `sr-only`.
+- `/umkm` juga tidak memiliki hero visual; search/filter dan daftar UMKM menjadi konten pertama, dengan H1 tetap tersedia secara `sr-only`.
 - Pendaftaran publik `/daftar-umkm` memakai Livewire `App\Livewire\Public\UmkmRegistrationForm`.
 - Slug unik dibuat lewat helper `App\Support\UniqueSlug` dan dipakai pada pendaftaran publik serta auto-fill form Filament.
 - Notifikasi dashboard memakai Laravel database notifications dan Filament notification bell dengan polling 30 detik.
@@ -44,7 +45,6 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Fitur tracking kontak telah dihapus total: model/controller/recorder/widget analytics dan route perantara tidak lagi tersedia; migration terbaru menghapus tabel `lead_events` dari database deployment.
 - Aplikasi tidak menyimpan IP, user agent, referer, klik kontak, atau scan QR pengunjung.
 - Kolom `umkms.view_count` dan sort publik "Populer" juga dihapus karena tidak ada lagi pencatatan kunjungan.
-- Runbook deployment penghapusan tersedia di `docs/CONTACT_TRACKING_REMOVAL.md`.
 - Penghapusan tracking sudah aktif di Railway sejak 19 Juni 2026 melalui commit `c79da7b`; endpoint lama terverifikasi 404 dan CTA production memakai URL langsung.
 - Pendaftaran UMKM sekarang account-first: calon owner membuat akun di `/admin/register`, lalu mengisi profil UMKM dari panel.
 - `/daftar-umkm` adalah landing onboarding owner, bukan form guest submission.
@@ -58,6 +58,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Tutorial hanya untuk public layout; panel Filament belum punya tutorial custom.
 - Public layout memiliki skip link ke `#main-content`, visible focus ring global, dan nav aktif memakai `aria-current="page"`.
 - Drawer mobile, filter bottom sheet, dan walkthrough memakai dialog semantics (`role="dialog"`, `aria-modal`, `aria-labelledby`) tanpa dependency tambahan.
+- Drawer navigasi mobile dirender sebagai sibling dari sticky header agar backdrop dan panel `fixed` selalu mengikuti viewport, termasuk pada browser mobile.
 - Listing Livewire `/produk` dan `/umkm` memiliki live region untuk total hasil/loading/empty state serta ID filter yang dibedakan antara desktop dan mobile.
 - Public layout menerima props SEO: `description`, `canonical`, `image`, `type`, dan `structuredData`.
 - Detail UMKM public merender canonical, Open Graph, Twitter card, dan JSON-LD `LocalBusiness` dari data UMKM verified.

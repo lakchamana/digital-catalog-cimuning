@@ -28,6 +28,22 @@ class PublicDiscoveryNavigationTest extends TestCase
             ->assertSee('aria-modal="true"', false);
     }
 
+    public function test_mobile_navigation_drawer_is_outside_the_sticky_header(): void
+    {
+        $html = $this->get('/')->assertOk()->getContent();
+        $document = new \DOMDocument();
+
+        libxml_use_internal_errors(true);
+        $document->loadHTML($html);
+        libxml_clear_errors();
+
+        $xpath = new \DOMXPath($document);
+
+        $this->assertCount(1, $xpath->query('//*[@id="mobile-navigation-drawer"]'));
+        $this->assertCount(0, $xpath->query('//*[@id="mobile-navigation-drawer"]/ancestor::header'));
+        $this->assertCount(1, $xpath->query('//*[@data-mobile-navigation-backdrop]'));
+    }
+
     public function test_homepage_renders_carousel_and_category_shortcuts(): void
     {
         $this->get('/')
@@ -93,6 +109,23 @@ class PublicDiscoveryNavigationTest extends TestCase
             ->assertSee('role="status"', false)
             ->assertSee('category-filter-desktop', false)
             ->assertSee('category-filter-mobile', false);
+    }
+
+    public function test_umkm_listing_opens_directly_on_search_without_a_visual_hero(): void
+    {
+        $this->seedDirectoryContent();
+
+        $this->get(route('umkm.index'))
+            ->assertOk()
+            ->assertSee('<h1 class="sr-only">Direktori UMKM</h1>', false)
+            ->assertSee('Cari UMKM')
+            ->assertDontSee('Temukan UMKM Cimuning')
+            ->assertDontSee('Cari berdasarkan nama usaha, produk, jasa, kategori, deskripsi, atau lokasi RW.');
+
+        $this->get(route('categories.show', 'kuliner'))
+            ->assertOk()
+            ->assertSee('<h1 class="sr-only">Kategori Kuliner</h1>', false)
+            ->assertDontSee('Temukan UMKM Cimuning');
     }
 
     public function test_public_routes_render_after_accessibility_polish(): void
