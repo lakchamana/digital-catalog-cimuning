@@ -2,11 +2,15 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Resources\ModerationActions\ModerationActionResource;
+use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Filament\Resources\Products\ProductResource;
-use App\Filament\Resources\UmkmSubmissions\UmkmSubmissionResource;
 use App\Filament\Resources\Umkms\Pages\EditUmkm;
 use App\Filament\Resources\Umkms\UmkmResource;
+use App\Filament\Resources\UmkmSubmissions\UmkmSubmissionResource;
+use App\Filament\Widgets\ProductModerationQueue;
 use App\Models\Category;
+use App\Models\ModerationAction;
 use App\Models\Product;
 use App\Models\Umkm;
 use App\Models\User;
@@ -16,6 +20,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 
 class ProfessionalUmkmVerificationTest extends TestCase
@@ -170,8 +175,149 @@ class ProfessionalUmkmVerificationTest extends TestCase
         $this->get(route('home'))->assertOk()->assertDontSee($product->name);
         $this->get(route('umkm.show', $umkm->slug))->assertOk()->assertDontSee($product->name);
 
+        ContentModeration::requestProductReview(
+            $product,
+            $owner,
+            'Foto dan deskripsi produk sudah diperbaiki sesuai catatan admin.',
+        );
+        $this->assertNotNull($product->refresh()->moderation_review_requested_at);
+
         ContentModeration::unblockProduct($product, $admin, 'Perbaikan produk sudah ditinjau dan dapat ditampilkan kembali.');
         $this->assertFalse($product->refresh()->is_admin_blocked);
+        $this->assertNull($product->moderation_review_requested_at);
+        $this->assertNull($product->moderation_review_note);
+        $this->assertDatabaseHas('moderation_actions', [
+            'subject_type' => Product::class,
+            'subject_id' => $product->id,
+            'action' => 'unblocked',
+        ]);
+        $this->assertTrue($owner->notifications()->get()
+            ->contains(fn ($notification): bool => $notification->data['title'] === 'Produk dapat ditampilkan kembali'));
+        $this->get(route('products.index'))->assertOk()->assertSee($product->name);
+    }
+
+    public function test_owner_can_request_product_review_and_admin_can_reject_it(): void
+    {
+        [$owner, $admin, $umkm] = $this->peopleAndUmkm('verified', true);
+        $product = $this->product($umkm);
+        ContentModeration::blockProduct($product, $admin, 'Deskripsi produk belum sesuai informasi yang ditampilkan.');
+        $admin->notifications()->delete();
+
+        ContentModeration::requestProductReview(
+            $product,
+            $owner,
+            'Deskripsi dan gambar produk sudah diperbaiki sesuai arahan admin.',
+        );
+
+        $this->assertNotNull($product->refresh()->moderation_review_requested_at);
+        $this->assertSame('Deskripsi dan gambar produk sudah diperbaiki sesuai arahan admin.', $product->moderation_review_note);
+        $this->assertDatabaseHas('moderation_actions', [
+            'subject_type' => Product::class,
+            'subject_id' => $product->id,
+            'actor_id' => $owner->id,
+            'action' => 'review_requested',
+        ]);
+        $this->assertSame('Produk meminta peninjauan ulang', $admin->notifications()->first()?->data['title']);
+        $this->get(route('products.index'))->assertOk()->assertDontSee($product->name);
+        Livewire::actingAs($admin)
+            ->test(ProductModerationQueue::class)
+            ->assertSee('Produk menunggu peninjauan ulang')
+            ->assertCanSeeTableRecords([$product]);
+        $this->actingAs($admin)
+            ->get(ProductResource::getUrl('view', ['record' => $product]))
+            ->assertOk()
+            ->assertSee('Tolak peninjauan')
+            ->assertSee('Setujui &amp; aktifkan kembali', escape: false);
+
+        ContentModeration::rejectProductReview(
+            $product,
+            $admin,
+            'Foto produk masih belum jelas dan perlu diunggah ulang.',
+        );
+
+        $this->assertTrue($product->refresh()->is_admin_blocked);
+        $this->assertNull($product->moderation_review_requested_at);
+        $this->assertNull($product->moderation_review_note);
+        $this->assertSame('Foto produk masih belum jelas dan perlu diunggah ulang.', $product->admin_block_reason);
+        $this->assertTrue($owner->notifications()->get()
+            ->contains(fn ($notification): bool => $notification->data['title'] === 'Peninjauan produk belum disetujui'));
+    }
+
+    public function test_product_review_request_rejects_invalid_owner_state_and_duplicates(): void
+    {
+        [$owner, $admin, $umkm] = $this->peopleAndUmkm('verified', true);
+        $product = $this->product($umkm);
+
+        try {
+            ContentModeration::requestProductReview($product, $owner, 'Produk sudah diperbaiki dengan lengkap.');
+            $this->fail('Produk yang tidak diblokir seharusnya ditolak.');
+        } catch (ValidationException) {
+            $this->assertNull($product->refresh()->moderation_review_requested_at);
+        }
+
+        ContentModeration::blockProduct($product, $admin, 'Konten produk perlu diperbaiki sebelum tampil kembali.');
+
+        try {
+            ContentModeration::requestProductReview($product, $owner, 'pendek');
+            $this->fail('Catatan pendek seharusnya ditolak.');
+        } catch (ValidationException) {
+            $this->assertNull($product->refresh()->moderation_review_requested_at);
+        }
+
+        $otherOwner = User::query()->create([
+            'name' => 'Owner Lain',
+            'email' => 'owner-lain-review@example.test',
+            'password' => 'password',
+            'role' => 'umkm_owner',
+        ]);
+
+        $this->expectException(HttpException::class);
+        ContentModeration::requestProductReview($product, $otherOwner, 'Saya mencoba mengajukan produk milik orang lain.');
+    }
+
+    public function test_duplicate_product_review_request_is_rejected(): void
+    {
+        [$owner, $admin, $umkm] = $this->peopleAndUmkm('verified', true);
+        $product = $this->product($umkm);
+        ContentModeration::blockProduct($product, $admin, 'Konten produk perlu diperbaiki sebelum tampil kembali.');
+        ContentModeration::requestProductReview($product, $owner, 'Produk sudah diperbaiki sesuai arahan pertama admin.');
+
+        $this->expectException(ValidationException::class);
+        ContentModeration::requestProductReview($product, $owner, 'Permintaan kedua tidak boleh membuat antrean ganda.');
+    }
+
+    public function test_owner_form_cannot_modify_product_moderation_state(): void
+    {
+        [$owner, $admin, $umkm] = $this->peopleAndUmkm('verified', true);
+        $product = $this->product($umkm);
+        ContentModeration::blockProduct($product, $admin, 'Konten produk perlu diperbaiki sebelum tampil kembali.');
+
+        Livewire::actingAs($owner)
+            ->test(EditProduct::class, ['record' => $product->getRouteKey()])
+            ->assertFormFieldDoesNotExist('is_admin_blocked')
+            ->assertFormFieldDoesNotExist('admin_block_reason')
+            ->assertFormFieldDoesNotExist('moderation_review_requested_at');
+    }
+
+    public function test_moderation_audit_resource_is_read_only_and_admin_only(): void
+    {
+        [$owner, $admin, $umkm] = $this->peopleAndUmkm('verified', true);
+        $product = $this->product($umkm);
+        ContentModeration::blockProduct($product, $admin, 'Produk diblokir untuk menguji halaman audit moderasi.');
+        $action = $product->moderationActions()->firstOrFail();
+
+        $this->actingAs($admin)
+            ->get(ModerationActionResource::getUrl('index'))
+            ->assertOk()
+            ->assertSee('Log Moderasi');
+        $this->get(ModerationActionResource::getUrl('view', ['record' => $action]))
+            ->assertOk()
+            ->assertSee('Catatan ini bersifat read-only');
+
+        $this->assertTrue(Gate::forUser($owner)->denies('viewAny', ModerationAction::class));
+        $this->assertFalse(ModerationActionResource::canCreate());
+        $this->assertFalse(ModerationActionResource::canEdit($action));
+        $this->assertFalse(ModerationActionResource::canDelete($action));
     }
 
     public function test_featured_curation_is_separate_and_audited(): void

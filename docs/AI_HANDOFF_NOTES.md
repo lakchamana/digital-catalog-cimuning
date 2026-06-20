@@ -159,6 +159,10 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Dashboard admin memiliki widget `UMKM perlu ditinjau` berbasis submission pending.
 - Dashboard owner memiliki widget status UMKM miliknya.
 - Test verifikasi profesional menjaga draft publik, audit reviewer, alasan revisi/penolakan, policy read-only admin, kurasi featured, dan blokir produk.
+- Owner produk terblokir dapat mengajukan peninjauan ulang satu kali dengan catatan perbaikan wajib; permintaan masuk ke antrean dan notification bell admin.
+- Admin dapat membuka blokir atau menolak permintaan review dengan alasan wajib tanpa mengubah konten owner; keputusan membersihkan state request dan menotifikasi owner.
+- Resource admin read-only `Log Moderasi` mencatat featured, blokir, permintaan review, penolakan review, dan pembukaan blokir dengan filter operasional.
+- Produk yang diblokir tetap dikecualikan dari seluruh query publik sampai admin benar-benar membuka blokir.
 - CTA WhatsApp dan Maps pada detail, sticky mobile, product card, listing, dan homepage sekarang memakai URL langsung tanpa pencatatan database.
 - Dashboard Filament tidak lagi memiliki statistik atau aktivitas tracking kontak.
 - Tabel `lead_events` dihapus melalui migration production-safe; route `/leads/...` dan route QR tracking juga sudah dihapus.
@@ -190,15 +194,8 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 
 ## Next Steps
 
-1. Uji manual `/admin/register` di browser asli dengan autofill aktif untuk memastikan CAPTCHA tokenized tidak gagal palsu.
-2. Uji manual filter `/produk` untuk kategori produk, fallback kategori UMKM, harga, sort, pagination, dan reset query.
-3. Uji manual `/admin` di browser dengan `admin@cimuning.test` / `password` dan owner dummy / `password`.
-4. Uji manual homepage mobile/desktop untuk memastikan carousel terasa natural, tombol rapi, dan kategori tidak terlalu padat.
-5. Lanjutkan validasi copy setelah uji manual mobile.
-6. Pertimbangkan template poster/stiker QR setelah kebutuhan desain cetak final tersedia.
-7. Uji manual upload gambar di Railway/Cloudinary untuk memastikan URL yang tersimpan tampil di public card dan tabel Filament.
-8. Pertimbangkan email notification dan password reset flow setelah konfigurasi mail siap.
-9. Tambahkan export data UMKM untuk admin bila sudah dibutuhkan operasional.
-10. Uji manual wizard UMKM owner di perangkat mobile, terutama tombol "Gunakan lokasi saya" dan "Buka Google Maps".
-11. Pertimbangkan dashboard tutorial khusus owner jika wizard Filament masih terasa membingungkan untuk pengguna awam.
-12. Uji manual production Railway setelah setiap perubahan besar: homepage, `/produk`, `/umkm`, `/admin`, Livewire JS, Filament asset, upload Cloudinary, dan mixed-content console.
+1. Uji manual alur admin/owner di perangkat nyata: blokir produk, perbaiki sebagai owner, ajukan review, lalu buka blokir atau tolak sebagai admin.
+2. Uji manual upload gambar di Railway/Cloudinary untuk memastikan URL tersimpan dan tampil di public card serta tabel Filament.
+3. Siapkan email operasional dan password reset setelah domain serta konfigurasi mail tersedia.
+4. Tetapkan backup database Railway, domain production, monitoring log/error, dan prosedur rotasi secret.
+5. Pertimbangkan export data UMKM hanya ketika benar-benar dibutuhkan operasional.

@@ -133,6 +133,19 @@
 5. Produk tampil di detail UMKM dan listing produk jika aktif.
 6. Jika gambar utama kosong, tampilan publik memakai foto galeri pertama sebagai fallback.
 7. Admin tidak mengedit produk owner, tetapi dapat memblokir produk bermasalah dengan alasan dan audit; owner tidak dapat membuka blokir sendiri.
+8. Setelah memperbaiki produk terblokir, owner memilih `Ajukan Peninjauan Ulang` dan wajib menjelaskan perbaikannya.
+9. Sistem mencegah permintaan ganda, mencatat permintaan ke log moderasi, dan memberi notifikasi kepada admin.
+10. Produk tetap tersembunyi dari homepage, listing produk, dan detail UMKM selama menunggu keputusan.
+11. Admin meninjau produk secara read-only lalu membuka blokir atau menolak permintaan dengan alasan wajib.
+12. Keputusan membersihkan status permintaan, dicatat dalam audit, dan dikirim kepada owner melalui notification bell.
+
+## Flow Audit Moderasi Admin
+
+1. Admin membuka menu `Log Moderasi` di panel `/admin`.
+2. Log menampilkan kurasi featured, blokir produk, permintaan review owner, penolakan review, dan pembukaan blokir.
+3. Admin dapat menyaring log berdasarkan aksi, aktor, jenis konten, dan rentang waktu.
+4. Log bersifat read-only dan tidak dapat dibuat, diubah, atau dihapus dari panel.
+5. Owner tidak dapat membuka resource audit dan tidak dapat mengubah field moderasi secara langsung.
 
 ## Flow Kontak WhatsApp/Maps
 

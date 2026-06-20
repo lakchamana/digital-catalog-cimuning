@@ -238,6 +238,10 @@ Variabel yang harus diset di Railway dashboard (tab Variables pada service Larav
 
 ## Catatan Penting untuk AI Berikutnya
 
+### Update Moderasi Operasional - 20 Juni 2026
+
+Produk terblokir kini memiliki state permintaan peninjauan ulang. Owner wajib mengirim catatan perbaikan, permintaan ganda ditolak, dan admin menerima antrean serta notifikasi di Filament. Admin dapat membuka blokir atau menolak review dengan alasan wajib; kedua keputusan dicatat pada `moderation_actions` dan dikirim kepada owner. Resource `Log Moderasi` bersifat read-only dan hanya dapat diakses admin. Migration baru menambahkan `moderation_review_requested_at` dan `moderation_review_note` ke tabel `products`; `docker-entrypoint.sh` menjalankannya otomatis saat deployment Railway.
+
 1. **Jangan hapus `server.php`** — tanpa file ini, Livewire dan Filament JS tidak bisa load di deployment Railway.
 2. **Jangan tambahkan `php artisan config:cache` di Dockerfile** — env vars Railway tidak tersedia saat build. Semua caching harus di `docker-entrypoint.sh`.
 3. **Jangan ubah `FILESYSTEM_DISK` kembali ke `local` atau `public` di production** — filesystem Railway ephemeral, file upload akan hilang saat redeploy.

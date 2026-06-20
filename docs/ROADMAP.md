@@ -29,6 +29,7 @@
 - QR profile UMKM dengan SVG download langsung ke profil publik.
 - Polish onboarding owner dengan RW 01-26, copy publik, dan penghapusan field analytics lama.
 - Workflow verifikasi profesional dengan submission draft, review admin read-only, audit keputusan, dan moderasi produk.
+- Peninjauan ulang produk terblokir, antrean admin, notifikasi dua arah, dan log moderasi read-only.
 
 ## Phase 3
 
@@ -39,6 +40,7 @@
 - Tutorial/dashboard guidance khusus owner bila dibutuhkan.
 - PWA ringan untuk pengalaman mobile.
 - Hardening production deployment: backup database, domain custom, observability/log monitoring, dan secret rotation.
+- Email operasional dan password reset setelah domain serta konfigurasi mail tersedia.
 
 ## Future Improvement
 

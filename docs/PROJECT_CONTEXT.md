@@ -55,6 +55,8 @@ Mayoritas user diasumsikan memakai smartphone. Semua halaman harus nyaman diguna
 
 Panel `/admin` memakai Laravel Filament 5. Public pages tetap Blade + Livewire dan tidak dipindahkan ke Filament. Owner mengelola profil serta produknya sendiri. Admin melihat data owner secara read-only dan mengambil keputusan melalui resource `Verifikasi UMKM`; koreksi konten harus dilakukan owner. Perubahan profil verified disimpan sebagai draft submission sehingga versi publik lama tetap tayang sampai perubahan disetujui.
 
+Moderasi produk mengikuti batas tanggung jawab yang sama. Admin dapat memblokir produk dengan alasan, tetapi tidak mengubah konten owner. Setelah memperbaiki produk, owner mengajukan peninjauan ulang dengan catatan; admin kemudian membuka blokir atau menolak permintaan. Produk tetap tidak tampil publik sampai blokir benar-benar dicabut. Seluruh featured dan moderasi produk tercatat pada resource admin read-only `Log Moderasi`.
+
 Form UMKM owner menggunakan wizard dengan bahasa publik yang sederhana. RW wajib dipilih dari `RW 01` sampai `RW 26`; slug dan koordinat mentah ditangani sistem, sedangkan status publik serta featured hanya berubah melalui workflow admin yang terkontrol. Aplikasi tidak menyimpan jumlah kunjungan profil atau menyediakan sort popularitas berbasis tracking.
 
 Upload gambar di lokal memakai public disk Laravel dan storage link `public/storage`. Di production Railway, upload diarahkan ke Cloudinary melalui custom filesystem disk karena filesystem Railway bersifat ephemeral. Gambar yang didukung pada tahap ini adalah JPG, PNG, dan WEBP dengan batas konservatif 2 MB.

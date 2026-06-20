@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 #[Fillable([
     'umkm_id', 'category_id', 'name', 'slug', 'description', 'price', 'image', 'is_active',
     'is_admin_blocked', 'admin_block_reason', 'admin_blocked_at', 'admin_blocked_by',
+    'moderation_review_requested_at', 'moderation_review_note',
 ])]
 class Product extends Model
 {
@@ -24,6 +25,7 @@ class Product extends Model
             'is_active' => 'boolean',
             'is_admin_blocked' => 'boolean',
             'admin_blocked_at' => 'datetime',
+            'moderation_review_requested_at' => 'datetime',
         ];
     }
 
@@ -51,5 +53,4 @@ class Product extends Model
     {
         return $this->morphMany(ModerationAction::class, 'subject')->latest();
     }
-
 }

@@ -4,10 +4,12 @@ namespace App\Providers;
 
 use App\Http\Responses\OwnerRegistrationResponse;
 use App\Models\Category;
+use App\Models\ModerationAction;
 use App\Models\Product;
 use App\Models\Umkm;
 use App\Models\UmkmSubmission;
 use App\Policies\CategoryPolicy;
+use App\Policies\ModerationActionPolicy;
 use App\Policies\ProductPolicy;
 use App\Policies\UmkmPolicy;
 use App\Policies\UmkmSubmissionPolicy;
@@ -44,11 +46,12 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Umkm::class, UmkmPolicy::class);
         Gate::policy(UmkmSubmission::class, UmkmSubmissionPolicy::class);
         Gate::policy(Product::class, ProductPolicy::class);
+        Gate::policy(ModerationAction::class, ModerationActionPolicy::class);
 
         // Daftarkan Cloudinary sebagai custom filesystem disk.
         // Aktif saat FILESYSTEM_DISK=cloudinary di environment production (Railway).
         Storage::extend('cloudinary', function () {
-            return new CloudinaryStorage();
+            return new CloudinaryStorage;
         });
     }
 }

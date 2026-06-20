@@ -6,6 +6,9 @@
 - UMKM submission snapshots for initial registrations and verified-profile changes, including reviewer, notes, checklist, and decision timestamps.
 - Dedicated read-only Filament `Verifikasi UMKM` resource with mandatory review checklist and revision/rejection reasons.
 - Audited UMKM featured curation and product blocking/unblocking actions.
+- Owner product re-review requests with mandatory improvement notes, duplicate protection, admin notifications, and owner decision feedback.
+- Admin dashboard queue for blocked products awaiting re-review.
+- Read-only admin `Log Moderasi` resource with actor, subject, action, reason, and date filters.
 - Owner dashboard feedback for the latest submission status and admin review notes.
 - Initial Laravel project scaffold.
 - Tailwind CSS theme tokens for Cimuning UMKM visual system.
@@ -91,6 +94,7 @@
 - Verified profile edits stay as pending drafts while the previously approved profile remains public.
 - Admin and owner notifications now link to their respective review and editing surfaces.
 - Public product queries exclude products blocked by admin moderation.
+- Product moderation now keeps blocked products hidden until an admin explicitly approves the re-review and clears the block.
 - Replaced default Laravel welcome route with Cimuning UMKM homepage.
 - Homepage now reads categories and featured UMKMs from the database when tables are available, with static fallback for pre-migration development.
 - `/umkm` and `/produk` now support simple database-backed keyword search when seeded data is available.

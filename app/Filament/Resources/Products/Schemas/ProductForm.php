@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use App\Models\Product;
-use App\Support\UploadDisk;
 use App\Support\UniqueSlug;
+use App\Support\UploadDisk;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
@@ -33,6 +33,14 @@ class ProductForm
                         Placeholder::make('admin_block_reason_display')
                             ->label('Alasan')
                             ->content(fn (?Product $record): string => $record?->admin_block_reason ?: '-'),
+                        Placeholder::make('moderation_review_status_display')
+                            ->label('Status peninjauan ulang')
+                            ->content(fn (?Product $record): string => $record?->moderation_review_requested_at
+                                ? 'Menunggu review admin'
+                                : 'Belum diajukan'),
+                        Placeholder::make('moderation_review_note_display')
+                            ->label('Catatan perbaikan terakhir')
+                            ->content(fn (?Product $record): string => $record?->moderation_review_note ?: '-'),
                     ]),
                 Section::make('Informasi produk')
                     ->schema([
