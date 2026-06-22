@@ -84,15 +84,17 @@ File konfigurasi Cloudinary. Membaca tiga kredensial dari environment variables:
 Custom filesystem adapter yang mengimplementasikan `Illuminate\Contracts\Filesystem\Filesystem`. Dibuat karena package `cloudinary-labs/cloudinary-laravel` tidak kompatibel dengan Laravel 13 (hanya support sampai Laravel 12). Sebagai gantinya, dipakai SDK resmi `cloudinary/cloudinary_php` (v3.1.3) dengan adapter custom ini.
 
 Method yang diimplementasikan secara fungsional:
-- `put($path, $contents)` — menerima string atau stream, upload file ke Cloudinary, lalu mengembalikan status boolean filesystem.
+- `put($path, $contents)` — meneruskan stream multipart langsung ke Cloudinary tanpa Base64, lalu mengembalikan status boolean filesystem.
 - `putFile($path, $file)` — upload dari path file lokal.
 - `putFileAs($path, $file, $name)` — upload dengan nama tetap (dipakai Filament file upload).
 - `delete($paths)` — hapus file dari Cloudinary berdasarkan public_id.
-- `url($path)` — kembalikan URL publik. Jika `$path` sudah berupa URL lengkap, kembalikan langsung.
+- `url($path)` — menghasilkan URL delivery `f_auto/q_auto` tanpa resize atau crop. URL lengkap lama tetap dikembalikan apa adanya.
 - `exists($path)` dan `missing($path)` — memeriksa asset melalui Admin API bila pemeriksaan eksplisit diperlukan.
 - `ping()` — diagnosis autentikasi read-only tanpa menampilkan secret.
 
 Livewire memakai disk lokal untuk upload sementara melalui `LIVEWIRE_TEMPORARY_FILE_UPLOAD_DISK=local`. Setelah validasi selesai, Filament memindahkan file ke disk permanen Cloudinary. Pemisahan ini penting karena temporary upload membutuhkan operasi filesystem lokal yang tidak disediakan adapter Cloudinary ringan.
+
+Transfer permanen memakai multipart stream native SDK sehingga tidak membuat salinan Base64 yang lebih besar. Cloudinary tetap menyimpan file asli; `f_auto` dan `q_auto` hanya mengoptimalkan format serta kualitas saat file dikirim ke browser. Tidak ada thumbnail, resize, crop, atau perubahan rasio otomatis.
 
 Semua upload disimpan di folder `cimuning/` di Cloudinary. Public ID dibuat dari nama file tanpa ekstensi. Aplikasi tidak lagi menyimpan data tracking klik/scan atau IP pengunjung.
 
@@ -190,7 +192,7 @@ Variabel yang harus diset di Railway dashboard (tab Variables pada service Larav
 |---|---|---|
 | `APP_NAME` | `Cimuning Digital Hub` | |
 | `APP_ENV` | `production` | Wajib agar `URL::forceScheme` aktif |
-| `APP_KEY` | `base64:kBX+65g1kKrjubzvARdQSTGCWn84gxW8W9yLpGBLB4I=` | Di-generate dengan `php artisan key:generate --show` |
+| `APP_KEY` | *(set langsung di Railway)* | Jangan simpan nilai nyata di repository |
 | `APP_DEBUG` | `false` (atau `true` saat debug) | |
 | `APP_URL` | `https://digital-catalog-cimuning-production.up.railway.app` | URL production Railway |
 | `DB_CONNECTION` | `mysql` | |

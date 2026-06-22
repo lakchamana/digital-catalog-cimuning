@@ -4,6 +4,9 @@ namespace App\Support;
 
 use Cloudinary\Api\Exception\NotFound;
 use Cloudinary\Cloudinary;
+use Cloudinary\Transformation\Format;
+use Cloudinary\Transformation\Quality;
+use GuzzleHttp\Psr7\Utils;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
@@ -46,14 +49,14 @@ class CloudinaryStorage implements Filesystem
     public function put($path, $contents, $options = []): bool|string
     {
         try {
-            $binary = $this->contentsToString($contents);
             $result = $this->client->uploadApi()->upload(
-                'data:'.$this->mimeTypeForPath((string) $path).';base64,'.base64_encode($binary),
+                $this->uploadSource($contents),
                 [
                     'public_id' => $this->publicId((string) $path),
                     'resource_type' => 'image',
                     'overwrite' => true,
                     'use_filename' => false,
+                    'filename' => basename((string) $path),
                 ],
             );
 
@@ -120,7 +123,10 @@ class CloudinaryStorage implements Filesystem
             return (string) $path;
         }
 
-        return $this->client->image($this->publicId((string) $path))->toUrl();
+        $image = $this->client->image($this->publicId((string) $path));
+        $image->format(Format::auto())->quality(Quality::auto());
+
+        return $image->toUrl();
     }
 
     public function exists($path): bool
@@ -155,11 +161,13 @@ class CloudinaryStorage implements Filesystem
         return $this->folder.'/'.$name;
     }
 
-    protected function contentsToString(mixed $contents): string
+    protected function uploadSource(mixed $contents): mixed
     {
         if (is_resource($contents)) {
-            $contents = stream_get_contents($contents);
-        } elseif ($contents instanceof Stringable) {
+            return $contents;
+        }
+
+        if ($contents instanceof Stringable) {
             $contents = (string) $contents;
         }
 
@@ -167,16 +175,7 @@ class CloudinaryStorage implements Filesystem
             throw new InvalidArgumentException('Konten upload harus berupa string atau stream yang dapat dibaca.');
         }
 
-        return $contents;
-    }
-
-    protected function mimeTypeForPath(string $path): string
-    {
-        return match (strtolower(pathinfo($path, PATHINFO_EXTENSION))) {
-            'jpg', 'jpeg' => 'image/jpeg',
-            'webp' => 'image/webp',
-            default => 'image/png',
-        };
+        return Utils::streamFor($contents);
     }
 
     public function get($path): ?string

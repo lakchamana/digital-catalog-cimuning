@@ -145,7 +145,9 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Upload logo/cover UMKM, gambar utama produk, dan galeri produk kini memakai helper disk upload sehingga mengikuti `FILESYSTEM_DISK` tanpa hardcode `public` di form Filament.
 - Temporary upload Livewire memakai disk lokal, sedangkan file final memakai Cloudinary di production; ini mencegah error stream pada endpoint upload.
 - Adapter Cloudinary menerima string/stream, public UI memakai resolver URL disk aktif, dan `media:diagnose` memeriksa konfigurasi tanpa menampilkan secret.
+- Transfer final Cloudinary memakai multipart stream tanpa Base64; delivery memakai `f_auto/q_auto` tanpa resize, crop, atau thumbnail otomatis.
 - Kredensial Cloudinary nyata tidak boleh ditulis di dokumentasi atau Git; secret lama wajib dirotasi dan nilai baru hanya disimpan di Railway.
+- Nilai `APP_KEY` production lama pernah tercatat di dokumentasi dan sudah diganti placeholder; jadwalkan rotasi terpisah dengan memahami dampaknya pada session/data terenkripsi.
 - Galeri foto produk sudah bisa dikelola dari Filament Product form dengan maksimal 6 gambar JPG/PNG/WEBP masing-masing 2 MB.
 - Product card publik memakai prioritas gambar utama, lalu gambar galeri pertama, lalu fallback visual, serta menampilkan badge tambahan foto jika galeri berisi lebih dari satu gambar.
 - `php artisan test` sudah hijau dan berisi test tambahan untuk akses panel dan scoping owner.

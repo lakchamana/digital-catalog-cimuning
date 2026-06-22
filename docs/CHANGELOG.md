@@ -91,6 +91,8 @@
 - Feature tests for the hidden registration honeypot, RW validation, owner/admin field visibility, removed UMKM analytics column, and seeder compatibility.
 
 ### Changed
+- Cloudinary upload transfer now uses native multipart streams instead of Base64 data URIs.
+- Cloudinary delivery URLs now use `f_auto` and `q_auto` without automatic resizing, cropping, or thumbnails.
 - Livewire temporary uploads now use the local disk before Filament stores validated media permanently on Cloudinary.
 - Public media URLs now resolve through the configured upload disk instead of assuming local `/storage` paths.
 - Admin access to owner UMKM and product records is now read-only; content correction remains the owner's responsibility.
@@ -162,6 +164,7 @@
 - Obsolete partial contact-tracking removal report and its documentation references.
 
 ### Fixed
+- Media transfer no longer creates a temporary Base64 copy with roughly 33% encoding overhead.
 - Cloudinary uploads now accept resource streams produced by Livewire and return filesystem-compatible success values.
 - Existing Cloudinary media no longer disappears from Filament forms because upload fields skip repeated remote metadata checks.
 - Sitemap XML declaration now compiles safely during production Blade view caching.

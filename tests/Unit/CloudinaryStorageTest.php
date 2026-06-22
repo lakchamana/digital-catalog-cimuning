@@ -11,6 +11,7 @@ use Cloudinary\Api\Upload\UploadApi;
 use Cloudinary\Cloudinary;
 use Illuminate\Support\Facades\Storage;
 use Mockery;
+use Psr\Http\Message\StreamInterface;
 use Tests\TestCase;
 
 class CloudinaryStorageTest extends TestCase
@@ -20,9 +21,11 @@ class CloudinaryStorageTest extends TestCase
         $uploadApi = Mockery::mock(UploadApi::class);
         $uploadApi->shouldReceive('upload')
             ->once()
-            ->withArgs(fn (string $data, array $options): bool => str_contains($data, base64_encode('image-binary'))
+            ->withArgs(fn (mixed $source, array $options): bool => is_resource($source)
+                && stream_get_contents($source) === 'image-binary'
                 && $options['public_id'] === 'cimuning/photo'
-                && $options['resource_type'] === 'image')
+                && $options['resource_type'] === 'image'
+                && $options['filename'] === 'photo.jpg')
             ->andReturn(new ApiResponse(['secure_url' => 'https://res.cloudinary.test/photo.jpg'], []));
         $client = Mockery::mock(Cloudinary::class);
         $client->shouldReceive('uploadApi')->once()->andReturn($uploadApi);
@@ -36,7 +39,23 @@ class CloudinaryStorageTest extends TestCase
         fclose($stream);
     }
 
-    public function test_it_uploads_string_contents_and_returns_false_when_cloudinary_fails(): void
+    public function test_it_wraps_string_contents_as_a_stream_without_base64(): void
+    {
+        $uploadApi = Mockery::mock(UploadApi::class);
+        $uploadApi->shouldReceive('upload')
+            ->once()
+            ->withArgs(fn (mixed $source, array $options): bool => $source instanceof StreamInterface
+                && (string) $source === 'image-binary'
+                && ! str_contains((string) $source, 'data:image')
+                && $options['public_id'] === 'cimuning/photo')
+            ->andReturn(new ApiResponse(['secure_url' => 'https://res.cloudinary.test/photo.png'], []));
+        $client = Mockery::mock(Cloudinary::class);
+        $client->shouldReceive('uploadApi')->once()->andReturn($uploadApi);
+
+        $this->assertTrue((new CloudinaryStorage($client, 'cimuning'))->put('products/photo.png', 'image-binary'));
+    }
+
+    public function test_it_returns_false_when_cloudinary_upload_fails(): void
     {
         $uploadApi = Mockery::mock(UploadApi::class);
         $uploadApi->shouldReceive('upload')->once()->andThrow(new \RuntimeException('Upload failed'));
@@ -99,7 +118,11 @@ class CloudinaryStorageTest extends TestCase
         $url = MediaUrl::get('products/photo.webp');
 
         $this->assertStringStartsWith('https://res.cloudinary.com/demo-cloud/image/upload/', $url);
+        $this->assertStringContainsString('/f_auto/q_auto/', $url);
         $this->assertStringContainsString('cimuning/photo', $url);
+        $this->assertStringNotContainsString('/c_', $url);
+        $this->assertStringNotContainsString('/w_', $url);
+        $this->assertStringNotContainsString('/h_', $url);
     }
 
     public function test_livewire_temporary_uploads_default_to_local_disk(): void

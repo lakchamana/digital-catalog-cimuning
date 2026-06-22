@@ -61,6 +61,8 @@ Form UMKM owner menggunakan wizard dengan bahasa publik yang sederhana. RW wajib
 
 Upload gambar di lokal memakai public disk Laravel dan storage link `public/storage`. Di production Railway, Livewire menyimpan file sementara pada disk lokal container lalu Filament memindahkan hasil validasi ke Cloudinary melalui custom filesystem disk. URL media publik selalu dibentuk dari disk aktif. Gambar yang didukung adalah JPG, PNG, dan WEBP dengan batas 2 MB.
 
+Transfer final ke Cloudinary menggunakan multipart stream tanpa Base64. Delivery Cloudinary memakai format dan kualitas otomatis (`f_auto/q_auto`) tanpa mengubah ukuran, crop, atau rasio gambar.
+
 ## Deployment
 
 Project sudah disiapkan untuk testing internal di Railway pada URL production `https://digital-catalog-cimuning-production.up.railway.app/`. Railway menjalankan container Docker berbasis PHP 8.3/FrankenPHP, build Vite dengan Node.js 22, memakai Railway MySQL Plugin, dan menyimpan upload UMKM/produk ke Cloudinary.
