@@ -4,8 +4,8 @@ namespace App\Filament\Resources\Umkms\Schemas;
 
 use App\Models\Umkm;
 use App\Support\OwnerFormHelper;
-use App\Support\UploadDisk;
 use App\Support\UniqueSlug;
+use App\Support\UploadDisk;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -206,6 +206,7 @@ class UmkmForm
                         ->disk(UploadDisk::name())
                         ->directory('umkms/logos')
                         ->visibility('public')
+                        ->fetchFileInformation(false)
                         ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                         ->maxSize(2048)
                         ->imagePreviewHeight('120')
@@ -218,6 +219,7 @@ class UmkmForm
                         ->disk(UploadDisk::name())
                         ->directory('umkms/covers')
                         ->visibility('public')
+                        ->fetchFileInformation(false)
                         ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                         ->maxSize(2048)
                         ->imagePreviewHeight('140')

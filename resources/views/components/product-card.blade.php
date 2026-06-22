@@ -2,7 +2,7 @@
 
 @php
     $imagePath = $product->image ?: $product->images->first()?->path;
-    $imageUrl = $imagePath ? (\Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://']) ? $imagePath : asset('storage/'.$imagePath)) : null;
+    $imageUrl = \App\Support\MediaUrl::get($imagePath);
     $galleryCount = $product->relationLoaded('images') ? $product->images->count() : $product->images()->count();
     $whatsappUrl = $product->umkm?->whatsapp_url
         ? $product->umkm->whatsapp_url.'?text='.urlencode("Halo, saya ingin bertanya tentang {$product->name}.")

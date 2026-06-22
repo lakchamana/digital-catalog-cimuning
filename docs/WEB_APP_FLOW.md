@@ -129,7 +129,7 @@
 1. Owner membuka dashboard products.
 2. Owner menambah nama, kategori, deskripsi, harga opsional, gambar utama, galeri foto opsional, dan status aktif.
 3. Sistem memvalidasi data dan upload gambar JPG/PNG/WEBP maksimal 2 MB per file.
-4. Upload mengikuti disk aktif: public storage di lokal atau Cloudinary saat production memakai `FILESYSTEM_DISK=cloudinary`.
+4. Livewire menyimpan upload sementara pada disk lokal; setelah validasi, file final masuk ke public storage lokal atau Cloudinary sesuai `FILESYSTEM_DISK`.
 5. Produk tampil di detail UMKM dan listing produk jika aktif.
 6. Jika gambar utama kosong, tampilan publik memakai foto galeri pertama sebagai fallback.
 7. Admin tidak mengedit produk owner, tetapi dapat memblokir produk bermasalah dengan alasan dan audit; owner tidak dapat membuka blokir sendiri.
@@ -179,5 +179,5 @@
 5. `server.php` menjadi router PHP built-in server: file statis yang ada diserve langsung, sedangkan request asset/route Livewire dan Filament yang bukan file fisik diteruskan ke Laravel.
 6. Railway reverse proxy menerima HTTPS dari browser dan meneruskan ke container; Laravel memaksa URL HTTPS dan mempercayai proxy agar asset tidak mixed content.
 7. Database production testing memakai Railway MySQL.
-8. Upload logo, cover, dan foto produk memakai Cloudinary saat `FILESYSTEM_DISK=cloudinary`.
+8. Upload logo, cover, dan foto produk memakai temporary disk lokal lalu Cloudinary sebagai storage permanen saat `FILESYSTEM_DISK=cloudinary`.
 9. Local development tetap bisa berjalan dengan XAMPP/MySQL lokal dan disk lokal/public sesuai `.env`.

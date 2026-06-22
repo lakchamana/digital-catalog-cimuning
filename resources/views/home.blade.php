@@ -128,13 +128,7 @@
     $imageUrl = function ($product): ?string {
         $imagePath = $product->image ?: $product->images->first()?->path;
 
-        if (! $imagePath) {
-            return null;
-        }
-
-        return \Illuminate\Support\Str::startsWith($imagePath, ['http://', 'https://'])
-            ? $imagePath
-            : asset('storage/'.$imagePath);
+        return \App\Support\MediaUrl::get($imagePath);
     };
 @endphp
 

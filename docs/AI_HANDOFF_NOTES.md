@@ -143,6 +143,9 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Owner registration kini memakai CAPTCHA tokenized dan honeypot yang lebih tahan autofill untuk mengurangi kegagalan palsu saat jawaban hitungan benar.
 - Upload logo/cover UMKM dan gambar produk memakai public disk melalui `public/storage` di lokal, dan Cloudinary saat `FILESYSTEM_DISK=cloudinary` di production.
 - Upload logo/cover UMKM, gambar utama produk, dan galeri produk kini memakai helper disk upload sehingga mengikuti `FILESYSTEM_DISK` tanpa hardcode `public` di form Filament.
+- Temporary upload Livewire memakai disk lokal, sedangkan file final memakai Cloudinary di production; ini mencegah error stream pada endpoint upload.
+- Adapter Cloudinary menerima string/stream, public UI memakai resolver URL disk aktif, dan `media:diagnose` memeriksa konfigurasi tanpa menampilkan secret.
+- Kredensial Cloudinary nyata tidak boleh ditulis di dokumentasi atau Git; secret lama wajib dirotasi dan nilai baru hanya disimpan di Railway.
 - Galeri foto produk sudah bisa dikelola dari Filament Product form dengan maksimal 6 gambar JPG/PNG/WEBP masing-masing 2 MB.
 - Product card publik memakai prioritas gambar utama, lalu gambar galeri pertama, lalu fallback visual, serta menampilkan badge tambahan foto jika galeri berisi lebih dari satu gambar.
 - `php artisan test` sudah hijau dan berisi test tambahan untuk akses panel dan scoping owner.
@@ -195,7 +198,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 ## Next Steps
 
 1. Uji manual alur admin/owner di perangkat nyata: blokir produk, perbaiki sebagai owner, ajukan review, lalu buka blokir atau tolak sebagai admin.
-2. Uji manual upload gambar di Railway/Cloudinary untuk memastikan URL tersimpan dan tampil di public card serta tabel Filament.
+2. Rotasi secret Cloudinary, perbarui Railway Variables, jalankan `php artisan media:diagnose`, lalu uji upload logo, cover, gambar utama, dan galeri.
 3. Siapkan email operasional dan password reset setelah domain serta konfigurasi mail tersedia.
 4. Tetapkan backup database Railway, domain production, monitoring log/error, dan prosedur rotasi secret.
 5. Pertimbangkan export data UMKM hanya ketika benar-benar dibutuhkan operasional.

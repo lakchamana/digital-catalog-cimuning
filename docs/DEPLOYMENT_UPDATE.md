@@ -84,13 +84,15 @@ File konfigurasi Cloudinary. Membaca tiga kredensial dari environment variables:
 Custom filesystem adapter yang mengimplementasikan `Illuminate\Contracts\Filesystem\Filesystem`. Dibuat karena package `cloudinary-labs/cloudinary-laravel` tidak kompatibel dengan Laravel 13 (hanya support sampai Laravel 12). Sebagai gantinya, dipakai SDK resmi `cloudinary/cloudinary_php` (v3.1.3) dengan adapter custom ini.
 
 Method yang diimplementasikan secara fungsional:
-- `put($path, $contents)` — upload file ke Cloudinary sebagai base64, return secure URL.
+- `put($path, $contents)` — menerima string atau stream, upload file ke Cloudinary, lalu mengembalikan status boolean filesystem.
 - `putFile($path, $file)` — upload dari path file lokal.
 - `putFileAs($path, $file, $name)` — upload dengan nama tetap (dipakai Filament file upload).
 - `delete($paths)` — hapus file dari Cloudinary berdasarkan public_id.
-- `url($path)` — kembalikan URL publik. Jika `$path` sudah berupa URL lengkap (hasil upload), kembalikan langsung.
+- `url($path)` — kembalikan URL publik. Jika `$path` sudah berupa URL lengkap, kembalikan langsung.
+- `exists($path)` dan `missing($path)` — memeriksa asset melalui Admin API bila pemeriksaan eksplisit diperlukan.
+- `ping()` — diagnosis autentikasi read-only tanpa menampilkan secret.
 
-Method lain dikembalikan dengan nilai default aman (empty array, false, null) karena tidak dipakai oleh fitur upload project ini.
+Livewire memakai disk lokal untuk upload sementara melalui `LIVEWIRE_TEMPORARY_FILE_UPLOAD_DISK=local`. Setelah validasi selesai, Filament memindahkan file ke disk permanen Cloudinary. Pemisahan ini penting karena temporary upload membutuhkan operasi filesystem lokal yang tidak disediakan adapter Cloudinary ringan.
 
 Semua upload disimpan di folder `cimuning/` di Cloudinary. Public ID dibuat dari nama file tanpa ekstensi. Aplikasi tidak lagi menyimpan data tracking klik/scan atau IP pengunjung.
 
@@ -165,6 +167,7 @@ Diperbarui menjadi template production-ready. Perubahan utama:
 - `APP_ENV=production`, `APP_DEBUG=false`.
 - `SESSION_DRIVER=database` dan `CACHE_STORE=database` (agar tidak bergantung filesystem ephemeral Railway). Catatan: saat testing awal, ini bisa diset ke `file` agar lebih simpel.
 - `FILESYSTEM_DISK=cloudinary` dengan variable `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, `CLOUDINARY_FOLDER`.
+- `LIVEWIRE_TEMPORARY_FILE_UPLOAD_DISK=local` agar endpoint temporary upload tidak memakai Cloudinary.
 - Placeholder untuk `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` dari Railway MySQL plugin.
 
 ### 5. `composer.json` dan `composer.lock`
@@ -200,14 +203,20 @@ Variabel yang harus diset di Railway dashboard (tab Variables pada service Larav
 | `CACHE_STORE` | `file` | Sama seperti session |
 | `QUEUE_CONNECTION` | `sync` | |
 | `FILESYSTEM_DISK` | `cloudinary` | Mengarahkan upload ke Cloudinary |
-| `CLOUDINARY_CLOUD_NAME` | `dwylcln9i` | |
-| `CLOUDINARY_API_KEY` | `367363587628327` | |
-| `CLOUDINARY_API_SECRET` | `QmsUlYbEd0IjX20-tRyp7-0Oglk` | |
+| `LIVEWIRE_TEMPORARY_FILE_UPLOAD_DISK` | `local` | Penyimpanan sementara selama proses upload |
+| `CLOUDINARY_CLOUD_NAME` | *(set langsung di Railway)* | Jangan simpan nilai nyata di repository |
+| `CLOUDINARY_API_KEY` | *(set langsung di Railway)* | Jangan simpan nilai nyata di repository |
+| `CLOUDINARY_API_SECRET` | *(set langsung di Railway)* | Wajib dirotasi setelah pernah terekspos |
 | `CLOUDINARY_FOLDER` | `cimuning` | |
 
 ---
 
 ## Masalah yang Ditemukan dan Diselesaikan
+
+### 0. Upload media gagal sebelum form tersimpan
+
+**Masalah**: Livewire mengikuti default `FILESYSTEM_DISK=cloudinary` untuk temporary upload. Adapter lama juga menjalankan `base64_encode()` langsung pada stream, sehingga upload menghasilkan pesan `failed to upload` dan tidak pernah membuat asset di folder Cloudinary.
+**Solusi**: temporary upload dipisahkan ke disk lokal, adapter menerima stream dengan benar, dan URL public dibentuk dari disk media aktif. Jalankan `php artisan media:diagnose` untuk memeriksa konfigurasi tanpa mencetak nilai secret.
 
 ### 1. Package Cloudinary Laravel tidak kompatibel
 

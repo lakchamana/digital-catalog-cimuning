@@ -1,16 +1,6 @@
 @php
-    $imageUrl = function (?string $path): ?string {
-        if (! $path) {
-            return null;
-        }
-
-        return \Illuminate\Support\Str::startsWith($path, ['http://', 'https://'])
-            ? $path
-            : asset('storage/'.$path);
-    };
-
-    $coverUrl = $imageUrl($umkm->cover_image);
-    $logoUrl = $imageUrl($umkm->logo_image);
+    $coverUrl = \App\Support\MediaUrl::get($umkm->cover_image);
+    $logoUrl = \App\Support\MediaUrl::get($umkm->logo_image);
     $socialImage = $coverUrl ?: ($logoUrl ?: asset('assets/brand/logo-cimuning.png'));
     $hasCoordinates = filled($umkm->latitude) && filled($umkm->longitude);
     $mapQuery = $hasCoordinates

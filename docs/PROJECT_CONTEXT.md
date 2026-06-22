@@ -59,7 +59,7 @@ Moderasi produk mengikuti batas tanggung jawab yang sama. Admin dapat memblokir 
 
 Form UMKM owner menggunakan wizard dengan bahasa publik yang sederhana. RW wajib dipilih dari `RW 01` sampai `RW 26`; slug dan koordinat mentah ditangani sistem, sedangkan status publik serta featured hanya berubah melalui workflow admin yang terkontrol. Aplikasi tidak menyimpan jumlah kunjungan profil atau menyediakan sort popularitas berbasis tracking.
 
-Upload gambar di lokal memakai public disk Laravel dan storage link `public/storage`. Di production Railway, upload diarahkan ke Cloudinary melalui custom filesystem disk karena filesystem Railway bersifat ephemeral. Gambar yang didukung pada tahap ini adalah JPG, PNG, dan WEBP dengan batas konservatif 2 MB.
+Upload gambar di lokal memakai public disk Laravel dan storage link `public/storage`. Di production Railway, Livewire menyimpan file sementara pada disk lokal container lalu Filament memindahkan hasil validasi ke Cloudinary melalui custom filesystem disk. URL media publik selalu dibentuk dari disk aktif. Gambar yang didukung adalah JPG, PNG, dan WEBP dengan batas 2 MB.
 
 ## Deployment
 

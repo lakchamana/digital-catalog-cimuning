@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+- Read-only `media:diagnose` command for checking permanent/temporary disks and Cloudinary authentication without exposing secrets.
 - UMKM submission snapshots for initial registrations and verified-profile changes, including reviewer, notes, checklist, and decision timestamps.
 - Dedicated read-only Filament `Verifikasi UMKM` resource with mandatory review checklist and revision/rejection reasons.
 - Audited UMKM featured curation and product blocking/unblocking actions.
@@ -90,6 +91,8 @@
 - Feature tests for the hidden registration honeypot, RW validation, owner/admin field visibility, removed UMKM analytics column, and seeder compatibility.
 
 ### Changed
+- Livewire temporary uploads now use the local disk before Filament stores validated media permanently on Cloudinary.
+- Public media URLs now resolve through the configured upload disk instead of assuming local `/storage` paths.
 - Admin access to owner UMKM and product records is now read-only; content correction remains the owner's responsibility.
 - Verified profile edits stay as pending drafts while the previously approved profile remains public.
 - Admin and owner notifications now link to their respective review and editing surfaces.
@@ -159,6 +162,8 @@
 - Obsolete partial contact-tracking removal report and its documentation references.
 
 ### Fixed
+- Cloudinary uploads now accept resource streams produced by Livewire and return filesystem-compatible success values.
+- Existing Cloudinary media no longer disappears from Filament forms because upload fields skip repeated remote metadata checks.
 - Sitemap XML declaration now compiles safely during production Blade view caching.
 - PHPUnit dev dependency is now installed successfully after PHP `zip` became available, so `php artisan test` can run.
 - Homepage carousel no longer jumps the page back up while users are scrolling through catalog sections.
