@@ -131,14 +131,16 @@
 3. Sistem memvalidasi data dan upload gambar JPG/PNG/WEBP maksimal 2 MB per file.
 4. Livewire menyimpan upload sementara pada disk lokal; setelah validasi, file final masuk ke public storage lokal atau Cloudinary sesuai `FILESYSTEM_DISK`.
 5. Transfer ke Cloudinary memakai stream multipart; browser menerima URL `f_auto/q_auto` tanpa thumbnail, resize, atau crop otomatis.
-6. Produk tampil di detail UMKM dan listing produk jika aktif.
-7. Jika gambar utama kosong, tampilan publik memakai foto galeri pertama sebagai fallback.
-8. Admin tidak mengedit produk owner, tetapi dapat memblokir produk bermasalah dengan alasan dan audit; owner tidak dapat membuka blokir sendiri.
-9. Setelah memperbaiki produk terblokir, owner memilih `Ajukan Peninjauan Ulang` dan wajib menjelaskan perbaikannya.
-10. Sistem mencegah permintaan ganda, mencatat permintaan ke log moderasi, dan memberi notifikasi kepada admin.
-11. Produk tetap tersembunyi dari homepage, listing produk, dan detail UMKM selama menunggu keputusan.
-12. Admin meninjau produk secara read-only lalu membuka blokir atau menolak permintaan dengan alasan wajib.
-13. Keputusan membersihkan status permintaan, dicatat dalam audit, dan dikirim kepada owner melalui notification bell.
+6. Endpoint temporary membatasi format, ukuran, dimensi, dan rate; adapter memeriksa ulang isi file sebelum upload.
+7. Cloudinary delivery memakai signed URL untuk kompatibilitas dengan Strict Transformations.
+8. Produk tampil di detail UMKM dan listing produk jika aktif.
+9. Jika gambar utama kosong, tampilan publik memakai foto galeri pertama sebagai fallback.
+10. Admin tidak mengedit produk owner, tetapi dapat memblokir produk bermasalah dengan alasan dan audit; owner tidak dapat membuka blokir sendiri.
+11. Setelah memperbaiki produk terblokir, owner memilih `Ajukan Peninjauan Ulang` dan wajib menjelaskan perbaikannya.
+12. Sistem mencegah permintaan ganda, mencatat permintaan ke log moderasi, dan memberi notifikasi kepada admin.
+13. Produk tetap tersembunyi dari homepage, listing produk, dan detail UMKM selama menunggu keputusan.
+14. Admin meninjau produk secara read-only lalu membuka blokir atau menolak permintaan dengan alasan wajib.
+15. Keputusan membersihkan status permintaan, dicatat dalam audit, dan dikirim kepada owner melalui notification bell.
 
 ## Flow Audit Moderasi Admin
 

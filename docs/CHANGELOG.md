@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+- Optional `media:diagnose --upload` smoke test with signed delivery verification and guaranteed cleanup.
 - Read-only `media:diagnose` command for checking permanent/temporary disks and Cloudinary authentication without exposing secrets.
 - UMKM submission snapshots for initial registrations and verified-profile changes, including reviewer, notes, checklist, and decision timestamps.
 - Dedicated read-only Filament `Verifikasi UMKM` resource with mandatory review checklist and revision/rejection reasons.
@@ -91,6 +92,8 @@
 - Feature tests for the hidden registration honeypot, RW validation, owner/admin field visibility, removed UMKM analytics column, and seeder compatibility.
 
 ### Changed
+- Cloudinary delivery URLs are signed for compatibility with Strict Transformations.
+- Livewire temporary media uploads are restricted to supported images, 2 MB, 5000×5000, and 20 requests per minute.
 - Cloudinary upload transfer now uses native multipart streams instead of Base64 data URIs.
 - Cloudinary delivery URLs now use `f_auto` and `q_auto` without automatic resizing, cropping, or thumbnails.
 - Livewire temporary uploads now use the local disk before Filament stores validated media permanently on Cloudinary.
@@ -164,6 +167,7 @@
 - Obsolete partial contact-tracking removal report and its documentation references.
 
 ### Fixed
+- Cloudinary adapter now rejects unsafe paths, spoofed MIME content, oversized files, and unreadable streams before upload.
 - Media transfer no longer creates a temporary Base64 copy with roughly 33% encoding overhead.
 - Cloudinary uploads now accept resource streams produced by Livewire and return filesystem-compatible success values.
 - Existing Cloudinary media no longer disappears from Filament forms because upload fields skip repeated remote metadata checks.

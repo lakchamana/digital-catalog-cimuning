@@ -16,13 +16,16 @@ use Tests\TestCase;
 
 class CloudinaryStorageTest extends TestCase
 {
+    private const PNG = '89504e470d0a1a0a0000000d4948445200000001000000010804000000b51c0c020000000b4944415478da63fcff1f0002eb01f569769cab0000000049454e44ae426082';
+
     public function test_it_uploads_a_readable_stream(): void
     {
+        $binary = hex2bin(self::PNG);
         $uploadApi = Mockery::mock(UploadApi::class);
         $uploadApi->shouldReceive('upload')
             ->once()
             ->withArgs(fn (mixed $source, array $options): bool => is_resource($source)
-                && stream_get_contents($source) === 'image-binary'
+                && stream_get_contents($source) === $binary
                 && $options['public_id'] === 'cimuning/photo'
                 && $options['resource_type'] === 'image'
                 && $options['filename'] === 'photo.jpg')
@@ -31,7 +34,7 @@ class CloudinaryStorageTest extends TestCase
         $client->shouldReceive('uploadApi')->once()->andReturn($uploadApi);
         $storage = new CloudinaryStorage($client, 'cimuning');
         $stream = fopen('php://temp', 'r+');
-        fwrite($stream, 'image-binary');
+        fwrite($stream, $binary);
         rewind($stream);
 
         $this->assertTrue($storage->put('products/photo.jpg', $stream));
@@ -41,18 +44,19 @@ class CloudinaryStorageTest extends TestCase
 
     public function test_it_wraps_string_contents_as_a_stream_without_base64(): void
     {
+        $binary = hex2bin(self::PNG);
         $uploadApi = Mockery::mock(UploadApi::class);
         $uploadApi->shouldReceive('upload')
             ->once()
             ->withArgs(fn (mixed $source, array $options): bool => $source instanceof StreamInterface
-                && (string) $source === 'image-binary'
+                && (string) $source === $binary
                 && ! str_contains((string) $source, 'data:image')
                 && $options['public_id'] === 'cimuning/photo')
             ->andReturn(new ApiResponse(['secure_url' => 'https://res.cloudinary.test/photo.png'], []));
         $client = Mockery::mock(Cloudinary::class);
         $client->shouldReceive('uploadApi')->once()->andReturn($uploadApi);
 
-        $this->assertTrue((new CloudinaryStorage($client, 'cimuning'))->put('products/photo.png', 'image-binary'));
+        $this->assertTrue((new CloudinaryStorage($client, 'cimuning'))->put('products/photo.png', $binary));
     }
 
     public function test_it_returns_false_when_cloudinary_upload_fails(): void
@@ -62,7 +66,22 @@ class CloudinaryStorageTest extends TestCase
         $client = Mockery::mock(Cloudinary::class);
         $client->shouldReceive('uploadApi')->once()->andReturn($uploadApi);
 
-        $this->assertFalse((new CloudinaryStorage($client, 'cimuning'))->put('products/photo.png', 'binary'));
+        $this->assertFalse((new CloudinaryStorage($client, 'cimuning'))->put('products/photo.png', hex2bin(self::PNG)));
+    }
+
+    public function test_it_rejects_unsafe_paths_mime_spoofing_oversized_and_unseekable_streams(): void
+    {
+        $client = Mockery::mock(Cloudinary::class);
+        $client->shouldNotReceive('uploadApi');
+        $storage = new CloudinaryStorage($client, 'cimuning');
+
+        $this->assertFalse($storage->put('../photo.php', hex2bin(self::PNG)));
+        $this->assertFalse($storage->put('products/photo.jpg', 'not-an-image'));
+        $this->assertFalse($storage->put('products/photo.jpg', str_repeat('a', (2 * 1024 * 1024) + 1)));
+
+        $stream = fopen('php://output', 'w');
+        $this->assertFalse($storage->put('products/photo.jpg', $stream));
+        fclose($stream);
     }
 
     public function test_it_checks_asset_existence_with_the_normalized_public_id(): void
@@ -119,6 +138,7 @@ class CloudinaryStorageTest extends TestCase
 
         $this->assertStringStartsWith('https://res.cloudinary.com/demo-cloud/image/upload/', $url);
         $this->assertStringContainsString('/f_auto/q_auto/', $url);
+        $this->assertMatchesRegularExpression('#/s--[A-Za-z0-9_-]+--/#', $url);
         $this->assertStringContainsString('cimuning/photo', $url);
         $this->assertStringNotContainsString('/c_', $url);
         $this->assertStringNotContainsString('/w_', $url);
@@ -128,5 +148,10 @@ class CloudinaryStorageTest extends TestCase
     public function test_livewire_temporary_uploads_default_to_local_disk(): void
     {
         $this->assertSame('local', config('livewire.temporary_file_upload.disk'));
+        $this->assertSame('throttle:20,1', config('livewire.temporary_file_upload.middleware'));
+        $this->assertSame(['png', 'jpg', 'jpeg', 'webp'], config('livewire.temporary_file_upload.preview_mimes'));
+        $this->assertContains('max:2048', config('livewire.temporary_file_upload.rules'));
+        $this->assertContains('mimes:jpg,jpeg,png,webp', config('livewire.temporary_file_upload.rules'));
+        $this->assertContains('dimensions:max_width=5000,max_height=5000', config('livewire.temporary_file_upload.rules'));
     }
 }

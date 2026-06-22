@@ -10,6 +10,7 @@ use GuzzleHttp\Psr7\Utils;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
+use Psr\Http\Message\StreamInterface;
 use Stringable;
 use Throwable;
 
@@ -49,8 +50,9 @@ class CloudinaryStorage implements Filesystem
     public function put($path, $contents, $options = []): bool|string
     {
         try {
+            $source = $this->validatedUploadSource((string) $path, $contents);
             $result = $this->client->uploadApi()->upload(
-                $this->uploadSource($contents),
+                $source,
                 [
                     'public_id' => $this->publicId((string) $path),
                     'resource_type' => 'image',
@@ -64,7 +66,7 @@ class CloudinaryStorage implements Filesystem
         } catch (Throwable $exception) {
             Log::error('Cloudinary upload gagal.', [
                 'exception' => $exception::class,
-                'path' => (string) $path,
+                'path' => basename((string) $path),
             ]);
 
             return false;
@@ -109,7 +111,7 @@ class CloudinaryStorage implements Filesystem
                 $success = false;
                 Log::warning('Cloudinary delete gagal.', [
                     'exception' => $exception::class,
-                    'path' => (string) $path,
+                    'path' => basename((string) $path),
                 ]);
             }
         }
@@ -125,6 +127,10 @@ class CloudinaryStorage implements Filesystem
 
         $image = $this->client->image($this->publicId((string) $path));
         $image->format(Format::auto())->quality(Quality::auto());
+
+        if (config('cloudinary.signed_urls', true)) {
+            $image->signUrl();
+        }
 
         return $image->toUrl();
     }
@@ -161,10 +167,12 @@ class CloudinaryStorage implements Filesystem
         return $this->folder.'/'.$name;
     }
 
-    protected function uploadSource(mixed $contents): mixed
+    protected function validatedUploadSource(string $path, mixed $contents): mixed
     {
+        $this->validateUploadPath($path);
+
         if (is_resource($contents)) {
-            return $contents;
+            return $this->validateResource($contents);
         }
 
         if ($contents instanceof Stringable) {
@@ -175,7 +183,70 @@ class CloudinaryStorage implements Filesystem
             throw new InvalidArgumentException('Konten upload harus berupa string atau stream yang dapat dibaca.');
         }
 
-        return Utils::streamFor($contents);
+        return $this->validateStream(Utils::streamFor($contents));
+    }
+
+    protected function validateUploadPath(string $path): void
+    {
+        $path = ltrim(str_replace('\\', '/', $path), '/');
+        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        $allowedExtensions = config('cloudinary.allowed_extensions', ['jpg', 'jpeg', 'png', 'webp']);
+
+        if (
+            str_contains($path, '..')
+            || ! preg_match('/^[A-Za-z0-9_\/-]+\.[A-Za-z0-9]+$/', $path)
+            || ! in_array($extension, $allowedExtensions, true)
+        ) {
+            throw new InvalidArgumentException('Path atau ekstensi upload tidak diizinkan.');
+        }
+    }
+
+    protected function validateResource($resource)
+    {
+        $metadata = stream_get_meta_data($resource);
+
+        if (! ($metadata['seekable'] ?? false) || rewind($resource) === false) {
+            throw new InvalidArgumentException('Stream upload harus dapat dibaca ulang.');
+        }
+
+        $statistics = fstat($resource);
+        $size = is_array($statistics) ? ($statistics['size'] ?? null) : null;
+        $header = fread($resource, 65536);
+        rewind($resource);
+
+        $this->validateFileContent($size, $header === false ? '' : $header);
+
+        return $resource;
+    }
+
+    protected function validateStream(StreamInterface $stream): StreamInterface
+    {
+        if (! $stream->isReadable() || ! $stream->isSeekable()) {
+            throw new InvalidArgumentException('Stream upload harus dapat dibaca ulang.');
+        }
+
+        $stream->rewind();
+        $header = $stream->read(65536);
+        $stream->rewind();
+        $this->validateFileContent($stream->getSize(), $header);
+
+        return $stream;
+    }
+
+    protected function validateFileContent(?int $size, string $header): void
+    {
+        $maxBytes = (int) config('cloudinary.max_upload_bytes', 2 * 1024 * 1024);
+
+        if ($size === null || $size <= 0 || $size > $maxBytes) {
+            throw new InvalidArgumentException('Ukuran file upload tidak diizinkan.');
+        }
+
+        $mimeType = (new \finfo(FILEINFO_MIME_TYPE))->buffer($header);
+        $allowedMimeTypes = config('cloudinary.allowed_mime_types', ['image/jpeg', 'image/png', 'image/webp']);
+
+        if (! is_string($mimeType) || ! in_array($mimeType, $allowedMimeTypes, true)) {
+            throw new InvalidArgumentException('Isi file bukan gambar yang diizinkan.');
+        }
     }
 
     public function get($path): ?string

@@ -78,6 +78,7 @@ File konfigurasi Cloudinary. Membaca tiga kredensial dari environment variables:
 - `CLOUDINARY_API_KEY`
 - `CLOUDINARY_API_SECRET`
 - `CLOUDINARY_FOLDER` — subfolder di Cloudinary untuk mengisolasi aset project (default: `cimuning`).
+- `CLOUDINARY_SIGNED_URLS` — aktifkan signed delivery URL untuk melindungi transformasi public.
 
 ### 5. `app/Support/CloudinaryStorage.php`
 
@@ -95,6 +96,8 @@ Method yang diimplementasikan secara fungsional:
 Livewire memakai disk lokal untuk upload sementara melalui `LIVEWIRE_TEMPORARY_FILE_UPLOAD_DISK=local`. Setelah validasi selesai, Filament memindahkan file ke disk permanen Cloudinary. Pemisahan ini penting karena temporary upload membutuhkan operasi filesystem lokal yang tidak disediakan adapter Cloudinary ringan.
 
 Transfer permanen memakai multipart stream native SDK sehingga tidak membuat salinan Base64 yang lebih besar. Cloudinary tetap menyimpan file asli; `f_auto` dan `q_auto` hanya mengoptimalkan format serta kualitas saat file dikirim ke browser. Tidak ada thumbnail, resize, crop, atau perubahan rasio otomatis.
+
+Temporary upload dibatasi JPG/PNG/WEBP maksimal 2 MB, dimensi 5000×5000, dan 20 request per menit. Adapter memeriksa path, ekstensi, ukuran, MIME signature, dan stream sebelum upload. Delivery URL ditandatangani agar dapat dipakai bersama Cloudinary Strict Transformations.
 
 Semua upload disimpan di folder `cimuning/` di Cloudinary. Public ID dibuat dari nama file tanpa ekstensi. Aplikasi tidak lagi menyimpan data tracking klik/scan atau IP pengunjung.
 
@@ -210,6 +213,7 @@ Variabel yang harus diset di Railway dashboard (tab Variables pada service Larav
 | `CLOUDINARY_API_KEY` | *(set langsung di Railway)* | Jangan simpan nilai nyata di repository |
 | `CLOUDINARY_API_SECRET` | *(set langsung di Railway)* | Wajib dirotasi setelah pernah terekspos |
 | `CLOUDINARY_FOLDER` | `cimuning` | |
+| `CLOUDINARY_SIGNED_URLS` | `true` | Wajib sebelum mengaktifkan Strict Transformations |
 
 ---
 
@@ -219,6 +223,10 @@ Variabel yang harus diset di Railway dashboard (tab Variables pada service Larav
 
 **Masalah**: Livewire mengikuti default `FILESYSTEM_DISK=cloudinary` untuk temporary upload. Adapter lama juga menjalankan `base64_encode()` langsung pada stream, sehingga upload menghasilkan pesan `failed to upload` dan tidak pernah membuat asset di folder Cloudinary.
 **Solusi**: temporary upload dipisahkan ke disk lokal, adapter menerima stream dengan benar, dan URL public dibentuk dari disk media aktif. Jalankan `php artisan media:diagnose` untuk memeriksa konfigurasi tanpa mencetak nilai secret.
+
+### Hardening upload dan delivery
+
+Gunakan `php artisan media:diagnose` untuk pemeriksaan read-only. Gunakan `php artisan media:diagnose --upload` hanya saat perlu melakukan smoke upload, verifikasi signed `f_auto/q_auto`, dan cleanup otomatis. Setelah deployment menghasilkan signed URL dengan benar, aktifkan **Strict Transformations** di Cloudinary. Jika media gagal, nonaktifkan Strict Transformations sebagai rollback dan periksa diagnosis sebelum mencoba kembali.
 
 ### 1. Package Cloudinary Laravel tidak kompatibel
 
