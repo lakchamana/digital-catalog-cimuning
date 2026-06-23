@@ -43,12 +43,12 @@
 ## Flow Pencarian UMKM
 
 1. User membuka `/umkm` atau masuk dari kategori tertentu.
-2. Halaman langsung menampilkan search/filter dan daftar UMKM tanpa hero pengantar.
-3. User mengetik kebutuhan lalu dapat menekan tombol utama "Cari"; hasil tetap diperbarui oleh Livewire.
+2. Halaman langsung menampilkan filter dan daftar UMKM tanpa hero pengantar atau search box lokal.
+3. User memakai search utama di navbar untuk mengganti kata kunci; pada halaman UMKM navbar mengarah ke `/umkm?search=...`.
 4. User dapat memfilter berdasarkan kategori, lokasi/RW, verified, layanan, urutan, dan jumlah per halaman.
-5. Filter aktif tampil sebagai chip dan bisa dihapus satu per satu tanpa menghapus semua pencarian.
-6. Nilai filter yang tidak valid dikembalikan ke default agar URL aneh tidak merusak halaman.
-7. Query search disimpan di URL agar bisa dibagikan.
+5. Setiap pilihan filter langsung diterapkan oleh Livewire dan query string ikut diperbarui.
+6. Filter aktif tampil sebagai chip dan bisa dihapus satu per satu tanpa menghapus semua pencarian.
+7. Nilai filter yang tidak valid dikembalikan ke default agar URL aneh tidak merusak halaman.
 8. Total hasil, loading, dan empty state tersedia sebagai live region untuk assistive technology.
 9. Jika tidak ada hasil, tampilkan empty state yang ramah dengan aksi hapus filter atau cari produk/jasa.
 
@@ -68,14 +68,15 @@
 ## Flow Pencarian Produk/Jasa
 
 1. User membuka `/produk` atau mencari dari navbar.
-2. Halaman langsung menampilkan search/filter dan daftar produk tanpa jumbotron pengantar.
-3. User mengetik kebutuhan dan dapat menekan tombol utama "Cari"; hasil tetap diperbarui oleh Livewire.
+2. Halaman langsung menampilkan filter dan daftar produk tanpa jumbotron pengantar atau search box lokal.
+3. User memakai search utama di navbar untuk mengganti kata kunci; secara default navbar mengarah ke `/produk?search=...`.
 4. User dapat membuka filter untuk kategori, UMKM, harga, urutan, dan jumlah per halaman.
-5. Filter aktif tampil sebagai chip dan bisa dihapus satu per satu tanpa menghapus semua pencarian.
-6. Nilai filter yang tidak valid dikembalikan ke default agar URL aneh tidak merusak halaman.
-7. Filter kategori mencocokkan kategori produk atau kategori UMKM sebagai fallback bila produk belum punya kategori sendiri.
-8. Filter harga membedakan produk dengan harga di atas 0 dan produk yang perlu menghubungi UMKM.
-9. Hasil hanya menampilkan produk aktif dari UMKM active dan verified.
+5. Setiap pilihan filter langsung diterapkan oleh Livewire dan query string ikut diperbarui.
+6. Filter aktif tampil sebagai chip dan bisa dihapus satu per satu tanpa menghapus semua pencarian.
+7. Nilai filter yang tidak valid dikembalikan ke default agar URL aneh tidak merusak halaman.
+8. Filter kategori mencocokkan kategori produk atau kategori UMKM sebagai fallback bila produk belum punya kategori sendiri.
+9. Filter harga membedakan produk dengan harga di atas 0 dan produk yang perlu menghubungi UMKM.
+10. Hasil hanya menampilkan produk aktif dari UMKM active dan verified.
 
 ## Flow Homepage Product-Led
 

@@ -14,83 +14,39 @@
     class="bg-white py-10 md:py-16"
 >
     <div class="container-cimuning">
-        <div class="rounded-card border border-cimuning-border bg-white p-4 shadow-card md:p-5">
-            <form wire:submit.prevent="submitSearch">
-                <label for="product-search" class="text-sm font-semibold text-cimuning-charcoal">Cari produk atau jasa</label>
-                <div class="mt-3 grid gap-3 lg:grid-cols-[1fr_auto]">
-                    <div class="flex min-h-11 overflow-hidden rounded-input border border-cimuning-border bg-white transition focus-within:border-cimuning-red focus-within:outline-2">
-                        <input
-                            id="product-search"
-                            type="search"
-                            wire:model.live.debounce.500ms="search"
-                            placeholder="Contoh: nasi box, laundry, servis motor..."
-                            class="min-w-0 flex-1 border-0 bg-white px-4 text-base text-cimuning-charcoal placeholder:text-cimuning-muted focus:outline-none"
-                        >
-                        @if ($search !== '')
-                            <button
-                                type="button"
-                                wire:click="clearFilter('search')"
-                                class="hidden min-h-11 px-4 text-sm font-semibold text-cimuning-slate transition hover:text-cimuning-red focus:outline-2 sm:inline-flex sm:items-center"
-                            >
-                                Bersihkan
-                            </button>
-                        @endif
-                    </div>
+        <div class="mb-6 flex flex-col gap-3 rounded-card border border-cimuning-border bg-cimuning-section p-4 md:flex-row md:items-center md:justify-between lg:hidden">
+            <p class="text-sm leading-6 text-cimuning-slate">
+                Gunakan search utama di navbar untuk mengganti kata kunci.
+            </p>
+            <div class="flex flex-wrap gap-2">
+                <button
+                    type="button"
+                    x-on:click="openFilters()"
+                    x-bind:aria-expanded="filtersOpen.toString()"
+                    aria-controls="product-filter-drawer"
+                    class="inline-flex min-h-11 items-center justify-center rounded-button border border-cimuning-border bg-white px-5 py-3 text-sm font-semibold text-cimuning-charcoal transition hover:bg-white/80 focus:outline-2"
+                >
+                    {{ $activeFilterCount > 0 ? 'Filter ('.$activeFilterCount.')' : 'Filter' }}
+                </button>
 
-                    <div class="grid grid-cols-[1fr_auto] gap-3 sm:flex">
-                        <button
-                            type="submit"
-                            class="inline-flex min-h-11 items-center justify-center rounded-button bg-cimuning-red px-5 py-3 text-sm font-bold text-white transition hover:bg-cimuning-deep focus:outline-2"
-                        >
-                            Cari
-                        </button>
-                        @if ($search !== '')
-                            <button
-                                type="button"
-                                wire:click="clearFilter('search')"
-                                class="inline-flex min-h-11 items-center justify-center rounded-button border border-cimuning-border bg-white px-4 py-3 text-sm font-semibold text-cimuning-slate transition hover:bg-cimuning-section focus:outline-2 sm:hidden"
-                            >
-                                Bersihkan
-                            </button>
-                        @endif
-                    </div>
-                </div>
-            </form>
-
-            <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <p class="text-sm leading-6 text-cimuning-slate">
-                    Cari nama produk, jasa, UMKM, kategori, atau RW.
-                </p>
-                <div class="flex flex-wrap gap-2">
+                @if ($activeFilterCount > 0)
                     <button
                         type="button"
-                        x-on:click="openFilters()"
-                        x-bind:aria-expanded="filtersOpen.toString()"
-                        aria-controls="product-filter-drawer"
-                        class="inline-flex min-h-11 items-center justify-center rounded-button border border-cimuning-border bg-white px-5 py-3 text-sm font-semibold text-cimuning-charcoal transition hover:bg-cimuning-section focus:outline-2 lg:hidden"
+                        wire:click="resetFilters"
+                        class="inline-flex min-h-11 items-center justify-center rounded-button border border-cimuning-border bg-white px-5 py-3 text-sm font-semibold text-cimuning-charcoal transition hover:bg-white/80 focus:outline-2"
                     >
-                        {{ $activeFilterCount > 0 ? 'Filter ('.$activeFilterCount.')' : 'Filter' }}
+                        Hapus semua filter
                     </button>
-
-                    @if ($activeFilterCount > 0)
-                        <button
-                            type="button"
-                            wire:click="resetFilters"
-                            class="inline-flex min-h-11 items-center justify-center rounded-button border border-cimuning-border bg-white px-5 py-3 text-sm font-semibold text-cimuning-charcoal transition hover:bg-cimuning-section focus:outline-2"
-                        >
-                            Hapus semua filter
-                        </button>
-                    @endif
-                </div>
+                @endif
             </div>
         </div>
 
-        <div class="mt-8 grid gap-8 lg:grid-cols-[280px_1fr] lg:items-start">
+        <div class="grid gap-8 lg:grid-cols-[280px_1fr] lg:items-start">
             <aside class="hidden rounded-card border border-cimuning-border bg-cimuning-section p-5 lg:block" aria-label="Filter produk">
                 <div class="mb-5 flex items-start justify-between gap-3">
                     <div>
                         <h2 class="text-lg font-bold text-cimuning-charcoal">Saring hasil</h2>
-                        <p class="mt-1 text-sm leading-6 text-cimuning-slate">Persempit katalog berdasarkan kebutuhan.</p>
+                        <p class="mt-1 text-sm leading-6 text-cimuning-slate">Filter langsung diterapkan dan URL ikut diperbarui.</p>
                     </div>
                     @if ($activeFilterCount > 0)
                         <button
@@ -110,6 +66,7 @@
                     <div>
                         <h2 id="product-results-heading" class="text-2xl font-bold text-cimuning-charcoal">{{ $resultHeading }}</h2>
                         <p class="mt-2 text-base text-cimuning-slate" aria-live="polite" aria-atomic="true">Ditemukan {{ $products->total() }} produk/jasa dari UMKM verified.</p>
+                        <p class="mt-2 text-sm leading-6 text-cimuning-slate">Gunakan search utama di navbar untuk mengganti kata kunci.</p>
                     </div>
                 </div>
 

@@ -14,13 +14,12 @@ class ProductSearchTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_keyword_search_matches_product_and_umkm_category(): void
+    public function test_keyword_search_from_url_matches_product_and_umkm_category(): void
     {
         $this->seedProducts();
 
-        Livewire::test(ProductSearch::class)
-            ->set('search', 'Jasa')
-            ->call('submitSearch')
+        Livewire::withQueryParams(['search' => 'Jasa'])
+            ->test(ProductSearch::class)
             ->assertSet('search', 'Jasa')
             ->assertSee('Hasil untuk')
             ->assertSee('Kata kunci')
@@ -28,16 +27,16 @@ class ProductSearchTest extends TestCase
             ->assertDontSee('Nasi Ayam');
     }
 
-    public function test_product_search_ui_has_clear_primary_search_action(): void
+    public function test_product_page_uses_navbar_search_and_live_filters(): void
     {
         $this->seedProducts();
 
         $this->get(route('products.index'))
             ->assertOk()
-            ->assertSee('Cari produk atau jasa')
-            ->assertSee('Contoh: nasi box, laundry, servis motor...')
-            ->assertSee('wire:submit.prevent="submitSearch"', false)
-            ->assertSee('Cari')
+            ->assertDontSee('id="product-search"', false)
+            ->assertDontSee('wire:submit.prevent="submitSearch"', false)
+            ->assertDontSee('Contoh: nasi box, laundry, servis motor...')
+            ->assertSee('Gunakan search utama di navbar untuk mengganti kata kunci.')
             ->assertSee('Saring hasil')
             ->assertSee('Lihat hasil')
             ->assertSee('<h1 class="sr-only">Produk dan jasa UMKM Cimuning</h1>', false)
@@ -134,8 +133,8 @@ class ProductSearchTest extends TestCase
     {
         $this->seedProducts();
 
-        Livewire::test(ProductSearch::class)
-            ->set('search', 'Nasi')
+        Livewire::withQueryParams(['search' => 'Nasi'])
+            ->test(ProductSearch::class)
             ->set('category', 'kuliner')
             ->set('price', 'priced')
             ->assertSee('Kata kunci')

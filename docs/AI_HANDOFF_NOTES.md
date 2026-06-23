@@ -31,9 +31,9 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Listing `/umkm` menyimpan filter di query string: `search`, `category`, `rw`, `verified`, `services`, `sort`, `perPage`, dan `page`.
 - Listing `/produk` menyimpan filter di query string: `search`, `category`, `umkm`, `price`, `sort`, `perPage`, dan `page`.
 - Filter `/umkm` menormalisasi nilai query string yang tidak valid untuk kategori, RW, layanan, sort, dan jumlah per halaman.
-- UX `/umkm` dibuat eksplisit seperti `/produk`: search box memiliki tombol utama "Cari", reset hanya muncul saat filter aktif, filter aktif tampil sebagai chip yang bisa dihapus satu per satu, dan drawer mobile memakai tombol "Lihat hasil".
+- UX `/umkm` sekarang memakai search utama di navbar sebagai satu-satunya input keyword; halaman listing fokus pada filter live, hasil, chip aktif, dan drawer mobile "Lihat hasil".
 - Filter `/produk` menormalisasi nilai query string yang tidak valid; kategori produk juga fallback ke kategori UMKM jika `products.category_id` kosong.
-- UX `/produk` dibuat eksplisit: search box memiliki tombol utama "Cari", reset hanya muncul saat filter aktif, filter aktif tampil sebagai chip yang bisa dihapus satu per satu, dan drawer mobile memakai tombol "Lihat hasil".
+- UX `/produk` sekarang memakai search utama di navbar sebagai satu-satunya input keyword; halaman listing fokus pada filter live, hasil, chip aktif, dan drawer mobile "Lihat hasil".
 - `/produk` tidak memiliki jumbotron/hero lagi; filter dan daftar produk/jasa menjadi konten pertama yang terlihat, dengan H1 tetap tersedia secara `sr-only`.
 - `/umkm` juga tidak memiliki hero visual; search/filter dan daftar UMKM menjadi konten pertama, dengan H1 tetap tersedia secara `sr-only`.
 - `/daftar-umkm` memakai account-first onboarding; form guest Livewire lama sudah dihapus.
@@ -51,7 +51,8 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Pendaftaran UMKM sekarang account-first: calon owner membuat akun di `/admin/register`, lalu mengisi profil UMKM dari panel.
 - `/daftar-umkm` adalah landing onboarding owner, bukan form guest submission.
 - Owner baru otomatis mendapat role `umkm_owner`; UMKM yang dibuat owner dipaksa `pending` dan `is_active = false`.
-- Homepage diarahkan search-centric dan discovery-first: navbar memiliki search besar ke `/produk`, carousel jumbotron informatif, kategori ikon, produk/jasa aktif dari UMKM verified, lalu section UMKM pilihan.
+- Homepage diarahkan search-centric dan discovery-first: navbar memiliki search besar yang default ke `/produk`, carousel jumbotron informatif, kategori ikon, produk/jasa aktif dari UMKM verified, lalu section UMKM pilihan.
+- Navbar search bersifat kontekstual: pada `/umkm` dan `/kategori/{slug}` form search menuju `/umkm?search=...`; halaman publik lain tetap menuju `/produk?search=...`.
 - Carousel homepage memakai Alpine.js dengan horizontal-only `scrollTo`, bukan `scrollIntoView`, agar auto-slide tidak menarik viewport kembali ke atas saat user scroll katalog.
 - Auto-advance carousel dipause saat carousel tidak terlihat di viewport melalui `IntersectionObserver`, serta pause saat hover/focus.
 - Route `/kategori` adalah halaman semua kategori aktif; `/kategori/{slug}` tetap dipakai untuk listing kategori tertentu.

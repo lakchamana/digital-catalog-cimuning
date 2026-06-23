@@ -13,29 +13,28 @@ class UmkmSearchTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_umkm_search_ui_has_clear_primary_search_action(): void
+    public function test_umkm_page_uses_navbar_search_and_live_filters(): void
     {
         $this->seedUmkms();
 
         $this->get(route('umkm.index'))
             ->assertOk()
-            ->assertSee('Cari UMKM')
-            ->assertSee('Contoh: warung nasi, laundry, RW 07...')
-            ->assertSee('wire:submit.prevent="submitSearch"', false)
-            ->assertSee('Cari')
+            ->assertDontSee('id="umkm-search"', false)
+            ->assertDontSee('Contoh: warung nasi, laundry, RW 07...')
+            ->assertDontSee('wire:submit.prevent="submitSearch"', false)
+            ->assertSee('Gunakan search utama di navbar untuk mengganti kata kunci.')
             ->assertSee('Saring UMKM')
             ->assertSee('Lihat hasil')
             ->assertDontSee('>Reset</button>', false)
             ->assertDontSee('Terapkan Filter');
     }
 
-    public function test_keyword_search_uses_submit_action_and_contextual_heading(): void
+    public function test_keyword_search_from_url_uses_contextual_heading(): void
     {
         $this->seedUmkms();
 
-        Livewire::test(UmkmSearch::class)
-            ->set('search', 'Dapur')
-            ->call('submitSearch')
+        Livewire::withQueryParams(['search' => 'Dapur'])
+            ->test(UmkmSearch::class)
             ->assertSet('search', 'Dapur')
             ->assertSee('Hasil untuk')
             ->assertSee('Kata kunci')
@@ -100,8 +99,8 @@ class UmkmSearchTest extends TestCase
     {
         $this->seedUmkms();
 
-        Livewire::test(UmkmSearch::class)
-            ->set('search', 'Cimuning')
+        Livewire::withQueryParams(['search' => 'Cimuning'])
+            ->test(UmkmSearch::class)
             ->set('category', 'kuliner')
             ->set('rw', 'RW 07')
             ->set('services', ['delivery', 'cod'])

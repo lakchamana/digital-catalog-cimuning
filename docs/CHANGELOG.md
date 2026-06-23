@@ -92,6 +92,9 @@
 - Feature tests for the hidden registration honeypot, RW validation, owner/admin field visibility, removed UMKM analytics column, and seeder compatibility.
 
 ### Changed
+- Public `/produk` and `/umkm` now use the navbar as the only keyword search entry point; page content focuses on live filters, results, and active filter chips.
+- Navbar search is contextual: `/umkm` and `/kategori/{slug}` search UMKM, while other public pages search products/services by default.
+- Product and UMKM filters now behave like direct-apply discovery controls: selecting a filter updates results and query string immediately without a local search submit step.
 - Cloudinary delivery URLs are signed for compatibility with Strict Transformations.
 - Livewire temporary media uploads are restricted to supported images, 2 MB, 5000×5000, and 20 requests per minute.
 - Cloudinary upload transfer now uses native multipart streams instead of Base64 data URIs.

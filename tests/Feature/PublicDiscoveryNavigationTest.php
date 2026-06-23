@@ -12,7 +12,7 @@ class PublicDiscoveryNavigationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_navbar_search_targets_products_index(): void
+    public function test_navbar_search_targets_products_index_by_default(): void
     {
         $this->get('/')
             ->assertOk()
@@ -26,6 +26,23 @@ class PublicDiscoveryNavigationTest extends TestCase
             ->assertSee('aria-controls="mobile-navigation-drawer"', false)
             ->assertSee('role="dialog"', false)
             ->assertSee('aria-modal="true"', false);
+    }
+
+    public function test_navbar_search_targets_umkm_index_on_umkm_context_pages(): void
+    {
+        $this->seedDirectoryContent();
+
+        $this->get(route('umkm.index'))
+            ->assertOk()
+            ->assertSee('action="'.route('umkm.index').'"', false)
+            ->assertSee('Cari nama UMKM, kategori, atau RW Cimuning')
+            ->assertSee('Cari nama UMKM, kategori, atau RW...')
+            ->assertSee('Cari UMKM atau RW...');
+
+        $this->get(route('categories.show', 'kuliner'))
+            ->assertOk()
+            ->assertSee('action="'.route('umkm.index').'"', false)
+            ->assertSee('Cari nama UMKM, kategori, atau RW Cimuning');
     }
 
     public function test_mobile_navigation_drawer_is_outside_the_sticky_header(): void
@@ -118,7 +135,7 @@ class PublicDiscoveryNavigationTest extends TestCase
         $this->get(route('umkm.index'))
             ->assertOk()
             ->assertSee('<h1 class="sr-only">Direktori UMKM</h1>', false)
-            ->assertSee('Cari UMKM')
+            ->assertSee('Saring UMKM')
             ->assertDontSee('Temukan UMKM Cimuning')
             ->assertDontSee('Cari berdasarkan nama usaha, produk, jasa, kategori, deskripsi, atau lokasi RW.');
 

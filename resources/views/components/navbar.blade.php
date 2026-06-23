@@ -18,6 +18,17 @@
     $ownerRegisterUrl = \Illuminate\Support\Facades\Route::has('filament.admin.auth.register')
         ? route('filament.admin.auth.register')
         : route('umkm.register');
+    $isUmkmSearchContext = request()->routeIs('umkm.index') || request()->routeIs('categories.show');
+    $navbarSearchRoute = $isUmkmSearchContext ? route('umkm.index') : route('products.index');
+    $navbarSearchLabel = $isUmkmSearchContext
+        ? 'Cari nama UMKM, kategori, atau RW Cimuning'
+        : 'Cari produk, jasa, atau UMKM Cimuning';
+    $navbarSearchPlaceholder = $isUmkmSearchContext
+        ? 'Cari nama UMKM, kategori, atau RW...'
+        : 'Cari produk, jasa, atau UMKM Cimuning...';
+    $mobileSearchPlaceholder = $isUmkmSearchContext
+        ? 'Cari UMKM atau RW...'
+        : 'Cari produk atau jasa...';
 @endphp
 
 <div
@@ -71,15 +82,15 @@
                 </span>
             </a>
 
-            <form action="{{ route('products.index') }}" method="GET" class="hidden min-w-0 flex-1 lg:block" role="search" aria-label="Cari produk atau jasa">
+            <form action="{{ $navbarSearchRoute }}" method="GET" class="hidden min-w-0 flex-1 lg:block" role="search" aria-label="{{ $navbarSearchLabel }}">
                 <div class="flex min-h-12 overflow-hidden rounded-button border border-cimuning-border bg-white shadow-card transition focus-within:border-cimuning-red focus-within:outline-2">
-                    <label for="navbar-search" class="sr-only">Cari produk, jasa, atau UMKM Cimuning</label>
+                    <label for="navbar-search" class="sr-only">{{ $navbarSearchLabel }}</label>
                     <input
                         id="navbar-search"
                         name="search"
                         type="search"
                         value="{{ request('search') }}"
-                        placeholder="Cari produk, jasa, atau UMKM Cimuning..."
+                        placeholder="{{ $navbarSearchPlaceholder }}"
                         class="min-w-0 flex-1 border-0 bg-white px-5 text-base text-cimuning-charcoal placeholder:text-cimuning-muted focus:outline-none"
                     >
                     <button type="submit" class="inline-flex min-h-12 items-center justify-center gap-2 bg-cimuning-red px-6 text-sm font-bold text-white transition hover:bg-cimuning-deep focus:outline-2">
@@ -112,15 +123,15 @@
             </button>
         </div>
 
-        <form action="{{ route('products.index') }}" method="GET" class="mt-3 lg:hidden" role="search" aria-label="Cari produk atau jasa">
+        <form action="{{ $navbarSearchRoute }}" method="GET" class="mt-3 lg:hidden" role="search" aria-label="{{ $navbarSearchLabel }}">
             <div class="flex min-h-11 overflow-hidden rounded-button border border-cimuning-border bg-white shadow-card">
-                <label for="mobile-navbar-search" class="sr-only">Cari produk, jasa, atau UMKM Cimuning</label>
+                <label for="mobile-navbar-search" class="sr-only">{{ $navbarSearchLabel }}</label>
                 <input
                     id="mobile-navbar-search"
                     name="search"
                     type="search"
                     value="{{ request('search') }}"
-                    placeholder="Cari produk atau jasa..."
+                    placeholder="{{ $mobileSearchPlaceholder }}"
                     class="min-w-0 flex-1 border-0 bg-white px-4 text-base text-cimuning-charcoal placeholder:text-cimuning-muted focus:outline-none"
                 >
                 <button type="submit" class="inline-flex min-h-11 w-12 items-center justify-center bg-cimuning-red text-white focus:outline-2" aria-label="Cari">
