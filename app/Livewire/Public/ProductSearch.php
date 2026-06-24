@@ -95,6 +95,7 @@ class ProductSearch extends Component
             'activeFilterCount' => $this->activeFilterCount(),
             'activeFilters' => $this->activeFilters($categories, $umkms),
             'resultHeading' => $this->resultHeading($categories, $umkms),
+            'resetUrl' => route('products.index'),
         ]);
     }
 
@@ -202,21 +203,25 @@ class ProductSearch extends Component
                 'key' => 'search',
                 'label' => 'Kata kunci',
                 'value' => $this->search,
+                'url' => $this->urlWithout('search'),
             ] : null,
             $this->category !== '' ? [
                 'key' => 'category',
                 'label' => 'Kategori',
                 'value' => $categories->firstWhere('slug', $this->category)?->name ?? $this->category,
+                'url' => $this->urlWithout('category'),
             ] : null,
             $this->umkm !== '' ? [
                 'key' => 'umkm',
                 'label' => 'UMKM',
                 'value' => $umkms->firstWhere('slug', $this->umkm)?->name ?? $this->umkm,
+                'url' => $this->urlWithout('umkm'),
             ] : null,
             $this->price !== 'all' ? [
                 'key' => 'price',
                 'label' => 'Harga',
                 'value' => $this->price === 'priced' ? 'Ada harga' : 'Hubungi UMKM',
+                'url' => $this->urlWithout('price'),
             ] : null,
             $this->sort !== 'latest' ? [
                 'key' => 'sort',
@@ -227,11 +232,13 @@ class ProductSearch extends Component
                     'price_high' => 'Harga tertinggi',
                     default => 'Terbaru',
                 },
+                'url' => $this->urlWithout('sort'),
             ] : null,
             (int) $this->perPage !== 9 ? [
                 'key' => 'perPage',
                 'label' => 'Jumlah',
                 'value' => $this->perPage.' per halaman',
+                'url' => $this->urlWithout('perPage'),
             ] : null,
         ])->filter()->values()->all();
     }
@@ -282,6 +289,33 @@ class ProductSearch extends Component
         if ($this->umkm !== '' && ! $this->validUmkmSlug($this->umkm)) {
             $this->umkm = '';
         }
+    }
+
+    protected function urlWithout(string $filter): string
+    {
+        $params = [
+            'search' => $this->search,
+            'category' => $this->category,
+            'umkm' => $this->umkm,
+            'price' => $this->price,
+            'sort' => $this->sort,
+            'perPage' => $this->perPage,
+        ];
+
+        $defaults = [
+            'search' => '',
+            'category' => '',
+            'umkm' => '',
+            'price' => 'all',
+            'sort' => 'latest',
+            'perPage' => 9,
+        ];
+
+        $params[$filter] = $defaults[$filter] ?? null;
+
+        return route('products.index', collect($params)
+            ->reject(fn ($value, string $key) => (string) $value === (string) $defaults[$key])
+            ->all());
     }
 
     protected function validCategorySlug(string $slug): bool

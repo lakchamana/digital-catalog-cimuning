@@ -108,7 +108,9 @@ class UmkmSearch extends Component
             'umkms' => $umkms,
             'activeFilterCount' => $this->activeFilterCount(),
             'activeFilters' => $this->activeFilters($categories),
+            'activeServices' => $this->validatedServices(),
             'resultHeading' => $this->resultHeading($categories),
+            'resetUrl' => route('umkm.index'),
         ]);
     }
 
@@ -220,26 +222,31 @@ class UmkmSearch extends Component
                 'key' => 'search',
                 'label' => 'Kata kunci',
                 'value' => $this->search,
+                'url' => $this->urlWithout('search'),
             ] : null,
             $this->category !== '' ? [
                 'key' => 'category',
                 'label' => 'Kategori',
                 'value' => $categories->firstWhere('slug', $this->category)?->name ?? $this->category,
+                'url' => $this->urlWithout('category'),
             ] : null,
             $this->rw !== '' ? [
                 'key' => 'rw',
                 'label' => 'RW',
                 'value' => $this->rw,
+                'url' => $this->urlWithout('rw'),
             ] : null,
             ! $this->verified ? [
                 'key' => 'verified',
                 'label' => 'Status',
                 'value' => 'Semua yang tampil publik',
+                'url' => $this->urlWithout('verified'),
             ] : null,
             ...collect($this->validatedServices())->map(fn (string $service) => [
                 'key' => 'service:'.$service,
                 'label' => 'Layanan',
                 'value' => $this->serviceLabels()[$service] ?? $service,
+                'url' => $this->urlWithoutService($service),
             ])->all(),
             $this->sort !== 'latest' ? [
                 'key' => 'sort',
@@ -248,11 +255,13 @@ class UmkmSearch extends Component
                     'az' => 'A-Z',
                     default => 'Terbaru',
                 },
+                'url' => $this->urlWithout('sort'),
             ] : null,
             (int) $this->perPage !== 9 ? [
                 'key' => 'perPage',
                 'label' => 'Jumlah',
                 'value' => $this->perPage.' per halaman',
+                'url' => $this->urlWithout('perPage'),
             ] : null,
         ])->filter()->values()->all();
     }
@@ -321,6 +330,69 @@ class UmkmSearch extends Component
         if ($this->rw !== '' && ! $this->validRw($this->rw)) {
             $this->rw = '';
         }
+    }
+
+    protected function urlWithout(string $filter): string
+    {
+        $params = [
+            'search' => $this->search,
+            'category' => $this->category,
+            'rw' => $this->rw,
+            'verified' => $this->verified ? '1' : '0',
+            'services' => $this->validatedServices(),
+            'sort' => $this->sort,
+            'perPage' => $this->perPage,
+        ];
+
+        $defaults = [
+            'search' => '',
+            'category' => '',
+            'rw' => '',
+            'verified' => '1',
+            'services' => [],
+            'sort' => 'latest',
+            'perPage' => 9,
+        ];
+
+        $params[$filter] = $defaults[$filter] ?? null;
+
+        return route('umkm.index', collect($params)
+            ->reject(fn ($value, string $key) => is_array($value)
+                ? $value === []
+                : (string) $value === (string) $defaults[$key])
+            ->all());
+    }
+
+    protected function urlWithoutService(string $service): string
+    {
+        $params = [
+            'search' => $this->search,
+            'category' => $this->category,
+            'rw' => $this->rw,
+            'verified' => $this->verified ? '1' : '0',
+            'services' => collect($this->validatedServices())
+                ->reject(fn (string $value) => $value === $service)
+                ->values()
+                ->all(),
+            'sort' => $this->sort,
+            'perPage' => $this->perPage,
+        ];
+
+        $defaults = [
+            'search' => '',
+            'category' => '',
+            'rw' => '',
+            'verified' => '1',
+            'services' => [],
+            'sort' => 'latest',
+            'perPage' => 9,
+        ];
+
+        return route('umkm.index', collect($params)
+            ->reject(fn ($value, string $key) => is_array($value)
+                ? $value === []
+                : (string) $value === (string) $defaults[$key])
+            ->all());
     }
 
     protected function validCategorySlug(string $slug): bool

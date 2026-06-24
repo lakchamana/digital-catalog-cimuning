@@ -25,6 +25,11 @@ class UmkmSearchTest extends TestCase
             ->assertSee('Gunakan search utama di navbar untuk mengganti kata kunci.')
             ->assertSee('Saring UMKM')
             ->assertSee('Lihat hasil')
+            ->assertSee('method="GET"', false)
+            ->assertSee('onchange="window.CimuningFilters.submit(this)"', false)
+            ->assertSee('name="category"', false)
+            ->assertSee('name="services[]"', false)
+            ->assertDontSee('wire:model.live="category"', false)
             ->assertDontSee('>Reset</button>', false)
             ->assertDontSee('Terapkan Filter');
     }

@@ -30,13 +30,12 @@
                 </button>
 
                 @if ($activeFilterCount > 0)
-                    <button
-                        type="button"
-                        wire:click="resetFilters"
+                    <a
+                        href="{{ $resetUrl }}"
                         class="inline-flex min-h-11 items-center justify-center rounded-button border border-cimuning-border bg-white px-5 py-3 text-sm font-semibold text-cimuning-charcoal transition hover:bg-white/80 focus:outline-2"
                     >
                         Hapus semua filter
-                    </button>
+                    </a>
                 @endif
             </div>
         </div>
@@ -49,13 +48,12 @@
                         <p class="mt-1 text-sm leading-6 text-cimuning-slate">Filter langsung diterapkan dan URL ikut diperbarui.</p>
                     </div>
                     @if ($activeFilterCount > 0)
-                        <button
-                            type="button"
-                            wire:click="resetFilters"
+                        <a
+                            href="{{ $resetUrl }}"
                             class="shrink-0 rounded-button px-2 py-1 text-xs font-semibold text-cimuning-red transition hover:bg-white focus:outline-2"
                         >
                             Hapus
-                        </button>
+                        </a>
                     @endif
                 </div>
                 @include('livewire.public.partials.umkm-filters', ['filterIdSuffix' => 'desktop'])
@@ -78,14 +76,13 @@
                             <span class="inline-flex min-h-9 items-center gap-2 rounded-full border border-cimuning-border bg-white px-3 py-1.5 text-sm font-semibold text-cimuning-slate shadow-sm">
                                 <span class="text-cimuning-muted">{{ $filter['label'] }}:</span>
                                 <span class="text-cimuning-charcoal">{{ $filter['value'] }}</span>
-                                <button
-                                    type="button"
-                                    wire:click="clearFilter('{{ $filter['key'] }}')"
+                                <a
+                                    href="{{ $filter['url'] }}"
                                     class="-mr-1 inline-flex h-6 w-6 items-center justify-center rounded-full text-base leading-none text-cimuning-muted transition hover:bg-cimuning-soft hover:text-cimuning-red focus:outline-2"
                                     aria-label="Hapus filter {{ $filter['label'] }}"
                                 >
                                     &times;
-                                </button>
+                                </a>
                             </span>
                         @endforeach
                     </div>
@@ -113,13 +110,12 @@
                             <p class="mt-2 text-base leading-7 text-cimuning-slate">Coba gunakan kata kunci lain atau pilih kategori berbeda.</p>
                             <div class="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
                                 @if ($activeFilterCount > 0)
-                                    <button
-                                        type="button"
-                                        wire:click="resetFilters"
+                                    <a
+                                        href="{{ $resetUrl }}"
                                         class="inline-flex min-h-11 items-center justify-center rounded-button bg-cimuning-red px-5 py-3 text-sm font-semibold text-white transition hover:bg-cimuning-deep focus:outline-2"
                                     >
                                         Hapus filter
-                                    </button>
+                                    </a>
                                 @endif
                                 <x-secondary-button href="{{ route('products.index') }}">
                                     Cari Produk/Jasa
@@ -191,14 +187,12 @@
                 Lihat hasil
             </button>
             @if ($activeFilterCount > 0)
-                <button
-                    type="button"
-                    wire:click="resetFilters"
-                    x-on:click="closeFilters()"
+                <a
+                    href="{{ $resetUrl }}"
                     class="inline-flex min-h-11 w-full items-center justify-center rounded-button border border-cimuning-border bg-white px-5 py-3 text-sm font-semibold text-cimuning-charcoal transition hover:bg-cimuning-section focus:outline-2"
                 >
                     Hapus semua
-                </button>
+                </a>
             @endif
         </div>
     </aside>

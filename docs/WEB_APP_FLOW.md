@@ -46,7 +46,7 @@
 2. Halaman langsung menampilkan filter dan daftar UMKM tanpa hero pengantar atau search box lokal.
 3. User memakai search utama di navbar untuk mengganti kata kunci; pada halaman UMKM navbar mengarah ke `/umkm?search=...`.
 4. User dapat memfilter berdasarkan kategori, lokasi/RW, verified, layanan, urutan, dan jumlah per halaman.
-5. Setiap pilihan filter langsung diterapkan oleh Livewire dan query string ikut diperbarui.
+5. Setiap pilihan filter langsung membuka URL GET baru sehingga hasil dan query string ikut diperbarui.
 6. Filter aktif tampil sebagai chip dan bisa dihapus satu per satu tanpa menghapus semua pencarian.
 7. Nilai filter yang tidak valid dikembalikan ke default agar URL aneh tidak merusak halaman.
 8. Total hasil, loading, dan empty state tersedia sebagai live region untuk assistive technology.
@@ -71,7 +71,7 @@
 2. Halaman langsung menampilkan filter dan daftar produk tanpa jumbotron pengantar atau search box lokal.
 3. User memakai search utama di navbar untuk mengganti kata kunci; secara default navbar mengarah ke `/produk?search=...`.
 4. User dapat membuka filter untuk kategori, UMKM, harga, urutan, dan jumlah per halaman.
-5. Setiap pilihan filter langsung diterapkan oleh Livewire dan query string ikut diperbarui.
+5. Setiap pilihan filter langsung membuka URL GET baru sehingga hasil dan query string ikut diperbarui.
 6. Filter aktif tampil sebagai chip dan bisa dihapus satu per satu tanpa menghapus semua pencarian.
 7. Nilai filter yang tidak valid dikembalikan ke default agar URL aneh tidak merusak halaman.
 8. Filter kategori mencocokkan kategori produk atau kategori UMKM sebagai fallback bila produk belum punya kategori sendiri.

@@ -31,9 +31,9 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Listing `/umkm` menyimpan filter di query string: `search`, `category`, `rw`, `verified`, `services`, `sort`, `perPage`, dan `page`.
 - Listing `/produk` menyimpan filter di query string: `search`, `category`, `umkm`, `price`, `sort`, `perPage`, dan `page`.
 - Filter `/umkm` menormalisasi nilai query string yang tidak valid untuk kategori, RW, layanan, sort, dan jumlah per halaman.
-- UX `/umkm` sekarang memakai search utama di navbar sebagai satu-satunya input keyword; halaman listing fokus pada filter live, hasil, chip aktif, dan drawer mobile "Lihat hasil".
+- UX `/umkm` sekarang memakai search utama di navbar sebagai satu-satunya input keyword; halaman listing fokus pada filter GET auto-submit, hasil, chip aktif, dan drawer mobile "Lihat hasil".
 - Filter `/produk` menormalisasi nilai query string yang tidak valid; kategori produk juga fallback ke kategori UMKM jika `products.category_id` kosong.
-- UX `/produk` sekarang memakai search utama di navbar sebagai satu-satunya input keyword; halaman listing fokus pada filter live, hasil, chip aktif, dan drawer mobile "Lihat hasil".
+- UX `/produk` sekarang memakai search utama di navbar sebagai satu-satunya input keyword; halaman listing fokus pada filter GET auto-submit, hasil, chip aktif, dan drawer mobile "Lihat hasil".
 - `/produk` tidak memiliki jumbotron/hero lagi; filter dan daftar produk/jasa menjadi konten pertama yang terlihat, dengan H1 tetap tersedia secara `sr-only`.
 - `/umkm` juga tidak memiliki hero visual; search/filter dan daftar UMKM menjadi konten pertama, dengan H1 tetap tersedia secara `sr-only`.
 - `/daftar-umkm` memakai account-first onboarding; form guest Livewire lama sudah dihapus.
