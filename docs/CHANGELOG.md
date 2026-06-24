@@ -92,6 +92,7 @@
 - Feature tests for the hidden registration honeypot, RW validation, owner/admin field visibility, removed UMKM analytics column, and seeder compatibility.
 - Broader Google Maps coordinate parsing for owner onboarding, including `ll`, `center`, encoded query coordinates, and `!3d/!4d` URLs.
 - Owner-facing Maps point status and a "Cek titik tersimpan" helper in the UMKM location wizard.
+- Public product detail pages at `/produk/{slug}` with gallery, full description, UMKM owner information, direct WhatsApp CTA, profile link, SEO metadata, and JSON-LD `Product` schema.
 
 ### Changed
 - Public `/produk` and `/umkm` now use the navbar as the only keyword search entry point; page content focuses on live filters, results, and active filter chips.
@@ -163,6 +164,8 @@
 - Owner UMKM registration now requires category, business name, description, contact person, WhatsApp, RW, and address.
 - UMKM detail pages now distinguish written address from Google Maps coordinates so public users understand both data sources.
 - Product moderation table actions now show clearer admin feedback after block, unblock, or rejected re-review decisions.
+- Product cards on homepage, `/produk`, and UMKM detail pages now link to product detail pages instead of sending users straight to the UMKM profile.
+- Dynamic sitemap now includes public product detail URLs while excluding inactive, blocked, or non-public products.
 
 ### Removed
 - Quick verification actions and destructive admin actions from owner UMKM/product tables.

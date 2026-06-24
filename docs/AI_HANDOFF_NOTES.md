@@ -35,6 +35,8 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Filter `/produk` menormalisasi nilai query string yang tidak valid; kategori produk juga fallback ke kategori UMKM jika `products.category_id` kosong.
 - UX `/produk` sekarang memakai search utama di navbar sebagai satu-satunya input keyword; halaman listing fokus pada filter GET auto-submit, hasil, chip aktif, dan drawer mobile "Lihat hasil".
 - `/produk` tidak memiliki jumbotron/hero lagi; filter dan daftar produk/jasa menjadi konten pertama yang terlihat, dengan H1 tetap tersedia secara `sr-only`.
+- Detail produk publik tersedia di `/produk/{slug}` dan hanya menampilkan produk aktif, tidak diblokir admin, dari UMKM verified + active.
+- Kartu produk publik mengarah ke detail produk; profil UMKM tetap tersedia sebagai CTA sekunder dari halaman detail produk.
 - `/umkm` juga tidak memiliki hero visual; search/filter dan daftar UMKM menjadi konten pertama, dengan H1 tetap tersedia secara `sr-only`.
 - `/daftar-umkm` memakai account-first onboarding; form guest Livewire lama sudah dihapus.
 - Slug unik dibuat lewat helper `App\Support\UniqueSlug` dan dipakai pada pendaftaran publik serta auto-fill form Filament.
@@ -65,7 +67,8 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Listing Livewire `/produk` dan `/umkm` memiliki live region untuk total hasil/loading/empty state serta ID filter yang dibedakan antara desktop dan mobile.
 - Public layout menerima props SEO: `description`, `canonical`, `image`, `type`, dan `structuredData`.
 - Detail UMKM public merender canonical, Open Graph, Twitter card, dan JSON-LD `LocalBusiness` dari data UMKM verified.
-- Sitemap dinamis tersedia di `/sitemap.xml`; hanya memuat homepage, listing public, kategori aktif, dan UMKM aktif + verified.
+- Detail produk public merender canonical, Open Graph, Twitter card, dan JSON-LD `Product` dari data katalog yang sudah public.
+- Sitemap dinamis tersedia di `/sitemap.xml`; hanya memuat homepage, listing public, kategori aktif, UMKM aktif + verified, dan produk public dari UMKM verified.
 - `robots.txt` menolak `/admin` dan mereferensikan sitemap.
 - Registrasi owner `/admin/register` memakai CAPTCHA matematika lokal berbasis session dan honeypot tersembunyi, tanpa layanan eksternal.
 - CAPTCHA owner registration memakai token per form render yang disimpan di session agar beberapa tab register tidak saling membatalkan jawaban.
@@ -126,7 +129,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Dokumentasi awal dibuat di folder `docs/`.
 - Public layout, navbar, footer, button components, badges, UMKM card, homepage, dan placeholder pages dibuat.
 - Placeholder `/tentang` dan `/kontak` sudah diganti dengan halaman informasi publik yang lengkap.
-- Route publik tersedia untuk `/`, `/umkm`, `/umkm/{slug}`, `/produk`, `/kategori`, `/kategori/{slug}`, `/daftar-umkm`, `/tentang`, dan `/kontak`.
+- Route publik tersedia untuk `/`, `/umkm`, `/umkm/{slug}`, `/produk`, `/produk/{slug}`, `/kategori`, `/kategori/{slug}`, `/daftar-umkm`, `/tentang`, dan `/kontak`.
 - Migration inti, relationship model, dan seeder dummy sudah dibuat.
 - Seeder membuat admin `admin@cimuning.test` dan owner dummy dengan password `password`.
 - User sudah mengaktifkan XAMPP/MySQL/Apache dan menjalankan `php artisan migrate --seed`.
@@ -156,6 +159,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Nilai `APP_KEY` production lama pernah tercatat di dokumentasi dan sudah diganti placeholder; jadwalkan rotasi terpisah dengan memahami dampaknya pada session/data terenkripsi.
 - Galeri foto produk sudah bisa dikelola dari Filament Product form dengan maksimal 6 gambar JPG/PNG/WEBP masing-masing 2 MB.
 - Product card publik memakai prioritas gambar utama, lalu gambar galeri pertama, lalu fallback visual, serta menampilkan badge tambahan foto jika galeri berisi lebih dari satu gambar.
+- Product card publik sekarang memakai CTA "Lihat Detail" menuju `/produk/{slug}`; tombol WhatsApp tetap menjadi kontak langsung, bukan checkout.
 - `php artisan test` sudah hijau dan berisi test tambahan untuk akses panel dan scoping owner.
 - Halaman detail UMKM `/umkm/{slug}` sudah dipoles dengan hero gambar, logo UMKM, badge layanan, Maps embed/link, sticky contact panel desktop, sticky CTA mobile, dan katalog produk berbasis gambar upload.
 - Route detail UMKM sudah eager-load `products.images` untuk menghindari N+1 pada galeri produk.
@@ -202,6 +206,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - QR profil langsung memuat URL profil UMKM tanpa route tracking.
 - Test QR profil menjaga SVG, target profil langsung, download, dan proteksi UMKM non-public.
 - Halaman Tentang dan Kontak/Bantuan publik sudah dilengkapi dengan SEO metadata, CTA, footer links, dan copy tanpa kontak palsu.
+- Halaman detail produk publik sudah ditambahkan dengan galeri, deskripsi lengkap, harga, info UMKM, CTA WhatsApp, link profil UMKM, SEO metadata, dan sitemap entry.
 - Test halaman informasi publik sudah ditambahkan untuk mencegah regresi ke placeholder.
 - Action tabel produk Filament sekarang memberi feedback sukses kepada admin setelah produk diblokir, dibuka kembali, atau permintaan review ditolak; owner tetap menerima notification bell dari service moderasi.
 

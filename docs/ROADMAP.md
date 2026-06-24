@@ -8,6 +8,7 @@
 - Migration dan model inti: users, categories, umkms, products, product_images, contacts, social links.
 - Listing UMKM dengan Livewire search/filter/pagination.
 - Detail UMKM dengan CTA WhatsApp dan maps.
+- Detail produk/jasa publik dengan galeri, deskripsi, harga opsional, UMKM pemilik, dan CTA WhatsApp.
 - Auth dan dashboard dasar.
 - CRUD kategori, UMKM, produk/jasa.
 - Upload foto aman.
@@ -36,7 +37,7 @@
 - Template poster/stiker QR profil UMKM untuk kebutuhan cetak/offline sharing.
 - Artikel atau cerita UMKM.
 - Export data UMKM untuk admin.
-- Optimasi SEO halaman detail.
+- Optimasi SEO lanjutan halaman detail.
 - Tutorial/dashboard guidance khusus owner bila dibutuhkan.
 - PWA ringan untuk pengalaman mobile.
 - Hardening production deployment: backup database, domain custom, observability/log monitoring, dan secret rotation.

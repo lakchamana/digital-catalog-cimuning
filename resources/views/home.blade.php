@@ -331,7 +331,9 @@
                     @php
                         $productImageUrl = $imageUrl($product);
                         $umkm = $product->umkm;
-                        $detailUrl = $umkm?->slug ? route('umkm.show', $umkm->slug) : route('products.index');
+                        $detailUrl = isset($product->slug)
+                            ? route('products.show', $product->slug)
+                            : ($umkm?->slug ? route('umkm.show', $umkm->slug) : route('products.index'));
                         $whatsappUrl = $umkm?->whatsapp_url
                             ? $umkm->whatsapp_url.'?text='.urlencode("Halo, saya ingin bertanya tentang {$product->name}.")
                             : null;
@@ -355,7 +357,7 @@
                                 {{ $product->price ? 'Rp '.number_format($product->price, 0, ',', '.') : 'Hubungi UMKM' }}
                             </p>
                             <div class="mt-3 grid gap-2">
-                                <x-secondary-button href="{{ $detailUrl }}" class="min-h-11 w-full px-3 text-xs">Lihat UMKM</x-secondary-button>
+                                <x-secondary-button href="{{ $detailUrl }}" class="min-h-11 w-full px-3 text-xs">Detail Produk</x-secondary-button>
                                 @if ($whatsappUrl)
                                     <x-whatsapp-button href="{{ $whatsappUrl }}" target="_blank" rel="noopener" class="min-h-11 w-full px-3 text-xs">Tanya</x-whatsapp-button>
                                 @endif

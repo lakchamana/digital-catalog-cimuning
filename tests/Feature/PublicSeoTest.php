@@ -66,6 +66,15 @@ class PublicSeoTest extends TestCase
         $verified = $this->seedVerifiedUmkm(['slug' => 'sitemap-verified', 'name' => 'Sitemap Verified']);
         $this->seedVerifiedUmkm(['slug' => 'sitemap-inactive', 'name' => 'Sitemap Inactive', 'is_active' => false]);
         $this->seedVerifiedUmkm(['slug' => 'sitemap-pending', 'name' => 'Sitemap Pending', 'status' => 'pending', 'is_active' => false]);
+        $publicProduct = $verified->products()->firstOrFail();
+        Product::query()->create([
+            'umkm_id' => $verified->id,
+            'category_id' => $category->id,
+            'name' => 'Produk Sitemap Blocked',
+            'slug' => 'produk-sitemap-blocked',
+            'is_active' => true,
+            'is_admin_blocked' => true,
+        ]);
 
         $this->get(route('sitemap'))
             ->assertOk()
@@ -77,8 +86,10 @@ class PublicSeoTest extends TestCase
             ->assertSee(route('categories.index'), false)
             ->assertSee(route('categories.show', $category->slug), false)
             ->assertSee(route('umkm.show', $verified->slug), false)
+            ->assertSee(route('products.show', $publicProduct->slug), false)
             ->assertDontSee('sitemap-inactive')
             ->assertDontSee('sitemap-pending')
+            ->assertDontSee('produk-sitemap-blocked')
             ->assertDontSee('/admin')
             ->assertDontSee('/leads/');
     }

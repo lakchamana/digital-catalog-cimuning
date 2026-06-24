@@ -77,6 +77,26 @@ Route::get('/produk', function () use ($hasTables) {
     return view('products.index');
 })->name('products.index');
 
+Route::get('/produk/{slug}', function (string $slug) use ($hasTables) {
+    if (! $hasTables(['products', 'umkms', 'categories'])) {
+        abort(404);
+    }
+
+    $product = Product::query()
+        ->with([
+            'category',
+            'images',
+            'umkm.category',
+        ])
+        ->where('slug', $slug)
+        ->where('is_active', true)
+        ->where('is_admin_blocked', false)
+        ->whereHas('umkm', fn ($query) => $query->where('is_active', true)->where('status', 'verified'))
+        ->firstOrFail();
+
+    return view('products.show', compact('product'));
+})->name('products.show');
+
 Route::get('/kategori', function () use ($hasTables) {
     if (! $hasTables(['categories', 'umkms'])) {
         return view('categories.index', [
@@ -169,6 +189,21 @@ Route::get('/sitemap.xml', function () use ($hasTables) {
                 'loc' => route('umkm.show', $umkm->slug),
                 'lastmod' => optional($umkm->updated_at)->toAtomString(),
                 'priority' => '0.8',
+                'changefreq' => 'weekly',
+            ]));
+    }
+
+    if ($hasTables(['products', 'umkms'])) {
+        Product::query()
+            ->where('is_active', true)
+            ->where('is_admin_blocked', false)
+            ->whereHas('umkm', fn ($query) => $query->where('is_active', true)->where('status', 'verified'))
+            ->latest('updated_at')
+            ->get()
+            ->each(fn (Product $product) => $urls->push([
+                'loc' => route('products.show', $product->slug),
+                'lastmod' => optional($product->updated_at)->toAtomString(),
+                'priority' => '0.7',
                 'changefreq' => 'weekly',
             ]));
     }

@@ -79,6 +79,16 @@
 8. Filter kategori mencocokkan kategori produk atau kategori UMKM sebagai fallback bila produk belum punya kategori sendiri.
 9. Filter harga membedakan produk dengan harga di atas 0 dan produk yang perlu menghubungi UMKM.
 10. Hasil hanya menampilkan produk aktif dari UMKM active dan verified.
+11. User membuka kartu produk untuk melihat detail produk di `/produk/{slug}`.
+
+## Flow Detail Produk
+
+1. User membuka detail produk dari homepage, `/produk`, atau katalog pada detail UMKM.
+2. Sistem hanya menampilkan produk aktif yang tidak diblokir admin dan berasal dari UMKM verified + active.
+3. User melihat foto utama, galeri, nama produk/jasa, kategori, harga jika tersedia, deskripsi lengkap, dan UMKM pemilik.
+4. User dapat menekan `Tanya Produk` untuk membuka WhatsApp langsung dengan pesan produk.
+5. User dapat membuka profil UMKM untuk melihat katalog lain, alamat, Maps, QR profil, dan kontak lengkap.
+6. Detail produk adalah halaman katalog informasi; tidak ada cart, checkout, payment, ongkir, atau transaksi internal.
 
 ## Flow Homepage Product-Led
 
@@ -86,7 +96,7 @@
 2. User langsung melihat search besar di navbar sebagai navigasi utama discovery.
 3. User melihat carousel jumbotron informatif berisi produk lokal, UMKM verified, akun owner, dan katalog digital.
 4. User memilih ikon kategori cepat, termasuk "Lihat Semua" untuk membuka `/kategori`.
-5. User melihat produk/jasa terbaru dan dapat membuka profil UMKM atau bertanya lewat WhatsApp.
+5. User melihat produk/jasa terbaru dan dapat membuka detail produk atau bertanya lewat WhatsApp.
 6. CTA membuka WhatsApp atau Google Maps secara langsung tanpa tracking database.
 7. Tidak ada cart, checkout, payment, ongkir, atau transaksi internal.
 
@@ -136,7 +146,7 @@
 5. Transfer ke Cloudinary memakai stream multipart; browser menerima URL `f_auto/q_auto` tanpa thumbnail, resize, atau crop otomatis.
 6. Endpoint temporary membatasi format, ukuran, dimensi, dan rate; adapter memeriksa ulang isi file sebelum upload.
 7. Cloudinary delivery memakai signed URL untuk kompatibilitas dengan Strict Transformations.
-8. Produk tampil di detail UMKM dan listing produk jika aktif.
+8. Produk tampil di detail UMKM, listing produk, homepage, dan halaman detail produk jika aktif.
 9. Jika gambar utama kosong, tampilan publik memakai foto galeri pertama sebagai fallback.
 10. Admin tidak mengedit produk owner, tetapi dapat memblokir produk bermasalah dengan alasan dan audit; owner tidak dapat membuka blokir sendiri.
 11. Setelah memperbaiki produk terblokir, owner memilih `Ajukan Peninjauan Ulang` dan wajib menjelaskan perbaikannya.
