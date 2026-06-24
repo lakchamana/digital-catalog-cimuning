@@ -57,6 +57,9 @@
         </main>
 
         <x-footer />
+        @unless (request()->routeIs('privacy'))
+            <x-privacy-notice />
+        @endunless
         <x-first-visit-onboarding />
 
         @livewireScripts

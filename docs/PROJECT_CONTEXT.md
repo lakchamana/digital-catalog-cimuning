@@ -10,6 +10,16 @@ Platform ini adalah online directory/katalog digital. Fokus utama aplikasi adala
 
 CTA WhatsApp dan Google Maps mengarah langsung ke layanan eksternal, sedangkan QR mengarah langsung ke profil UMKM. Platform tidak menyimpan event klik, scan QR, IP, user agent, referer, atau analytics kontak di database.
 
+## Privasi dan Data Pribadi
+
+Kebijakan Privasi publik tersedia di `/kebijakan-privasi` dan ditulis agar mudah dipahami oleh visitor, owner UMKM, dan pengelola. Substansinya mengikuti prinsip transparansi UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi: jelaskan data yang dikumpulkan, tujuan pemrosesan, data yang tampil publik, pihak ketiga, hak pengguna, keamanan, retensi, dan kanal bantuan.
+
+Visitor publik melihat pemberitahuan privasi first-visit yang ringan, bukan banner "accept cookies", karena aplikasi tidak memakai analytics/tracking cookies. Status pemberitahuan disimpan di browser memakai localStorage key `cimuning_privacy_notice_seen_v1`.
+
+Owner wajib menyetujui Kebijakan Privasi ketika membuat akun di `/admin/register`. Persetujuan dicatat pada `users.privacy_accepted_at` dan `users.privacy_version`. Data owner yang dapat tampil publik meliputi profil UMKM verified, produk aktif, kontak usaha, alamat/RW, titik Maps, media sosial, QR profil, serta foto/logo/cover/galeri yang owner unggah.
+
+Kebijakan Privasi harus direview ulang sebelum menambah analytics, email marketing, payment, checkout, chat, tracking pengunjung, atau pemrosesan data baru yang lebih sensitif. Kontak resmi pengelola belum final, sehingga kebijakan dan halaman bantuan sementara mengarahkan user ke `/kontak` tanpa nomor/email dummy.
+
 ## Target User
 
 - Public user atau warga yang mencari produk, jasa, toko, atau nama UMKM.

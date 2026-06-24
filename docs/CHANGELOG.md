@@ -3,6 +3,10 @@
 ## [Unreleased]
 
 ### Added
+- Public Privacy Policy page at `/kebijakan-privasi`, written for Cimuning Digital Hub data flows and aligned with Indonesia's personal data protection direction.
+- Lightweight first-visit privacy notice using localStorage key `cimuning_privacy_notice_seen_v1`, intentionally separate from the interactive walkthrough.
+- Required owner registration privacy consent with `privacy_accepted_at` and `privacy_version` stored on the user record.
+- Privacy Policy links in the public navbar/drawer, footer, contact/help page, owner registration form, and sitemap.
 - Optional `media:diagnose --upload` smoke test with signed delivery verification and guaranteed cleanup.
 - Read-only `media:diagnose` command for checking permanent/temporary disks and Cloudinary authentication without exposing secrets.
 - UMKM submission snapshots for initial registrations and verified-profile changes, including reviewer, notes, checklist, and decision timestamps.
@@ -95,6 +99,7 @@
 - Public product detail pages at `/produk/{slug}` with gallery, full description, UMKM owner information, direct WhatsApp CTA, profile link, SEO metadata, and JSON-LD `Product` schema.
 
 ### Changed
+- Owner registration now requires explicit agreement to the Privacy Policy before creating an UMKM owner account.
 - Public `/produk` and `/umkm` now use the navbar as the only keyword search entry point; page content focuses on live filters, results, and active filter chips.
 - Navbar search is contextual: `/umkm` and `/kategori/{slug}` search UMKM, while other public pages search products/services by default.
 - Product and UMKM filters now behave like direct-apply discovery controls: selecting a filter submits a GET URL immediately, so results and query string update even if Livewire AJAX is unavailable.
@@ -194,6 +199,8 @@
 - Pasted Google Maps links that do not contain readable coordinates now fail validation with a friendly message instead of being ignored silently.
 
 ### Notes
+- Privacy Policy v1 is not a substitute for formal legal review. Revisit it before adding analytics, email marketing, payment, checkout, chat, or any new tracking flow.
+- Public visitor notice is a privacy notice, not an "accept cookies" banner, because the app does not use analytics/tracking cookies.
 - MVP remains a directory/catalog platform. Payment, checkout, cart, and transaction flows are intentionally excluded.
 - MySQL/XAMPP is now active and user confirmed `php artisan migrate --seed` was run successfully.
 - Local PHP CLI has required extensions for Filament install: `intl`, `zip`, `fileinfo`, `mbstring`, `openssl`, and `pdo_mysql`.

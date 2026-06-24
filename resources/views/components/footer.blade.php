@@ -28,6 +28,7 @@
             <div class="mt-3 space-y-2 text-sm text-cimuning-slate">
                 <a class="block hover:text-cimuning-red" href="{{ route('about') }}">Tentang Kami</a>
                 <a class="block hover:text-cimuning-red" href="{{ route('contact') }}">Kontak/Bantuan</a>
+                <a class="block hover:text-cimuning-red" href="{{ route('privacy') }}">Kebijakan Privasi</a>
                 <a class="block hover:text-cimuning-red" href="{{ route('contact') }}">Bantuan Owner</a>
             </div>
         </div>

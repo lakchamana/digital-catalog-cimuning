@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\Umkm;
 use App\Models\User;
 use App\Support\OwnerFormHelper;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -26,10 +27,12 @@ class OwnerOnboardingTest extends TestCase
             ->assertOk()
             ->assertSee('Buat akun UMKM')
             ->assertSee('Verifikasi keamanan')
+            ->assertSee('Kebijakan Privasi')
             ->assertSee('Masukkan hasil perhitungan di atas.')
             ->assertDontSee('id="form.profile_confirmation" type="text"', false);
 
         Livewire::test(RegisterOwner::class)
+            ->assertFormFieldExists('privacy_accepted', fn ($field): bool => $field instanceof Checkbox)
             ->assertFormFieldExists('profile_confirmation', fn ($field): bool => $field instanceof Hidden);
     }
 
@@ -45,6 +48,7 @@ class OwnerOnboardingTest extends TestCase
                 'email' => 'owner-baru@example.test',
                 'password' => 'password',
                 'passwordConfirmation' => 'password',
+                'privacy_accepted' => true,
                 'captcha_token' => $captchaToken,
                 'captcha_answer' => " {$captchaAnswer} ",
             ])
@@ -55,7 +59,30 @@ class OwnerOnboardingTest extends TestCase
         $owner = User::query()->where('email', 'owner-baru@example.test')->firstOrFail();
 
         $this->assertSame('umkm_owner', $owner->role);
+        $this->assertNotNull($owner->privacy_accepted_at);
+        $this->assertSame(RegisterOwner::PRIVACY_VERSION, $owner->privacy_version);
         $this->assertAuthenticatedAs($owner);
+    }
+
+    public function test_owner_registration_requires_privacy_policy_acceptance(): void
+    {
+        $component = Livewire::test(RegisterOwner::class);
+        $captchaToken = session('owner_register_captcha_token');
+        $captchaAnswer = session("owner_register_captchas.{$captchaToken}.answer");
+
+        $component
+            ->fillForm([
+                'name' => 'Owner Privasi',
+                'email' => 'owner-privasi@example.test',
+                'password' => 'password',
+                'passwordConfirmation' => 'password',
+                'captcha_token' => $captchaToken,
+                'captcha_answer' => $captchaAnswer,
+            ])
+            ->call('register')
+            ->assertHasFormErrors(['privacy_accepted']);
+
+        $this->assertDatabaseMissing('users', ['email' => 'owner-privasi@example.test']);
     }
 
     public function test_owner_registration_captcha_allows_multiple_open_tabs(): void
@@ -72,6 +99,7 @@ class OwnerOnboardingTest extends TestCase
                 'email' => 'owner-multitab@example.test',
                 'password' => 'password',
                 'passwordConfirmation' => 'password',
+                'privacy_accepted' => true,
                 'captcha_token' => $firstToken,
                 'captcha_answer' => $firstAnswer,
             ])
@@ -96,6 +124,7 @@ class OwnerOnboardingTest extends TestCase
                 'email' => 'owner-salah@example.test',
                 'password' => 'password',
                 'passwordConfirmation' => 'password',
+                'privacy_accepted' => true,
                 'captcha_token' => $wrongToken,
                 'captcha_answer' => '999',
             ])
@@ -114,6 +143,7 @@ class OwnerOnboardingTest extends TestCase
                 'email' => 'owner-bot@example.test',
                 'password' => 'password',
                 'passwordConfirmation' => 'password',
+                'privacy_accepted' => true,
                 'captcha_token' => $captchaToken,
                 'captcha_answer' => $captchaAnswer,
                 'profile_confirmation' => 'filled-by-bot',
@@ -135,6 +165,7 @@ class OwnerOnboardingTest extends TestCase
                 'email' => 'owner-token-hilang@example.test',
                 'password' => 'password',
                 'passwordConfirmation' => 'password',
+                'privacy_accepted' => true,
                 'captcha_token' => 'token-tidak-ada',
                 'captcha_answer' => $captchaAnswer,
             ])

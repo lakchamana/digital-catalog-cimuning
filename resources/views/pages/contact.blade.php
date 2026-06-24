@@ -42,6 +42,7 @@
                     ['title' => 'Masuk sebagai owner', 'body' => 'Owner yang sudah punya akun bisa mengelola profil UMKM dan produk/jasa dari dashboard.', 'href' => $ownerLoginUrl, 'action' => 'Masuk Dashboard'],
                     ['title' => 'Menunggu verifikasi', 'body' => 'UMKM baru tidak langsung tampil publik. Admin akan memeriksa kelengkapan profil sebelum mengaktifkan direktori.', 'href' => route('umkm.register'), 'action' => 'Lihat Alur Daftar'],
                     ['title' => 'Perlu revisi data', 'body' => 'Jika status perlu revisi, owner dapat memperbaiki profil, kontak, lokasi, layanan, dan foto dari dashboard.', 'href' => $ownerLoginUrl, 'action' => 'Buka Dashboard'],
+                    ['title' => 'Kebijakan privasi', 'body' => 'Baca bagaimana data pengunjung, owner, profil UMKM, produk, dan media dikelola di Cimuning Digital Hub.', 'href' => route('privacy'), 'action' => 'Baca Kebijakan'],
                 ] as $item)
                     <article class="flex h-full flex-col rounded-card border border-cimuning-border bg-cimuning-section p-5">
                         <h3 class="text-lg font-bold text-cimuning-charcoal">{{ $item['title'] }}</h3>

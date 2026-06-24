@@ -163,6 +163,7 @@ Route::get('/sitemap.xml', function () use ($hasTables) {
         ['loc' => route('umkm.register'), 'priority' => '0.5', 'changefreq' => 'monthly'],
         ['loc' => route('about'), 'priority' => '0.4', 'changefreq' => 'monthly'],
         ['loc' => route('contact'), 'priority' => '0.4', 'changefreq' => 'monthly'],
+        ['loc' => route('privacy'), 'priority' => '0.4', 'changefreq' => 'monthly'],
     ]);
 
     if ($hasTables(['categories'])) {
@@ -220,3 +221,5 @@ Route::get('/daftar-umkm', function () {
 Route::view('/tentang', 'pages.about')->name('about');
 
 Route::view('/kontak', 'pages.contact')->name('contact');
+
+Route::view('/kebijakan-privasi', 'pages.privacy')->name('privacy');

@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\Auth;
 
 use Filament\Auth\Pages\Register;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
@@ -16,6 +17,8 @@ use SensitiveParameter;
 
 class RegisterOwner extends Register
 {
+    public const PRIVACY_VERSION = '2026-06-24';
+
     private const CAPTCHA_SESSION_KEY = 'owner_register_captchas';
 
     private const CURRENT_CAPTCHA_TOKEN_KEY = 'owner_register_captcha_token';
@@ -49,6 +52,12 @@ class RegisterOwner extends Register
         $token = (string) ($data['captcha_token'] ?? '');
         $captcha = $this->captchaForToken($token);
 
+        if (! in_array($data['privacy_accepted'] ?? false, [true, 1, '1', 'on'], true)) {
+            throw ValidationException::withMessages([
+                'data.privacy_accepted' => 'Anda perlu menyetujui Kebijakan Privasi sebelum membuat akun UMKM.',
+            ]);
+        }
+
         if (filled($data['profile_confirmation'] ?? null)) {
             $this->refreshCaptchaState();
 
@@ -66,7 +75,9 @@ class RegisterOwner extends Register
         }
 
         $data['role'] = 'umkm_owner';
-        unset($data['captcha_answer'], $data['captcha_token'], $data['profile_confirmation']);
+        $data['privacy_accepted_at'] = now();
+        $data['privacy_version'] = self::PRIVACY_VERSION;
+        unset($data['captcha_answer'], $data['captcha_token'], $data['profile_confirmation'], $data['privacy_accepted']);
 
         $this->forgetCaptcha($token);
 
@@ -85,6 +96,7 @@ class RegisterOwner extends Register
                     ->label('Password'),
                 $this->getPasswordConfirmationFormComponent()
                     ->label('Ulangi password'),
+                $this->getPrivacyAcceptanceFormComponent(),
                 $this->getCaptchaTokenFormComponent(),
                 $this->getCaptchaFormComponent(),
                 $this->getHoneypotFormComponent(),
@@ -110,6 +122,14 @@ class RegisterOwner extends Register
     {
         return Hidden::make('profile_confirmation')
             ->default('');
+    }
+
+    protected function getPrivacyAcceptanceFormComponent(): Component
+    {
+        return Checkbox::make('privacy_accepted')
+            ->label(new HtmlString('Saya telah membaca dan menyetujui <a href="'.route('privacy').'" target="_blank" rel="noopener" class="font-semibold text-primary-600 underline">Kebijakan Privasi Cimuning Digital Hub</a>.'))
+            ->accepted()
+            ->required();
     }
 
     private function refreshCaptcha(): string

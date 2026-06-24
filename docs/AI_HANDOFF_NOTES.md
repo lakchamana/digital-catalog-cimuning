@@ -70,6 +70,10 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Detail produk public merender canonical, Open Graph, Twitter card, dan JSON-LD `Product` dari data katalog yang sudah public.
 - Sitemap dinamis tersedia di `/sitemap.xml`; hanya memuat homepage, listing public, kategori aktif, UMKM aktif + verified, dan produk public dari UMKM verified.
 - `robots.txt` menolak `/admin` dan mereferensikan sitemap.
+- Kebijakan Privasi publik tersedia di `/kebijakan-privasi` dan masuk sitemap, footer, navbar/drawer, halaman kontak, serta form register owner.
+- Public layout menampilkan pemberitahuan privasi ringan dengan localStorage key `cimuning_privacy_notice_seen_v1`. Ini bukan banner "accept cookies" karena aplikasi tidak memakai analytics/tracking cookies.
+- Owner wajib menyetujui Kebijakan Privasi saat membuat akun di `/admin/register`; timestamp disimpan di `users.privacy_accepted_at` dan versi di `users.privacy_version`.
+- Versi kebijakan owner registration saat ini didefinisikan di `App\Filament\Pages\Auth\RegisterOwner::PRIVACY_VERSION`.
 - Registrasi owner `/admin/register` memakai CAPTCHA matematika lokal berbasis session dan honeypot tersembunyi, tanpa layanan eksternal.
 - CAPTCHA owner registration memakai token per form render yang disimpan di session agar beberapa tab register tidak saling membatalkan jawaban.
 - Form UMKM Filament sekarang memakai wizard bertahap agar owner awam tidak melihat seluruh field teknis sekaligus.
@@ -122,6 +126,8 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Jangan mengganti production upload ke `public`/`local` disk di Railway karena file upload akan hilang saat redeploy.
 - Jangan mengubah QR menjadi langsung WhatsApp untuk v1; target default adalah profil UMKM agar katalog, lokasi, dan kontak tetap terlihat.
 - Jangan menambahkan kembali tracking klik WhatsApp/Maps, scan QR, atau analytics kontak tanpa keputusan produk baru.
+- Jangan mengubah privacy notice publik menjadi cookie consent yang menyesatkan kecuali aplikasi benar-benar menambah cookies/analytics yang membutuhkan persetujuan eksplisit.
+- Jangan menaruh nomor telepon/email dummy di Kebijakan Privasi; sampai kontak resmi final, arahkan user ke halaman `/kontak`.
 
 ## Status Pekerjaan Terakhir
 
@@ -209,6 +215,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Halaman detail produk publik sudah ditambahkan dengan galeri, deskripsi lengkap, harga, info UMKM, CTA WhatsApp, link profil UMKM, SEO metadata, dan sitemap entry.
 - Test halaman informasi publik sudah ditambahkan untuk mencegah regresi ke placeholder.
 - Action tabel produk Filament sekarang memberi feedback sukses kepada admin setelah produk diblokir, dibuka kembali, atau permintaan review ditolak; owner tetap menerima notification bell dari service moderasi.
+- Halaman Kebijakan Privasi publik sudah ditambahkan di `/kebijakan-privasi` dengan pemberitahuan privasi first-visit dan consent wajib untuk owner registration.
 
 ## Next Steps
 
@@ -217,3 +224,4 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 3. Siapkan email operasional dan password reset setelah domain serta konfigurasi mail tersedia.
 4. Tetapkan backup database Railway, domain production, monitoring log/error, dan prosedur rotasi secret.
 5. Pertimbangkan export data UMKM hanya ketika benar-benar dibutuhkan operasional.
+6. Review formal Kebijakan Privasi dengan pihak hukum/pengelola sebelum rilis masyarakat luas, terutama jika nanti ada email marketing, analytics, chat, payment, atau tracking baru.
