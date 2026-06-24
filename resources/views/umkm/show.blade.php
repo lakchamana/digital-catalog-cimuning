@@ -134,7 +134,10 @@
                     <p><span class="font-semibold text-cimuning-charcoal">Pemilik:</span> {{ $umkm->owner_name ?? '-' }}</p>
                     <p><span class="font-semibold text-cimuning-charcoal">WhatsApp:</span> {{ $umkm->whatsapp ?? '-' }}</p>
                     <p><span class="font-semibold text-cimuning-charcoal">Lokasi:</span> {{ $umkm->rw ?? 'Cimuning' }}</p>
-                    <p><span class="font-semibold text-cimuning-charcoal">Alamat:</span> {{ $umkm->address ?? 'Alamat belum dilengkapi.' }}</p>
+                    <p><span class="font-semibold text-cimuning-charcoal">Alamat tertulis:</span> {{ $umkm->address ?? 'Alamat belum dilengkapi.' }}</p>
+                    @if ($hasCoordinates)
+                        <p><span class="font-semibold text-cimuning-charcoal">Titik Maps:</span> sudah tersedia</p>
+                    @endif
                 </div>
                 <div class="mt-5 grid gap-3">
                     @if ($whatsappUrl)
@@ -164,14 +167,18 @@
                 <p class="text-sm font-semibold uppercase tracking-wide text-cimuning-red">Lokasi</p>
                 <h2 class="mt-2 text-2xl font-bold text-cimuning-charcoal">Temukan lokasi usaha</h2>
                 <p class="mt-3 max-w-2xl text-base leading-8 text-cimuning-slate">
-                    Gunakan Maps untuk melihat perkiraan lokasi usaha. Pastikan kembali alamat atau titik temu melalui WhatsApp sebelum berkunjung.
+                    Gunakan titik Maps bila tersedia, lalu cocokkan dengan alamat tertulis. Pastikan kembali alamat atau titik temu melalui WhatsApp sebelum berkunjung.
                 </p>
             </div>
 
             <div class="rounded-card border border-cimuning-border bg-cimuning-section p-5">
-                <p class="text-base font-semibold text-cimuning-charcoal">{{ $umkm->address ?? 'Alamat belum tersedia' }}</p>
+                <p class="text-sm font-semibold uppercase tracking-wide text-cimuning-red">Alamat tertulis</p>
+                <p class="mt-2 text-base font-semibold text-cimuning-charcoal">{{ $umkm->address ?? 'Alamat belum tersedia' }}</p>
                 @if ($hasCoordinates)
+                    <p class="mt-4 text-sm font-semibold uppercase tracking-wide text-cimuning-red">Titik Google Maps</p>
                     <p class="mt-2 text-sm text-cimuning-slate">{{ $umkm->latitude }}, {{ $umkm->longitude }}</p>
+                @else
+                    <p class="mt-4 text-sm leading-6 text-cimuning-slate">Titik Google Maps belum dilengkapi. Tombol Maps akan mencari berdasarkan alamat tertulis jika tersedia.</p>
                 @endif
                 @if ($mapsUrl)
                     <x-secondary-button :href="$mapsUrl" target="_blank" rel="noopener" class="mt-4 w-full">Buka di Google Maps</x-secondary-button>

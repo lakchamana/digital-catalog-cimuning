@@ -29,6 +29,8 @@ class DirectContactLinksTest extends TestCase
             ->assertOk()
             ->assertSee('https://wa.me/6281234567890', false)
             ->assertSee('https://www.google.com/maps/search/?api=1&amp;query=', false)
+            ->assertSee('Alamat tertulis')
+            ->assertSee('Titik Google Maps')
             ->assertDontSee('/leads/', false);
     }
 
@@ -67,6 +69,8 @@ class DirectContactLinksTest extends TestCase
             'is_active' => true,
             'whatsapp' => '081234567890',
             'address' => 'Jl. Cimuning Raya',
+            'latitude' => -6.3123456,
+            'longitude' => 107.0123456,
         ]);
     }
 }

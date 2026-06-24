@@ -90,6 +90,8 @@
 - UMKM search UX tests for explicit search submit, contextual result headings, mobile filter copy, safe query fallback, and individual filter chip removal.
 - Searchable RW selector with the complete `RW 01` through `RW 26` options for UMKM onboarding.
 - Feature tests for the hidden registration honeypot, RW validation, owner/admin field visibility, removed UMKM analytics column, and seeder compatibility.
+- Broader Google Maps coordinate parsing for owner onboarding, including `ll`, `center`, encoded query coordinates, and `!3d/!4d` URLs.
+- Owner-facing Maps point status and a "Cek titik tersimpan" helper in the UMKM location wizard.
 
 ### Changed
 - Public `/produk` and `/umkm` now use the navbar as the only keyword search entry point; page content focuses on live filters, results, and active filter chips.
@@ -159,6 +161,8 @@
 - Owner registration honeypot now uses a true hidden field, removing the empty visual row below CAPTCHA while preserving server-side bot validation.
 - UMKM onboarding copy now uses concise public-facing language; owner-visible technical controls are hidden and the final step is a simple confirmation.
 - Owner UMKM registration now requires category, business name, description, contact person, WhatsApp, RW, and address.
+- UMKM detail pages now distinguish written address from Google Maps coordinates so public users understand both data sources.
+- Product moderation table actions now show clearer admin feedback after block, unblock, or rejected re-review decisions.
 
 ### Removed
 - Quick verification actions and destructive admin actions from owner UMKM/product tables.
@@ -184,6 +188,7 @@
 - Product category filters returning empty results when products relied on their UMKM category instead of `products.category_id`.
 - Owner registration false failures caused by CAPTCHA session replacement across multiple tabs or browser autofill touching the honeypot.
 - Mobile navigation drawer layout by moving viewport-fixed overlay elements outside the sticky backdrop-filter header.
+- Pasted Google Maps links that do not contain readable coordinates now fail validation with a friendly message instead of being ignored silently.
 
 ### Notes
 - MVP remains a directory/catalog platform. Payment, checkout, cart, and transaction flows are intentionally excluded.
@@ -199,6 +204,7 @@
 - Owner onboarding CAPTCHA is local and free; it is meant as a lightweight spam barrier, not a full bot-defense service.
 - Owner onboarding CAPTCHA is tokenized per form render; opening a second register tab should not invalidate the first tab's answer.
 - UMKM geotagging does not use a paid Google Maps API. Owners can use browser location, paste coordinates/Maps text, or open Google Maps manually.
+- Short Google Maps links are not resolved server-side for security; owners should open them first, then paste the full Maps URL or coordinates.
 - Browser Geolocation works on localhost during development and requires HTTPS in production.
 - Railway production testing URL: `https://digital-catalog-cimuning-production.up.railway.app/`.
 - Do not run `php artisan config:cache` during Docker build because Railway environment variables are runtime-only.

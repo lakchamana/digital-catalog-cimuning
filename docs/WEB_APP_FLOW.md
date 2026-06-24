@@ -25,11 +25,12 @@
 3. Sistem membuat akun dengan role `umkm_owner` dan mengarahkan owner ke dashboard.
 4. Owner mengisi atau memperbarui profil UMKM melalui wizard Informasi usaha, Kontak, Lokasi, Media sosial, Foto & layanan, dan Konfirmasi.
 5. Owner tidak perlu memahami slug/URL teknis karena sistem membuat slug otomatis.
-6. Owner wajib memilih RW 01-RW 26 melalui dropdown pencarian, lalu mengisi alamat dan dapat memakai Geolocation atau link Google Maps.
-7. UMKM baru tersimpan sebagai pending dan belum tampil publik.
-8. Owner menambah produk/jasa dan foto setelah profil UMKM tersedia.
-9. Owner melihat status pending, verified, rejected, atau need revision.
-10. Owner memperbaiki data jika admin meminta revisi.
+6. Owner wajib memilih RW 01-RW 26 melalui dropdown pencarian, lalu mengisi alamat dan dapat memakai Geolocation atau link Google Maps yang berisi koordinat.
+7. Owner mengecek titik Google Maps yang tersimpan; alamat tertulis tetap diisi manual karena sistem tidak memakai reverse geocoding.
+8. UMKM baru tersimpan sebagai pending dan belum tampil publik.
+9. Owner menambah produk/jasa dan foto setelah profil UMKM tersedia.
+10. Owner melihat status pending, verified, rejected, atau need revision.
+11. Owner memperbaiki data jika admin meminta revisi.
 
 ## Flow Admin
 
@@ -58,12 +59,13 @@
 2. User membaca manfaat dan langkah pendaftaran account-first.
 3. User membuat akun owner dari `/admin/register` dengan CAPTCHA matematika lokal tokenized dan honeypot anti-spam.
 4. Setelah login, owner melengkapi data usaha, kategori, kontak, lokasi, media sosial, layanan, dan foto dari dashboard.
-5. Sistem membantu lokasi tanpa API berbayar: browser Geolocation, parsing koordinat/teks Maps, dan tombol buka Google Maps.
-6. Sistem menerima Instagram/TikTok sebagai username atau URL, lalu menormalisasi saat data disimpan.
-7. Sistem memvalidasi input dan upload.
-8. Sistem membuat slug unik otomatis dan menyimpan data dengan status pending serta belum aktif.
-9. Sistem mengirim notifikasi dashboard ke admin.
-10. Admin melakukan verifikasi dari dashboard.
+5. Sistem membantu lokasi tanpa API berbayar: browser Geolocation, parsing koordinat/teks Maps, tombol cek titik tersimpan, dan tombol buka Google Maps.
+6. Jika link Maps tidak berisi koordinat yang bisa dibaca, sistem meminta owner menempel URL Maps lengkap atau koordinat; link pendek tidak di-resolve server-side.
+7. Sistem menerima Instagram/TikTok sebagai username atau URL, lalu menormalisasi saat data disimpan.
+8. Sistem memvalidasi input dan upload.
+9. Sistem membuat slug unik otomatis dan menyimpan data dengan status pending serta belum aktif.
+10. Sistem mengirim notifikasi dashboard ke admin.
+11. Admin melakukan verifikasi dari dashboard.
 
 ## Flow Pencarian Produk/Jasa
 
@@ -154,9 +156,10 @@
 ## Flow Kontak WhatsApp/Maps
 
 1. User membuka detail UMKM.
-2. User menekan CTA WhatsApp atau Lihat Lokasi.
-3. Website membuka WhatsApp atau Google Maps secara langsung tanpa route perantara dan tanpa menyimpan event.
-4. Transaksi tetap dilakukan langsung di luar website.
+2. User melihat alamat tertulis dan titik Google Maps sebagai informasi lokasi yang berbeda.
+3. User menekan CTA WhatsApp atau Lihat Lokasi.
+4. Website membuka WhatsApp atau Google Maps secara langsung tanpa route perantara dan tanpa menyimpan event.
+5. Transaksi tetap dilakukan langsung di luar website.
 
 ## Flow SEO Public Discovery
 

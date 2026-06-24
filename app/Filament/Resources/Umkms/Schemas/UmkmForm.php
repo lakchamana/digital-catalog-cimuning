@@ -139,7 +139,16 @@ class UmkmForm
                         ->label('Link lokasi Google Maps')
                         ->placeholder('Tempel link lokasi usaha dari Google Maps')
                         ->live(onBlur: true)
-                        ->helperText('Buka lokasi usaha di Google Maps, lalu salin dan tempel linknya di sini.')
+                        ->helperText('Opsional. Tempel URL Maps lengkap atau koordinat lokasi usaha.')
+                        ->rules([
+                            function (): \Closure {
+                                return function (string $attribute, mixed $value, \Closure $fail): void {
+                                    if ($message = OwnerFormHelper::mapsValidationMessage(is_string($value) ? $value : null)) {
+                                        $fail($message);
+                                    }
+                                };
+                            },
+                        ])
                         ->afterStateUpdated(function (Set $set, ?string $state): void {
                             $coordinates = OwnerFormHelper::coordinatesFromMapsText($state);
 

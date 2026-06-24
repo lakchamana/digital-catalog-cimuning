@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Filament\Resources\ModerationActions\ModerationActionResource;
 use App\Filament\Resources\Products\Pages\EditProduct;
+use App\Filament\Resources\Products\Pages\ListProducts;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\Umkms\Pages\EditUmkm;
 use App\Filament\Resources\Umkms\UmkmResource;
@@ -194,6 +195,23 @@ class ProfessionalUmkmVerificationTest extends TestCase
         $this->assertTrue($owner->notifications()->get()
             ->contains(fn ($notification): bool => $notification->data['title'] === 'Produk dapat ditampilkan kembali'));
         $this->get(route('products.index'))->assertOk()->assertSee($product->name);
+    }
+
+    public function test_admin_table_block_action_shows_success_feedback(): void
+    {
+        [$owner, $admin, $umkm] = $this->peopleAndUmkm('verified', true);
+        $product = $this->product($umkm);
+
+        Livewire::actingAs($admin)
+            ->test(ListProducts::class)
+            ->callTableAction('block', $product, [
+                'reason' => 'Produk melanggar ketentuan konten katalog publik.',
+            ])
+            ->assertNotified('Produk berhasil diblokir');
+
+        $this->assertTrue($product->refresh()->is_admin_blocked);
+        $this->assertTrue($owner->notifications()->get()
+            ->contains(fn ($notification): bool => $notification->data['title'] === 'Produk dinonaktifkan admin'));
     }
 
     public function test_owner_can_request_product_review_and_admin_can_reject_it(): void

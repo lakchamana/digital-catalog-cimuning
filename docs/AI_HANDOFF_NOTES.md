@@ -75,7 +75,9 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Field RW memakai searchable Select wajib dengan pilihan konsisten `RW 01` sampai `RW 26`.
 - Honeypot register memakai komponen `Hidden`, sehingga tidak membuat baris kosong setelah CAPTCHA tetapi validasi server-side tetap aktif.
 - Helper owner berada di `App\Support\OwnerFormHelper` untuk normalisasi Instagram/TikTok dan parsing koordinat dari teks/link Maps.
-- Pengambilan lokasi owner tidak memakai Google Maps API berbayar: UI menyediakan browser Geolocation, parsing koordinat, dan tombol membuka Google Maps dari alamat.
+- Pengambilan lokasi owner tidak memakai Google Maps API berbayar: UI menyediakan browser Geolocation, parsing koordinat, tombol cek titik tersimpan, dan tombol membuka Google Maps dari alamat.
+- Link Maps yang ditempel harus berisi koordinat yang bisa dibaca. Link pendek seperti `maps.app.goo.gl` tidak di-resolve server-side; owner perlu membuka link itu dahulu lalu menyalin URL lengkap atau koordinat.
+- Alamat tertulis dan titik Google Maps adalah dua data terpisah. Browser Geolocation hanya mengisi koordinat, bukan memperbaiki field alamat.
 - Production Railway memakai Dockerfile, `docker-entrypoint.sh`, dan `server.php`.
 - `server.php` wajib dipertahankan untuk PHP built-in server production karena Livewire/Filament JS adalah route Laravel, bukan file statis biasa.
 - Config cache dan route cache production dijalankan di `docker-entrypoint.sh` saat runtime, bukan di Docker build, karena environment variables Railway tersedia saat container berjalan.
@@ -188,6 +190,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - SEO public tahap awal sudah ditambahkan untuk detail UMKM dan sitemap publik.
 - Test SEO public sudah ditambahkan untuk meta detail UMKM, fallback social image, sitemap, dan robots.
 - Owner onboarding sudah dipoles: form UMKM owner berupa wizard, slug tidak perlu diisi owner, koordinat bisa dibantu dari Geolocation atau teks Maps, dan social media boleh berupa username atau URL.
+- Wizard lokasi owner sekarang menolak link Maps yang tidak berisi koordinat terbaca, menampilkan status titik Maps, dan menyediakan tombol cek titik tersimpan.
 - Form owner memakai RW 01-26, field wajib minimum, konfirmasi ringkas, serta tidak lagi menampilkan `view_count` atau pengaturan teknis publik.
 - Polish onboarding dan penghapusan `view_count` sudah aktif di Railway sejak 19 Juni 2026 melalui commit `a89103b`; `/produk`, register CAPTCHA, dan fallback query `sort=popular` sudah diverifikasi di production.
 - Test owner onboarding sudah diperluas untuk CAPTCHA, honeypot, slug otomatis, koordinat Maps, dan normalisasi Instagram/TikTok.
@@ -200,6 +203,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Test QR profil menjaga SVG, target profil langsung, download, dan proteksi UMKM non-public.
 - Halaman Tentang dan Kontak/Bantuan publik sudah dilengkapi dengan SEO metadata, CTA, footer links, dan copy tanpa kontak palsu.
 - Test halaman informasi publik sudah ditambahkan untuk mencegah regresi ke placeholder.
+- Action tabel produk Filament sekarang memberi feedback sukses kepada admin setelah produk diblokir, dibuka kembali, atau permintaan review ditolak; owner tetap menerima notification bell dari service moderasi.
 
 ## Next Steps
 

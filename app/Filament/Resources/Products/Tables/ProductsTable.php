@@ -11,6 +11,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Textarea;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -129,7 +130,15 @@ class ProductsTable
                         Textarea::make('reason')->label('Alasan penonaktifan')->required()->minLength(10)->maxLength(2000),
                     ])
                     ->visible(fn (Product $record): bool => Filament::auth()->user()?->isAdmin() && ! $record->is_admin_blocked)
-                    ->action(fn (Product $record, array $data) => ContentModeration::blockProduct($record, Filament::auth()->user(), $data['reason'])),
+                    ->action(function (Product $record, array $data): void {
+                        ContentModeration::blockProduct($record, Filament::auth()->user(), $data['reason']);
+
+                        Notification::make()
+                            ->title('Produk berhasil diblokir')
+                            ->body('Produk sudah disembunyikan dari halaman publik dan owner menerima notifikasi dashboard.')
+                            ->success()
+                            ->send();
+                    }),
                 Action::make('unblock')
                     ->label('Aktifkan kembali')
                     ->icon('heroicon-o-check-circle')
@@ -138,7 +147,15 @@ class ProductsTable
                         Textarea::make('reason')->label('Catatan pengaktifan')->required()->minLength(10)->maxLength(2000),
                     ])
                     ->visible(fn (Product $record): bool => Filament::auth()->user()?->isAdmin() && $record->is_admin_blocked)
-                    ->action(fn (Product $record, array $data) => ContentModeration::unblockProduct($record, Filament::auth()->user(), $data['reason'])),
+                    ->action(function (Product $record, array $data): void {
+                        ContentModeration::unblockProduct($record, Filament::auth()->user(), $data['reason']);
+
+                        Notification::make()
+                            ->title('Produk berhasil diaktifkan kembali')
+                            ->body('Produk dapat tampil lagi sesuai status aktifnya.')
+                            ->success()
+                            ->send();
+                    }),
                 Action::make('rejectReview')
                     ->label('Tolak peninjauan')
                     ->icon('heroicon-o-x-circle')
@@ -150,7 +167,15 @@ class ProductsTable
                     ->visible(fn (Product $record): bool => Filament::auth()->user()?->isAdmin()
                         && $record->is_admin_blocked
                         && filled($record->moderation_review_requested_at))
-                    ->action(fn (Product $record, array $data) => ContentModeration::rejectProductReview($record, Filament::auth()->user(), $data['reason'])),
+                    ->action(function (Product $record, array $data): void {
+                        ContentModeration::rejectProductReview($record, Filament::auth()->user(), $data['reason']);
+
+                        Notification::make()
+                            ->title('Peninjauan produk ditolak')
+                            ->body('Produk tetap disembunyikan dan owner menerima catatan keputusan.')
+                            ->warning()
+                            ->send();
+                    }),
                 ViewAction::make()->visible(fn (): bool => Filament::auth()->user()?->isAdmin() ?? false),
                 EditAction::make()->visible(fn (): bool => Filament::auth()->user()?->isUmkmOwner() ?? false),
             ]);

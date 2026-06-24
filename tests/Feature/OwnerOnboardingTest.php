@@ -335,12 +335,55 @@ class OwnerOnboardingTest extends TestCase
 
     public function test_maps_text_parser_accepts_coordinates_from_google_maps_text(): void
     {
-        $coordinates = OwnerFormHelper::coordinatesFromMapsText('https://www.google.com/maps/place/Cimuning/@-6.3123456,107.0123456,17z');
+        $samples = [
+            'https://www.google.com/maps/place/Cimuning/@-6.3123456,107.0123456,17z',
+            'https://www.google.com/maps/search/?api=1&query=-6.3123456,107.0123456',
+            'https://www.google.com/maps?ll=-6.3123456,107.0123456',
+            'https://www.google.com/maps?center=-6.3123456,107.0123456',
+            'https://www.google.com/maps/place/Cimuning/data=!3d-6.3123456!4d107.0123456',
+            'https://www.google.com/maps/place/Cimuning/data=!4d107.0123456!3d-6.3123456',
+            '-6.3123456, 107.0123456',
+            'https://www.google.com/maps/search/?api=1&query=-6.3123456%2C107.0123456',
+        ];
 
-        $this->assertSame([
-            'latitude' => '-6.3123456',
-            'longitude' => '107.0123456',
-        ], $coordinates);
+        foreach ($samples as $sample) {
+            $this->assertSame([
+                'latitude' => '-6.3123456',
+                'longitude' => '107.0123456',
+            ], OwnerFormHelper::coordinatesFromMapsText($sample), $sample);
+        }
+
+        $this->assertNull(OwnerFormHelper::coordinatesFromMapsText('https://maps.app.goo.gl/contohpendek'));
+        $this->assertNotNull(OwnerFormHelper::mapsValidationMessage('https://maps.app.goo.gl/contohpendek'));
+    }
+
+    public function test_owner_form_rejects_unreadable_maps_link(): void
+    {
+        $category = $this->category();
+        $owner = User::query()->create([
+            'name' => 'Owner Maps Salah',
+            'email' => 'owner-maps-salah@example.test',
+            'password' => 'password',
+            'role' => 'umkm_owner',
+        ]);
+
+        $this->actingAs($owner);
+
+        Livewire::test(CreateUmkm::class)
+            ->fillForm([
+                'category_id' => $category->id,
+                'name' => 'Usaha Maps Salah',
+                'description' => 'Usaha lokal Cimuning.',
+                'owner_name' => 'Owner Maps Salah',
+                'whatsapp' => '081234567890',
+                'rw' => 'RW 09',
+                'address' => 'Jl. Cimuning Raya',
+                'maps_link' => 'https://maps.app.goo.gl/contohpendek',
+            ])
+            ->call('create')
+            ->assertHasFormErrors(['maps_link']);
+
+        $this->assertDatabaseMissing('umkms', ['name' => 'Usaha Maps Salah']);
     }
 
     public function test_homepage_only_shows_products_from_verified_active_umkms(): void

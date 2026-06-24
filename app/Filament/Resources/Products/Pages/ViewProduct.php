@@ -30,7 +30,10 @@ class ViewProduct extends ViewRecord
                 ->action(function (array $data): void {
                     ContentModeration::blockProduct($this->record, Filament::auth()->user(), $data['reason']);
                     $this->record->refresh();
-                    $this->successNotification('Produk diblokir');
+                    $this->successNotification(
+                        'Produk berhasil diblokir',
+                        'Produk sudah disembunyikan dari halaman publik dan owner menerima notifikasi dashboard.',
+                    );
                 }),
             Action::make('rejectReview')
                 ->label('Tolak peninjauan')
@@ -48,7 +51,10 @@ class ViewProduct extends ViewRecord
                 ->action(function (array $data): void {
                     ContentModeration::rejectProductReview($this->record, Filament::auth()->user(), $data['reason']);
                     $this->record->refresh();
-                    $this->successNotification('Permintaan review ditolak');
+                    $this->successNotification(
+                        'Peninjauan produk ditolak',
+                        'Produk tetap disembunyikan dan owner menerima catatan keputusan.',
+                    );
                 }),
             Action::make('unblock')
                 ->label(fn (): string => $this->record->moderation_review_requested_at
@@ -65,13 +71,20 @@ class ViewProduct extends ViewRecord
                 ->action(function (array $data): void {
                     ContentModeration::unblockProduct($this->record, Filament::auth()->user(), $data['reason']);
                     $this->record->refresh();
-                    $this->successNotification('Produk dapat ditampilkan kembali');
+                    $this->successNotification(
+                        'Produk berhasil diaktifkan kembali',
+                        'Produk dapat tampil lagi sesuai status aktifnya.',
+                    );
                 }),
         ];
     }
 
-    private function successNotification(string $title): void
+    private function successNotification(string $title, ?string $body = null): void
     {
-        Notification::make()->title($title)->success()->send();
+        Notification::make()
+            ->title($title)
+            ->body($body)
+            ->success()
+            ->send();
     }
 }
