@@ -54,6 +54,7 @@
 6. Admin tetap mengelola kategori, kurasi UMKM pilihan, blokir publikasi UMKM, dan blokir produk bermasalah melalui action terpisah yang tercatat.
 7. Admin mengelola akun owner yang sudah mendaftar melalui menu `Akun Owner`; akun admin dan role tidak dapat diubah dari dashboard.
 8. Admin tidak melihat atau menentukan password. Link reset hanya dapat dikirim bila mail production dan `AUTH_PASSWORD_RESET_ENABLED` sudah aktif.
+9. Login/logout admin, kegagalan login panel, akses sensitif yang ditolak, perubahan profil admin, dan CRUD kategori masuk ke `Log Aktivitas Admin`.
 
 ## Flow Administrasi Akun Owner
 
@@ -187,6 +188,15 @@
 3. Admin dapat menyaring log berdasarkan aksi, aktor, jenis konten, dan rentang waktu.
 4. Log bersifat read-only dan tidak dapat dibuat, diubah, atau dihapus dari panel.
 5. Owner tidak dapat membuka resource audit dan tidak dapat mengubah field moderasi secara langsung.
+
+## Flow Audit Keamanan Admin
+
+1. Admin membuka menu `Log Aktivitas Admin` di panel `/admin`.
+2. Sistem mencatat login/logout admin, login panel gagal, akses sensitif yang ditolak, perubahan profil admin, dan create/update/delete kategori.
+3. Setiap record menyimpan waktu, aktor bila diketahui, target, request ID, route, method, dan perubahan field non-sensitif.
+4. Password, token, secret, IP mentah, query pencarian, cookie, dan isi media tidak disimpan dalam audit.
+5. Login gagal menyimpan hash identitas untuk korelasi tanpa menyimpan email percobaan sebagai teks terbuka.
+6. Log bersifat read-only dari dashboard; perubahan langsung oleh pemegang akses database tetap berada di luar jangkauan audit aplikasi.
 
 ## Flow Kontak WhatsApp/Maps
 

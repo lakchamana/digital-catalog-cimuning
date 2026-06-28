@@ -50,6 +50,9 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Anonimisasi hanya tersedia setelah suspend, membersihkan identitas/kontak/media/payload submission, dan mempertahankan audit keputusan minimum. Kegagalan cleanup media mempertahankan state `anonymization_pending` agar dapat dicoba ulang.
 - Admin dapat menonaktifkan atau memulihkan publikasi UMKM dengan alasan wajib tanpa mengubah konten owner. UMKM terblokir beserta produknya dikecualikan dari seluruh halaman publik, sitemap, dan QR.
 - `Log Moderasi` bersifat read-only dan mencatat lifecycle akun, kurasi featured, blokir UMKM, serta moderasi produk.
+- `Log Aktivitas Admin` adalah resource read-only terpisah untuk login/logout admin, login panel gagal, akses sensitif yang ditolak, perubahan profil admin, dan CRUD kategori.
+- Audit aktivitas admin menyimpan actor/target, request ID, route, method, serta before/after field aman. Password, token, secret, IP mentah, query string, dan binary media sengaja tidak disimpan.
+- Login panel gagal hanya menyimpan hash HMAC identitas login untuk korelasi keamanan, bukan email percobaan dalam bentuk teks terbuka.
 - Owner dapat memperbarui profil akun dan password sendiri melalui profile page Filament.
 - Reset password email dikendalikan `AUTH_PASSWORD_RESET_ENABLED`. Nilai default/Railway private adalah `false`; hosting publik wajib mengaktifkannya hanya setelah SMTP dan domain pengirim siap.
 - CTA WhatsApp dan Google Maps membuka URL eksternal secara langsung tanpa route tracking atau penyimpanan event.

@@ -64,6 +64,12 @@
                                 Nama, email, password terenkripsi, data UMKM, kontak usaha, WhatsApp, alamat, RW, koordinat Maps, media sosial, produk, harga, logo, cover, galeri, status verifikasi, notifikasi dashboard, dan catatan moderasi.
                             </p>
                         </div>
+                        <div class="rounded-card border border-cimuning-border bg-cimuning-section p-4 md:col-span-2">
+                            <h3 class="font-bold text-cimuning-charcoal">Keamanan panel pengelola</h3>
+                            <p class="mt-2 text-sm leading-6 text-cimuning-slate">
+                                Sistem mencatat login/logout admin, login panel yang gagal, akses sensitif yang ditolak, perubahan profil admin, dan perubahan kategori. Login gagal memakai hash identitas agar email percobaan tidak disimpan sebagai teks terbuka. Log tidak menyimpan password, token, secret, IP mentah, query pencarian, atau isi file media.
+                            </p>
+                        </div>
                     </div>
                 </article>
 
@@ -73,6 +79,7 @@
                         <li>Menampilkan direktori UMKM dan katalog produk/jasa yang sudah diverifikasi.</li>
                         <li>Mengelola akun owner, pengajuan UMKM, revisi, verifikasi, dan notifikasi dashboard.</li>
                         <li>Mengamankan akun, membatasi akses berdasarkan role, dan mencegah penyalahgunaan form.</li>
+                        <li>Menyediakan audit keamanan panel untuk penyelidikan akses dan perubahan administratif.</li>
                         <li>Menyimpan foto dan media yang owner unggah untuk kebutuhan profil dan katalog.</li>
                         <li>Menjalankan moderasi produk atau profil yang melanggar ketentuan katalog publik.</li>
                     </ul>
@@ -111,10 +118,10 @@
                 <article id="keamanan-retensi" class="rounded-card border border-cimuning-border bg-white p-6 shadow-card scroll-mt-24">
                     <h2 class="text-2xl font-bold text-cimuning-charcoal">7. Keamanan, penyimpanan, dan retensi</h2>
                     <p class="mt-4 text-base leading-8 text-cimuning-slate">
-                        Sistem memakai password hashing, akses berbasis role, verifikasi admin read-only, pembatasan upload, pemeriksaan tipe file, dan audit moderasi untuk membantu menjaga keamanan data.
+                        Sistem memakai password hashing, akses berbasis role, verifikasi admin read-only, pembatasan upload, pemeriksaan tipe file, audit moderasi, dan log aktivitas keamanan panel untuk membantu menjaga keamanan data.
                     </p>
                     <p class="mt-3 text-base leading-8 text-cimuning-slate">
-                        Data akun, profil UMKM, produk, media, notifikasi, dan log moderasi disimpan selama masih diperlukan untuk menjalankan layanan, menyelesaikan pengajuan, menjaga keamanan katalog, atau memenuhi kebutuhan audit internal. Data dapat dinonaktifkan atau dihapus berdasarkan permintaan yang sah.
+                        Data akun, profil UMKM, produk, media, notifikasi, log moderasi, dan log aktivitas admin disimpan selama masih diperlukan untuk menjalankan layanan, menyelesaikan pengajuan, menjaga keamanan katalog, atau memenuhi kebutuhan audit internal. Data dapat dinonaktifkan atau dihapus berdasarkan permintaan yang sah, dengan tetap mempertahankan catatan minimum yang diperlukan untuk keamanan atau kewajiban hukum.
                     </p>
                 </article>
 

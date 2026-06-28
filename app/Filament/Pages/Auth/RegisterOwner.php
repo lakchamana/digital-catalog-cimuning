@@ -10,14 +10,14 @@ use Filament\Schemas\Components\Component;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Str;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use SensitiveParameter;
 
 class RegisterOwner extends Register
 {
-    public const PRIVACY_VERSION = '2026-06-24';
+    public const PRIVACY_VERSION = '2026-06-28';
 
     private const CAPTCHA_SESSION_KEY = 'owner_register_captchas';
 

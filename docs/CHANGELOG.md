@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 ### Added
+- Read-only Filament `Log Aktivitas Admin` resource for authentication events, denied panel access, admin profile changes, and category CRUD.
+- Sanitized admin audit records with request IDs, safe before/after diffs, actor/target context, and no passwords, tokens, secrets, raw IP addresses, queries, or media payloads.
+- Category observer and panel authentication listeners so security-sensitive administration is recorded outside the content moderation log.
 - Admin-only Filament `Akun Owner` resource for viewing registered owners, correcting identity on a documented request, suspending/reactivating access, starting anonymization, and conditionally sending password reset links.
 - Owner account lifecycle states (`active`, `suspended`, `anonymization_pending`, and `anonymized`) with session revocation and immutable administration audit entries.
 - Separate UMKM publication blocking and restoration actions with mandatory reasons, owner notifications, and public-query protection.

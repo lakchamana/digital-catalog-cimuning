@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\EditProfile;
 use App\Filament\Pages\Auth\RegisterOwner;
 use App\Http\Middleware\EnsureAccountIsActive;
 use Filament\Http\Middleware\Authenticate;
@@ -30,7 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->registration(RegisterOwner::class)
-            ->profile()
+            ->profile(EditProfile::class)
             ->brandName('Cimuning Digital Hub')
             ->brandLogo(asset('assets/brand/logo-cimuning.png'))
             ->brandLogoHeight('2.5rem')

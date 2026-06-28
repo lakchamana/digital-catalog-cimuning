@@ -32,6 +32,7 @@
 - Workflow verifikasi profesional dengan submission draft, review admin read-only, audit keputusan, dan moderasi produk.
 - Peninjauan ulang produk terblokir, antrean admin, notifikasi dua arah, dan log moderasi read-only.
 - Administrasi akun owner terkontrol, suspend/session revocation, anonimisasi data, blokir publikasi UMKM, dan log administrasi read-only.
+- Audit keamanan admin untuk autentikasi, denied access, profile changes, dan CRUD kategori dengan sanitasi data sensitif.
 
 ## Phase 3
 

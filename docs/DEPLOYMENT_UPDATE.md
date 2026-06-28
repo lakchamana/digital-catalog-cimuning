@@ -266,6 +266,10 @@ Produk terblokir kini memiliki state permintaan peninjauan ulang. Owner wajib me
 
 Migration lifecycle akun dan blokir publikasi UMKM harus dijalankan setelah backup database. Railway private mempertahankan `AUTH_PASSWORD_RESET_ENABLED=false`. Saat pindah ke hosting publik, siapkan SMTP dan domain pengirim, uji email reset end-to-end, lalu ubah nilainya menjadi `true`. Admin tidak pernah melihat atau menetapkan password owner.
 
+### Update Audit Aktivitas Admin - 28 Juni 2026
+
+Migration `admin_activity_logs` menambahkan log read-only untuk autentikasi admin, akses panel yang ditolak, perubahan profil admin, dan CRUD kategori. Backup database sebelum rollout. Audit tidak menyimpan password, token, secret, IP mentah, query string, atau binary media; login gagal memakai hash identitas untuk korelasi.
+
 1. **Jangan hapus `server.php`** — tanpa file ini, Livewire dan Filament JS tidak bisa load di deployment Railway.
 2. **Jangan tambahkan `php artisan config:cache` di Dockerfile** — env vars Railway tidak tersedia saat build. Semua caching harus di `docker-entrypoint.sh`.
 3. **Jangan ubah `FILESYSTEM_DISK` kembali ke `local` atau `public` di production** — filesystem Railway ephemeral, file upload akan hilang saat redeploy.

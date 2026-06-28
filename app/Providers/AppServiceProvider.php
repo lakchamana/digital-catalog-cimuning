@@ -3,20 +3,28 @@
 namespace App\Providers;
 
 use App\Http\Responses\OwnerRegistrationResponse;
+use App\Models\AdminActivityLog;
 use App\Models\Category;
 use App\Models\ModerationAction;
 use App\Models\Product;
 use App\Models\Umkm;
 use App\Models\UmkmSubmission;
 use App\Models\User;
+use App\Observers\CategoryObserver;
+use App\Policies\AdminActivityLogPolicy;
 use App\Policies\CategoryPolicy;
 use App\Policies\ModerationActionPolicy;
 use App\Policies\ProductPolicy;
 use App\Policies\UmkmPolicy;
 use App\Policies\UmkmSubmissionPolicy;
 use App\Policies\UserPolicy;
+use App\Support\AdminActivityLogger;
 use App\Support\CloudinaryStorage;
 use Filament\Auth\Http\Responses\Contracts\RegistrationResponse;
+use Illuminate\Auth\Events\Failed;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
@@ -50,6 +58,33 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Product::class, ProductPolicy::class);
         Gate::policy(ModerationAction::class, ModerationActionPolicy::class);
         Gate::policy(User::class, UserPolicy::class);
+        Gate::policy(AdminActivityLog::class, AdminActivityLogPolicy::class);
+
+        Category::observe(CategoryObserver::class);
+
+        Event::listen(Login::class, function (Login $event): void {
+            if ($event->user instanceof User && $event->user->isAdmin()) {
+                AdminActivityLogger::authentication('admin_login', $event->user, $event->guard);
+            }
+        });
+
+        Event::listen(Logout::class, function (Logout $event): void {
+            if ($event->user instanceof User && $event->user->isAdmin()) {
+                AdminActivityLogger::authentication('admin_logout', $event->user, $event->guard);
+            }
+        });
+
+        Event::listen(Failed::class, function (Failed $event): void {
+            if (! request()->is('admin', 'admin/*')) {
+                return;
+            }
+
+            $target = $event->user instanceof User ? $event->user : null;
+
+            AdminActivityLogger::authentication('admin_login_failed', $target, $event->guard, [
+                'identity_hash' => AdminActivityLogger::failedIdentityHash($event->credentials['email'] ?? null),
+            ]);
+        });
 
         // Daftarkan Cloudinary sebagai custom filesystem disk.
         // Aktif saat FILESYSTEM_DISK=cloudinary di environment production (Railway).

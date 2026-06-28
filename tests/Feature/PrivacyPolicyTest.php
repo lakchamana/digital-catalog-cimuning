@@ -21,6 +21,8 @@ class PrivacyPolicyTest extends TestCase
             ->assertSee('Data yang dikelola')
             ->assertSee('Pengunjung publik')
             ->assertSee('Owner UMKM')
+            ->assertSee('Keamanan panel pengelola')
+            ->assertSee('tidak menyimpan password, token, secret, IP mentah')
             ->assertSee('Pihak ketiga')
             ->assertSee('Hak pengguna')
             ->assertSee('Kontak dan pembaruan kebijakan')
