@@ -284,7 +284,7 @@ Migration `admin_activity_logs` menambahkan log read-only untuk autentikasi admi
 
 ### Update Backup dan Pemulihan - 28 Juni 2026
 
-Docker memasang MySQL client untuk `mysqldump`. Halaman admin `Backup & Pemulihan` membuat ZIP AES-256 database dengan credential file sementara, checksum, global lock, throttle 15 menit, dan cleanup arsip server. Tambahkan variabel `BACKUP_ENABLED=true`; path `mysqldump` boleh kosong di Railway dan otomatis memakai binary container. Aktifkan backup volume daily/weekly/monthly pada MySQL Railway serta automatic backup dan `Back Up Existing Assets` di Cloudinary. Restore langsung dari dashboard tidak tersedia; ikuti `docs/BACKUP_RESTORE_RUNBOOK.md`.
+Docker memasang MySQL client untuk `mysqldump`. Halaman admin `Backup Data` membuat ZIP AES-256 database dengan credential file sementara, checksum, global lock, throttle 15 menit, dan cleanup arsip server. Tambahkan variabel `BACKUP_ENABLED=true`; path `mysqldump` boleh kosong di Railway dan otomatis memakai binary container. Backup penyedia hosting dan media bersifat opsional selama Railway hanya dipakai untuk testing internal; aktifkan kebijakan backup sesuai penyedia hosting final. Restore langsung dari dashboard tidak tersedia; ikuti `docs/BACKUP_RESTORE_RUNBOOK.md`.
 
 1. **Jangan hapus `server.php`** — tanpa file ini, Livewire dan Filament JS tidak bisa load di deployment Railway.
 2. **Jangan tambahkan `php artisan config:cache` di Dockerfile** — env vars Railway tidak tersedia saat build. Semua caching harus di `docker-entrypoint.sh`.

@@ -24,11 +24,11 @@ class BackupRecovery extends Page
 
     protected static string|UnitEnum|null $navigationGroup = 'Administrasi';
 
-    protected static ?string $navigationLabel = 'Backup & Pemulihan';
+    protected static ?string $navigationLabel = 'Backup Data';
 
     protected static ?int $navigationSort = 5;
 
-    protected static ?string $title = 'Backup & Pemulihan';
+    protected static ?string $title = 'Backup Data';
 
     protected string $view = 'filament.pages.backup-recovery';
 
@@ -37,6 +37,11 @@ class BackupRecovery extends Page
         $user = Filament::auth()->user();
 
         return $user?->isAdmin() && $user->hasActiveAccount();
+    }
+
+    public function getSubheading(): ?string
+    {
+        return 'Simpan salinan data secara berkala agar layanan lebih mudah dipulihkan saat terjadi kendala.';
     }
 
     /** @return Collection<int, BackupRun> */
@@ -63,8 +68,8 @@ class BackupRecovery extends Page
         if (! $last) {
             return [
                 'level' => 'danger',
-                'title' => 'Backup database belum tersedia',
-                'description' => 'Buat backup terenkripsi sebelum aplikasi digunakan secara luas.',
+                'title' => 'Belum ada backup data',
+                'description' => 'Buat backup pertama agar data penting memiliki salinan yang aman.',
                 'last' => null,
             ];
         }
@@ -74,8 +79,8 @@ class BackupRecovery extends Page
         if ($hours >= (int) config('backup.critical_hours', 72)) {
             return [
                 'level' => 'danger',
-                'title' => 'Backup melewati batas 72 jam',
-                'description' => 'Buat dan simpan backup baru sesegera mungkin.',
+                'title' => 'Backup perlu dibuat sekarang',
+                'description' => 'Backup terakhir sudah melewati jadwal tiga hari.',
                 'last' => $last,
             ];
         }
@@ -83,16 +88,16 @@ class BackupRecovery extends Page
         if ($hours >= (int) config('backup.warning_hours', 48)) {
             return [
                 'level' => 'warning',
-                'title' => 'Backup perlu diperbarui',
-                'description' => 'Usia backup sudah lebih dari 48 jam dan mendekati batas operasional.',
+                'title' => 'Jadwal backup sudah dekat',
+                'description' => 'Siapkan backup baru sebelum melewati batas tiga hari.',
                 'last' => $last,
             ];
         }
 
         return [
             'level' => 'success',
-            'title' => 'Backup database masih terjaga',
-            'description' => 'Backup terakhir masih berada dalam target maksimum 72 jam.',
+            'title' => 'Backup data masih terjaga',
+            'description' => 'Backup terakhir masih berada dalam jadwal yang disarankan.',
             'last' => $last,
         ];
     }
@@ -101,8 +106,8 @@ class BackupRecovery extends Page
     {
         return match ($status) {
             'processing' => 'Sedang diproses',
-            'completed' => 'Selesai',
-            'expired' => 'Arsip server dihapus',
+            'completed' => 'Berhasil',
+            'expired' => 'Berhasil',
             'failed' => 'Gagal',
             default => $status,
         };
@@ -111,75 +116,75 @@ class BackupRecovery extends Page
     public function restoreStatusLabel(string $status): string
     {
         return match ($status) {
-            'validated' => 'Valid - menunggu prosedur manual',
-            'executed' => 'Selesai melalui runbook',
+            'validated' => 'Sudah diperiksa',
+            'executed' => 'Pemulihan selesai',
             'rejected' => 'Ditolak',
             'cancelled' => 'Dibatalkan',
             default => $status,
         };
     }
 
-    protected function getHeaderActions(): array
+    public function createBackupAction(): Action
     {
-        return [
-            Action::make('createBackup')
-                ->label('Buat dan Unduh Backup')
-                ->icon('heroicon-o-arrow-down-tray')
-                ->color('primary')
-                ->modalHeading('Buat backup database terenkripsi')
-                ->modalDescription('Passphrase tidak disimpan. Simpan di password manager dan jangan menaruhnya bersama file backup.')
-                ->schema([
-                    TextInput::make('current_password')
-                        ->label('Password akun admin')
-                        ->password()
-                        ->revealable()
-                        ->currentPassword(guard: Filament::getAuthGuard())
-                        ->required(),
-                    TextInput::make('passphrase')
-                        ->label('Passphrase enkripsi')
-                        ->password()
-                        ->revealable()
-                        ->minLength(16)
-                        ->required(),
-                    TextInput::make('passphrase_confirmation')
-                        ->label('Ulangi passphrase')
-                        ->password()
-                        ->revealable()
-                        ->same('passphrase')
-                        ->required(),
-                    Checkbox::make('acknowledgement')
-                        ->label('Saya akan menyimpan file dan passphrase secara terpisah.')
-                        ->accepted()
-                        ->required(),
-                ])
-                ->action(function (array $data): BinaryFileResponse {
-                    try {
-                        $service = app(DatabaseBackupService::class);
-                        $service->cleanupExpired();
-                        $artifact = $service->create(Filament::auth()->user(), $data['passphrase']);
-                        $service->markDownloaded($artifact->run, Filament::auth()->user());
+        return Action::make('createBackup')
+            ->label('Buat Backup Baru')
+            ->icon('heroicon-o-arrow-down-tray')
+            ->color('primary')
+            ->modalHeading('Buat backup baru')
+            ->modalDescription('File akan langsung diunduh setelah selesai dibuat. Simpan password backup di tempat yang berbeda dari filenya.')
+            ->modalSubmitActionLabel('Buat dan unduh')
+            ->modalCancelActionLabel('Batal')
+            ->schema([
+                TextInput::make('current_password')
+                    ->label('Password admin')
+                    ->password()
+                    ->revealable()
+                    ->currentPassword(guard: Filament::getAuthGuard())
+                    ->required(),
+                TextInput::make('passphrase')
+                    ->label('Password backup')
+                    ->password()
+                    ->revealable()
+                    ->minLength(16)
+                    ->required(),
+                TextInput::make('passphrase_confirmation')
+                    ->label('Ulangi password backup')
+                    ->password()
+                    ->revealable()
+                    ->same('passphrase')
+                    ->required(),
+                Checkbox::make('acknowledgement')
+                    ->label('Saya sudah menyiapkan tempat penyimpanan yang aman untuk file backup.')
+                    ->accepted()
+                    ->required(),
+            ])
+            ->action(function (array $data): BinaryFileResponse {
+                try {
+                    $service = app(DatabaseBackupService::class);
+                    $service->cleanupExpired();
+                    $artifact = $service->create(Filament::auth()->user(), $data['passphrase']);
+                    $service->markDownloaded($artifact->run, Filament::auth()->user());
 
-                        Notification::make()
-                            ->title('Backup berhasil dibuat')
-                            ->body('Unduhan dimulai. Simpan arsip di penyimpanan terenkripsi.')
-                            ->success()
-                            ->send();
+                    Notification::make()
+                        ->title('Backup berhasil dibuat')
+                        ->body('Unduhan dimulai. Simpan file dan password backup secara terpisah.')
+                        ->success()
+                        ->send();
 
-                        return response()->download($artifact->path, $artifact->downloadName)->deleteFileAfterSend(true);
-                    } catch (ValidationException $exception) {
-                        throw $exception;
-                    } catch (Throwable) {
-                        Notification::make()
-                            ->title('Backup tidak dapat dibuat')
-                            ->body('Tidak ada file plaintext yang dipertahankan. Periksa konfigurasi server atau log aman.')
-                            ->danger()
-                            ->send();
+                    return response()->download($artifact->path, $artifact->downloadName)->deleteFileAfterSend(true);
+                } catch (ValidationException $exception) {
+                    throw $exception;
+                } catch (Throwable) {
+                    Notification::make()
+                        ->title('Backup belum berhasil dibuat')
+                        ->body('Tidak ada file yang disimpan. Silakan periksa pengaturan server lalu coba kembali.')
+                        ->danger()
+                        ->send();
 
-                        throw ValidationException::withMessages([
-                            'backup' => 'Proses backup gagal secara aman. Silakan coba lagi setelah memeriksa konfigurasi.',
-                        ]);
-                    }
-                }),
-        ];
+                    throw ValidationException::withMessages([
+                        'backup' => 'Backup belum berhasil dibuat. Silakan coba kembali setelah pengaturan server diperiksa.',
+                    ]);
+                }
+            });
     }
 }

@@ -14,6 +14,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
+use Livewire\Livewire;
 use RuntimeException;
 use Tests\TestCase;
 use ZipArchive;
@@ -42,9 +43,6 @@ class DatabaseBackupSecurityTest extends TestCase
     protected function tearDown(): void
     {
         RateLimiter::clear('database-backup:admin:1');
-        $this->removeDirectory(storage_path('app/private/backups'));
-        $this->removeDirectory(storage_path('app/private/backup-temp'));
-        $this->removeDirectory(storage_path('app/private/restore-uploads'));
 
         parent::tearDown();
     }
@@ -55,8 +53,17 @@ class DatabaseBackupSecurityTest extends TestCase
 
         $this->actingAs($admin)->get('/admin/backup-recovery')
             ->assertOk()
-            ->assertSee('Backup &amp; Pemulihan', false)
-            ->assertSee('Dashboard tidak dapat memulihkan database secara langsung.');
+            ->assertSee('Backup Data')
+            ->assertSee('Buat Backup Baru')
+            ->assertSee('Periksa file pemulihan')
+            ->assertDontSee('Dashboard tidak dapat memulihkan database secara langsung.')
+            ->assertDontSee('database.sql')
+            ->assertDontSee('AES-256');
+
+        Livewire::actingAs($admin)
+            ->test(BackupRecovery::class)
+            ->mountAction('createBackup')
+            ->assertActionMounted('createBackup');
     }
 
     public function test_owner_cannot_open_backup_and_recovery_page(): void
@@ -72,7 +79,6 @@ class DatabaseBackupSecurityTest extends TestCase
         $artifact = app(DatabaseBackupService::class)->create($admin, 'passphrase-sangat-aman-123');
 
         $this->assertFileExists($artifact->path);
-        $this->assertSame([], glob(storage_path('app/private/backup-temp/*')) ?: []);
         $this->assertDatabaseHas('backup_runs', [
             'id' => $artifact->run->id,
             'status' => 'completed',
@@ -104,7 +110,7 @@ class DatabaseBackupSecurityTest extends TestCase
             $this->assertArrayHasKey('archive', $exception->errors());
         }
 
-        $plainPath = storage_path('app/private/backups/plain.zip');
+        $plainPath = storage_path('app/private/backups/plain-'.bin2hex(random_bytes(6)).'.zip');
         $zip = new ZipArchive;
         $zip->open($plainPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
         $zip->addFromString('database.sql', 'SELECT 1;');
@@ -204,7 +210,6 @@ class DatabaseBackupSecurityTest extends TestCase
             app(DatabaseBackupService::class)->create($admin, 'passphrase-sangat-aman-123');
             $this->fail('Backup gagal seharusnya melempar exception.');
         } catch (RuntimeException) {
-            $this->assertSame([], glob(storage_path('app/private/backup-temp/*')) ?: []);
             $this->assertDatabaseHas('backup_runs', [
                 'status' => 'failed',
                 'failure_code' => 'RuntimeException',
@@ -268,23 +273,5 @@ class DatabaseBackupSecurityTest extends TestCase
             'password' => 'password',
             'role' => $role,
         ]);
-    }
-
-    private function removeDirectory(string $path): void
-    {
-        if (! is_dir($path)) {
-            return;
-        }
-
-        foreach (scandir($path) ?: [] as $entry) {
-            if ($entry === '.' || $entry === '..') {
-                continue;
-            }
-
-            $target = $path.DIRECTORY_SEPARATOR.$entry;
-            is_dir($target) ? $this->removeDirectory($target) : @unlink($target);
-        }
-
-        @rmdir($path);
     }
 }

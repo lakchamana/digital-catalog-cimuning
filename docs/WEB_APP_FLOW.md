@@ -246,7 +246,7 @@
 
 ## Flow Backup dan Pemulihan
 
-1. Admin membuka `Backup & Pemulihan`; owner dan guest tidak memiliki akses.
+1. Admin membuka `Backup Data`; owner dan guest tidak memiliki akses.
 2. Admin memasukkan password akun dan passphrase unik minimal 16 karakter.
 3. Sistem menjalankan dump MySQL konsisten, mengecualikan data sementara, lalu membuat ZIP AES-256 berisi `database.sql` dan manifest checksum.
 4. SQL plaintext dan file kredensial sementara selalu dihapus; passphrase tidak disimpan di database maupun audit.

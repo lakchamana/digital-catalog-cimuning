@@ -45,7 +45,7 @@ class DatabaseBackupService
         $archiveDirectory = storage_path('app/private/backups');
         $sqlPath = $temporaryDirectory.'/database.sql';
         $manifestPath = $temporaryDirectory.'/manifest.json';
-        $archivePath = $archiveDirectory.'/backup-'.$run->id.'-'.now()->utc()->format('Ymd-His').'.zip';
+        $archivePath = $archiveDirectory.'/backup-'.$run->id.'-'.now()->utc()->format('Ymd-His').'-'.Str::lower(Str::random(8)).'.zip';
 
         try {
             $this->makeDirectory($temporaryDirectory);

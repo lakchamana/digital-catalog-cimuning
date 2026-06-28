@@ -12,9 +12,11 @@ Runbook ini melindungi database dan media Cimuning Digital Hub tanpa menyediakan
 
 ## Tiga Lapisan Perlindungan
 
+Untuk deployment Railway yang hanya dipakai testing tim, backup Railway dan Cloudinary boleh tetap nonaktif. Keduanya menjadi contoh lapisan tambahan dan harus diganti atau disesuaikan ketika penyedia hosting production final sudah dipilih.
+
 1. **Railway volume backup:** aktifkan daily, weekly, dan monthly backup pada volume MySQL untuk pemulihan cepat di platform.
 2. **Cloudinary automatic backup:** aktifkan automatic backup, lalu jalankan **Back Up Existing Assets** satu kali untuk media yang sudah ada.
-3. **Backup database admin:** maksimal setiap 72 jam, buka `/admin/backup-recovery`, pilih **Buat dan Unduh Backup**, lalu simpan ZIP AES-256 di penyimpanan lokal terenkripsi.
+3. **Backup database admin:** maksimal setiap 72 jam, buka `/admin/backup-recovery`, pilih **Buat Backup Baru**, lalu simpan ZIP AES-256 di penyimpanan lokal terenkripsi.
 
 Backup Railway dan Cloudinary memakai kuota serta retensi layanan masing-masing. Periksa statusnya secara berkala melalui dashboard penyedia.
 
@@ -32,7 +34,7 @@ Referensi operasional resmi: [Railway Volume Backups](https://docs.railway.com/v
 ## Membuat Backup Database
 
 1. Pastikan tidak ada backup lain yang sedang berjalan.
-2. Login sebagai admin dan buka **Administrasi > Backup & Pemulihan**.
+2. Login sebagai admin dan buka **Administrasi > Backup Data**.
 3. Masukkan password akun admin.
 4. Buat passphrase unik, konfirmasi, lalu simpan di password manager.
 5. Unduh arsip dan catat checksum yang tampil pada riwayat.

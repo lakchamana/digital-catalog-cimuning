@@ -7,6 +7,7 @@
 - `backup_runs` and `restore_requests` audit metadata, `backup:inspect`, `backup:cleanup`, MySQL dump credential isolation, global locking, per-admin throttling, and guaranteed plaintext cleanup.
 - Operational backup and staging-only restore runbook covering Railway volume backups, Cloudinary automatic backups, retention, recovery kit separation, and quarterly restore drills.
 - Explicit `.env.testing` isolation using in-memory SQLite so test migration commands cannot target the local MySQL database.
+
 - Owner-friendly location assistant with device geolocation, explicit Google Maps link verification, persistent status feedback, and a direct saved-point preview.
 - Compact mobile owner dashboard with a 2x2 statistics grid and scan-friendly quick action rows.
 - Role-specific owner dashboard with actionable profile status, owned product totals, public product count, pending owner actions, and quick links to profile, catalog, public profile, and account security.
@@ -115,6 +116,8 @@
 - Public product detail pages at `/produk/{slug}` with gallery, full description, UMKM owner information, direct WhatsApp CTA, profile link, SEO metadata, and JSON-LD `Product` schema.
 
 ### Changed
+- Redesigned the admin `Backup Data` page with a clear health summary, compact mobile history cards, simplified Indonesian copy, guided storage steps, and a collapsed recovery checker for infrequent use.
+- Hosting-provider and media backup instructions are treated as optional during Railway team testing and should be finalized after the production hosting provider is selected.
 - `Log Moderasi` now also records account lifecycle actions and UMKM publication moderation.
 - Public UMKM/product queries now share model visibility scopes so an admin-blocked UMKM is excluded consistently from listings, details, sitemap, products, and QR.
 - Category deletion is restricted to unused records; categories referenced by UMKM or products must be deactivated instead.
