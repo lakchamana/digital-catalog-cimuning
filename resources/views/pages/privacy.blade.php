@@ -123,6 +123,9 @@
                     <p class="mt-3 text-base leading-8 text-cimuning-slate">
                         Data akun, profil UMKM, produk, media, notifikasi, log moderasi, dan log aktivitas admin disimpan selama masih diperlukan untuk menjalankan layanan, menyelesaikan pengajuan, menjaga keamanan katalog, atau memenuhi kebutuhan audit internal. Data dapat dinonaktifkan atau dihapus berdasarkan permintaan yang sah, dengan tetap mempertahankan catatan minimum yang diperlukan untuk keamanan atau kewajiban hukum.
                     </p>
+                    <p class="mt-3 text-base leading-8 text-cimuning-slate">
+                        Database dapat disalin ke backup terenkripsi untuk pemulihan insiden, sedangkan media dilindungi melalui backup penyedia penyimpanan. Akses backup dibatasi kepada admin, passphrase disimpan terpisah, dan salinan lama dihapus mengikuti jadwal retensi. Data yang telah dihapus dari layanan aktif dapat tetap berada sementara di dalam backup sampai masa retensinya berakhir; data tersebut tidak digunakan kembali kecuali untuk pemulihan yang sah dan akan ditinjau ulang setelah restore.
+                    </p>
                 </article>
 
                 <article id="kontak" class="rounded-card border border-cimuning-border bg-white p-6 shadow-card scroll-mt-24">

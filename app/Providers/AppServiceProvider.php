@@ -4,21 +4,27 @@ namespace App\Providers;
 
 use App\Http\Responses\OwnerRegistrationResponse;
 use App\Models\AdminActivityLog;
+use App\Models\BackupRun;
 use App\Models\Category;
 use App\Models\ModerationAction;
 use App\Models\Product;
+use App\Models\RestoreRequest;
 use App\Models\Umkm;
 use App\Models\UmkmSubmission;
 use App\Models\User;
 use App\Observers\CategoryObserver;
 use App\Policies\AdminActivityLogPolicy;
+use App\Policies\BackupRunPolicy;
 use App\Policies\CategoryPolicy;
 use App\Policies\ModerationActionPolicy;
 use App\Policies\ProductPolicy;
+use App\Policies\RestoreRequestPolicy;
 use App\Policies\UmkmPolicy;
 use App\Policies\UmkmSubmissionPolicy;
 use App\Policies\UserPolicy;
 use App\Support\AdminActivityLogger;
+use App\Support\Backup\DatabaseDumper;
+use App\Support\Backup\MySqlDatabaseDumper;
 use App\Support\CloudinaryStorage;
 use Filament\Auth\Http\Responses\Contracts\RegistrationResponse;
 use Illuminate\Auth\Events\Failed;
@@ -38,6 +44,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(RegistrationResponse::class, OwnerRegistrationResponse::class);
+        $this->app->bind(DatabaseDumper::class, MySqlDatabaseDumper::class);
     }
 
     /**
@@ -59,6 +66,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(ModerationAction::class, ModerationActionPolicy::class);
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(AdminActivityLog::class, AdminActivityLogPolicy::class);
+        Gate::policy(BackupRun::class, BackupRunPolicy::class);
+        Gate::policy(RestoreRequest::class, RestoreRequestPolicy::class);
 
         Category::observe(CategoryObserver::class);
 

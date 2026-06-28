@@ -20,6 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->dontFlash(['current_password', 'passphrase', 'passphrase_confirmation']);
+
         $exceptions->render(function (Throwable $exception, Request $request) {
             $status = match (true) {
                 $exception instanceof AuthorizationException => 403,

@@ -83,6 +83,8 @@ Transfer final ke Cloudinary menggunakan multipart stream tanpa Base64. Delivery
 
 Upload media memiliki defense-in-depth: temporary validation, throttle 20/menit, pemeriksaan MIME/ukuran/path di adapter, dan signed delivery URL. Cloudinary Strict Transformations diaktifkan manual setelah signed URL production terverifikasi.
 
+Backup memakai tiga lapisan: backup volume Railway untuk pemulihan cepat, automatic backup Cloudinary untuk media, dan backup database ZIP AES-256 yang dibuat admin maksimal setiap 72 jam. Dashboard hanya memvalidasi dan mencatat permintaan restore; eksekusi SQL langsung dari web sengaja tidak tersedia. Prosedur lengkap ada di `docs/BACKUP_RESTORE_RUNBOOK.md`.
+
 ## Deployment
 
 Project sudah disiapkan untuk testing internal di Railway pada URL production `https://digital-catalog-cimuning-production.up.railway.app/`. Railway menjalankan container Docker berbasis PHP 8.3/FrankenPHP, build Vite dengan Node.js 22, memakai Railway MySQL Plugin, dan menyimpan upload UMKM/produk ke Cloudinary.

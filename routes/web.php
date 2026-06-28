@@ -1,11 +1,17 @@
 <?php
 
+use App\Http\Controllers\Admin\RestoreRequestController;
 use App\Http\Controllers\QrCodeController;
+use App\Http\Middleware\EnsureAccountIsActive;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Umkm;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
+
+Route::post('/admin/backup-recovery/restore-request', RestoreRequestController::class)
+    ->middleware(['auth', EnsureAccountIsActive::class, 'throttle:5,15'])
+    ->name('admin.backup.restore-request');
 
 $hasTables = static function (array $tables): bool {
     try {

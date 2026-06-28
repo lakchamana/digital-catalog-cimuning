@@ -2,12 +2,15 @@ FROM dunglas/frankenphp:php8.3-bookworm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git unzip zip ca-certificates curl \
+    git unzip zip ca-certificates curl default-mysql-client \
     libicu-dev libzip-dev libpng-dev libjpeg-dev libfreetype6-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install required PHP extensions
 RUN install-php-extensions intl zip pdo_mysql bcmath gd opcache
+
+# Restore validation uses a dedicated authenticated multipart endpoint.
+RUN printf 'upload_max_filesize=250M\npost_max_size=256M\nmax_execution_time=180\n' > /usr/local/etc/php/conf.d/cimuning-uploads.ini
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

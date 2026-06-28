@@ -4,6 +4,7 @@ use App\Support\CloudinaryStorage;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Console\Command\Command;
 
@@ -129,3 +130,6 @@ Artisan::command('media:diagnose {--upload : Upload, verify, and remove a tempor
         return Command::FAILURE;
     }
 })->purpose('Check media disk configuration and Cloudinary authentication without exposing secrets');
+
+// Effective when a scheduler worker/cron is configured. Admin actions also run cleanup defensively.
+Schedule::command('backup:cleanup')->hourly()->withoutOverlapping();

@@ -3,6 +3,10 @@
 ## [Unreleased]
 
 ### Added
+- Admin-only `Backup & Pemulihan` page for AES-256 database backups, safe history metadata, 48/72-hour health warnings, encrypted archive validation, and restore requests that never execute SQL.
+- `backup_runs` and `restore_requests` audit metadata, `backup:inspect`, `backup:cleanup`, MySQL dump credential isolation, global locking, per-admin throttling, and guaranteed plaintext cleanup.
+- Operational backup and staging-only restore runbook covering Railway volume backups, Cloudinary automatic backups, retention, recovery kit separation, and quarterly restore drills.
+- Explicit `.env.testing` isolation using in-memory SQLite so test migration commands cannot target the local MySQL database.
 - Owner-friendly location assistant with device geolocation, explicit Google Maps link verification, persistent status feedback, and a direct saved-point preview.
 - Compact mobile owner dashboard with a 2x2 statistics grid and scan-friendly quick action rows.
 - Role-specific owner dashboard with actionable profile status, owned product totals, public product count, pending owner actions, and quick links to profile, catalog, public profile, and account security.

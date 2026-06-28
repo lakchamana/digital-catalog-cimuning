@@ -5,7 +5,9 @@ namespace App\Filament\Resources\AdminActivityLogs;
 use App\Filament\Resources\AdminActivityLogs\Pages\ListAdminActivityLogs;
 use App\Filament\Resources\AdminActivityLogs\Pages\ViewAdminActivityLog;
 use App\Models\AdminActivityLog;
+use App\Models\BackupRun;
 use App\Models\Category;
+use App\Models\RestoreRequest;
 use App\Models\User;
 use BackedEnum;
 use Filament\Forms\Components\DatePicker;
@@ -64,6 +66,8 @@ class AdminActivityLogResource extends Resource
                 SelectFilter::make('subject_type')->label('Jenis target')->options([
                     Category::class => 'Kategori',
                     User::class => 'Akun',
+                    BackupRun::class => 'Backup database',
+                    RestoreRequest::class => 'Permintaan restore',
                 ]),
                 Filter::make('created_at')
                     ->label('Rentang waktu')
@@ -124,6 +128,12 @@ class AdminActivityLogResource extends Resource
             'category_created' => 'Kategori dibuat',
             'category_updated' => 'Kategori diperbarui',
             'category_deleted' => 'Kategori dihapus',
+            'database_backup_started' => 'Backup database dimulai',
+            'database_backup_completed' => 'Backup database selesai',
+            'database_backup_failed' => 'Backup database gagal',
+            'database_backup_downloaded' => 'Backup database diunduh',
+            'restore_request_created' => 'Permintaan restore dibuat',
+            'restore_validation_failed' => 'Validasi restore gagal',
         ];
     }
 
@@ -135,9 +145,10 @@ class AdminActivityLogResource extends Resource
     private static function eventColor(string $event): string
     {
         return match ($event) {
-            'admin_login', 'category_created' => 'success',
-            'admin_login_failed', 'admin_access_denied', 'category_deleted' => 'danger',
-            'admin_logout', 'category_updated', 'admin_profile_updated' => 'info',
+            'admin_login', 'category_created', 'database_backup_completed' => 'success',
+            'admin_login_failed', 'admin_access_denied', 'category_deleted', 'database_backup_failed', 'restore_validation_failed' => 'danger',
+            'admin_logout', 'category_updated', 'admin_profile_updated', 'database_backup_downloaded', 'restore_request_created' => 'info',
+            'database_backup_started' => 'warning',
             default => 'gray',
         };
     }

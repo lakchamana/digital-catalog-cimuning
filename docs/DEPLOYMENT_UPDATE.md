@@ -208,6 +208,10 @@ Variabel yang harus diset di Railway dashboard (tab Variables pada service Larav
 | `CACHE_STORE` | `file` | Sama seperti session |
 | `QUEUE_CONNECTION` | `sync` | |
 | `AUTH_PASSWORD_RESET_ENABLED` | `false` | Railway private tetap nonaktif; aktifkan hanya setelah SMTP hosting publik teruji |
+| `BACKUP_ENABLED` | `true` | Mengaktifkan backup database terenkripsi untuk admin |
+| `BACKUP_MYSQLDUMP_PATH` | *(kosong)* | Container memakai `mysqldump` dari PATH; lokal otomatis mendeteksi XAMPP |
+| `BACKUP_TIMEOUT_SECONDS` | `120` | Batas proses dump database |
+| `BACKUP_ARCHIVE_TTL_MINUTES` | `60` | Batas arsip sementara di server |
 | `FILESYSTEM_DISK` | `cloudinary` | Mengarahkan upload ke Cloudinary |
 | `LIVEWIRE_TEMPORARY_FILE_UPLOAD_DISK` | `local` | Penyimpanan sementara selama proses upload |
 | `CLOUDINARY_CLOUD_NAME` | *(set langsung di Railway)* | Jangan simpan nilai nyata di repository |
@@ -277,6 +281,10 @@ Migration lifecycle akun dan blokir publikasi UMKM harus dijalankan setelah back
 ### Update Audit Aktivitas Admin - 28 Juni 2026
 
 Migration `admin_activity_logs` menambahkan log read-only untuk autentikasi admin, akses panel yang ditolak, perubahan profil admin, dan CRUD kategori. Backup database sebelum rollout. Audit tidak menyimpan password, token, secret, IP mentah, query string, atau binary media; login gagal memakai hash identitas untuk korelasi.
+
+### Update Backup dan Pemulihan - 28 Juni 2026
+
+Docker memasang MySQL client untuk `mysqldump`. Halaman admin `Backup & Pemulihan` membuat ZIP AES-256 database dengan credential file sementara, checksum, global lock, throttle 15 menit, dan cleanup arsip server. Tambahkan variabel `BACKUP_ENABLED=true`; path `mysqldump` boleh kosong di Railway dan otomatis memakai binary container. Aktifkan backup volume daily/weekly/monthly pada MySQL Railway serta automatic backup dan `Back Up Existing Assets` di Cloudinary. Restore langsung dari dashboard tidak tersedia; ikuti `docs/BACKUP_RESTORE_RUNBOOK.md`.
 
 1. **Jangan hapus `server.php`** — tanpa file ini, Livewire dan Filament JS tidak bisa load di deployment Railway.
 2. **Jangan tambahkan `php artisan config:cache` di Dockerfile** — env vars Railway tidak tersedia saat build. Semua caching harus di `docker-entrypoint.sh`.

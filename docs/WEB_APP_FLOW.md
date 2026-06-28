@@ -243,3 +243,14 @@
 7. Database production testing memakai Railway MySQL.
 8. Upload logo, cover, dan foto produk memakai temporary disk lokal lalu Cloudinary sebagai storage permanen saat `FILESYSTEM_DISK=cloudinary`.
 9. Local development tetap bisa berjalan dengan XAMPP/MySQL lokal dan disk lokal/public sesuai `.env`.
+
+## Flow Backup dan Pemulihan
+
+1. Admin membuka `Backup & Pemulihan`; owner dan guest tidak memiliki akses.
+2. Admin memasukkan password akun dan passphrase unik minimal 16 karakter.
+3. Sistem menjalankan dump MySQL konsisten, mengecualikan data sementara, lalu membuat ZIP AES-256 berisi `database.sql` dan manifest checksum.
+4. SQL plaintext dan file kredensial sementara selalu dihapus; passphrase tidak disimpan di database maupun audit.
+5. Admin mengunduh arsip dan menyimpannya pada penyimpanan terenkripsi, terpisah dari passphrase.
+6. Action `Ajukan Restore` hanya memvalidasi arsip dan mencatat permintaan. Dashboard tidak memiliki kemampuan menjalankan SQL.
+7. Restore aktual dilakukan ke database staging, diverifikasi, lalu dipindahkan melalui maintenance procedure sesuai `docs/BACKUP_RESTORE_RUNBOOK.md`.
+8. Media dilindungi terpisah melalui Cloudinary automatic backup; database Railway dilindungi pula dengan backup volume daily, weekly, dan monthly.

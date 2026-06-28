@@ -34,6 +34,7 @@
 - Administrasi akun owner terkontrol, suspend/session revocation, anonimisasi data, blokir publikasi UMKM, dan log administrasi read-only.
 - Audit keamanan admin untuk autentikasi, denied access, profile changes, dan CRUD kategori dengan sanitasi data sensitif.
 - Dashboard owner berbasis tindakan dengan status profil, ringkasan katalog milik sendiri, produk publik, pekerjaan tertunda, dan akses cepat keamanan akun.
+- Backup database AES-256, validasi arsip tanpa eksekusi SQL, audit metadata, Railway/Cloudinary backup checklist, dan restore runbook staging-first.
 
 ## Phase 3
 
@@ -42,7 +43,7 @@
 - Export data UMKM untuk admin.
 - Optimasi SEO lanjutan halaman detail.
 - PWA ringan untuk pengalaman mobile.
-- Hardening production deployment: backup database, domain custom, observability/log monitoring, dan secret rotation.
+- Hardening production deployment lanjutan: domain custom, observability/log monitoring, secret rotation, serta pengujian restore berkala.
 - Aktivasi email reset password yang sudah disiapkan setelah hosting publik, domain pengirim, dan SMTP tersedia.
 
 ## Future Improvement

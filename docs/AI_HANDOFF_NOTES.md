@@ -52,6 +52,9 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - `Log Moderasi` bersifat read-only dan mencatat lifecycle akun, kurasi featured, blokir UMKM, serta moderasi produk.
 - `Log Aktivitas Admin` adalah resource read-only terpisah untuk login/logout admin, login panel gagal, akses sensitif yang ditolak, perubahan profil admin, dan CRUD kategori.
 - Audit aktivitas admin menyimpan actor/target, request ID, route, method, serta before/after field aman. Password, token, secret, IP mentah, query string, dan binary media sengaja tidak disimpan.
+- Admin memiliki halaman `Backup & Pemulihan` untuk membuat dan mengunduh backup database ZIP AES-256. Password akun dan passphrase wajib, passphrase tidak disimpan, dan satu admin dibatasi satu permintaan per 15 menit.
+- Restore dari dashboard tidak tersedia. Action `Ajukan Restore` hanya memvalidasi enkripsi, manifest, checksum, dan riwayat backup lalu menyimpan metadata permintaan; SQL harus dipulihkan ke staging mengikuti `docs/BACKUP_RESTORE_RUNBOOK.md`.
+- Media tidak masuk ZIP database. Railway volume backup dan Cloudinary automatic backup wajib diaktifkan terpisah; jalankan `Back Up Existing Assets` untuk media lama.
 - Login panel gagal hanya menyimpan hash HMAC identitas login untuk korelasi keamanan, bukan email percobaan dalam bentuk teks terbuka.
 - Owner dapat memperbarui profil akun dan password sendiri melalui profile page Filament.
 - Dashboard Filament dibedakan berdasarkan role: admin tetap melihat statistik platform, sedangkan owner melihat status profil UMKM, jumlah produk miliknya, produk yang tampil publik, dan pekerjaan yang perlu diselesaikan. Card global `Kategori aktif` tidak ditampilkan kepada owner.
