@@ -9,6 +9,7 @@ use App\Filament\Resources\Umkms\Pages\ViewUmkm;
 use App\Filament\Resources\Umkms\Schemas\UmkmForm;
 use App\Filament\Resources\Umkms\Tables\UmkmsTable;
 use App\Models\Umkm;
+use App\Support\UploadDisk;
 use BackedEnum;
 use Filament\Facades\Filament;
 use Filament\Infolists\Components\IconEntry;
@@ -20,7 +21,6 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
-use App\Support\UploadDisk;
 
 class UmkmResource extends Resource
 {
@@ -67,7 +67,9 @@ class UmkmResource extends Resource
                             default => 'Menunggu',
                         }),
                     IconEntry::make('is_active')->label('Tampil publik')->boolean(),
+                    IconEntry::make('is_admin_blocked')->label('Diblokir admin')->boolean(),
                     IconEntry::make('is_featured')->label('UMKM pilihan')->boolean(),
+                    TextEntry::make('admin_block_reason')->label('Alasan penonaktifan')->placeholder('-')->columnSpanFull(),
                 ])->columns(2),
             Section::make('Kontak dan lokasi')
                 ->schema([

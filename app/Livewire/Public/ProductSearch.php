@@ -107,8 +107,7 @@ class ProductSearch extends Component
                 $query
                     ->whereHas('products', fn (Builder $productQuery) => $this->applyPublicProductScope($productQuery))
                     ->orWhereHas('umkms', fn (Builder $umkmQuery) => $umkmQuery
-                        ->where('is_active', true)
-                        ->where('status', 'verified')
+                        ->publiclyVisible()
                         ->whereHas('products', fn (Builder $productQuery) => $productQuery
                             ->where('is_active', true)
                             ->where('is_admin_blocked', false)));
@@ -121,8 +120,7 @@ class ProductSearch extends Component
     protected function umkmOptions(): Collection
     {
         return Umkm::query()
-            ->where('is_active', true)
-            ->where('status', 'verified')
+            ->publiclyVisible()
             ->whereHas('products', fn (Builder $query) => $query
                 ->where('is_active', true)
                 ->where('is_admin_blocked', false))
@@ -262,10 +260,7 @@ class ProductSearch extends Component
 
     protected function applyPublicProductScope(Builder $query): Builder
     {
-        return $query
-            ->where('is_active', true)
-            ->where('is_admin_blocked', false)
-            ->whereHas('umkm', fn (Builder $umkmQuery) => $umkmQuery->where('is_active', true)->where('status', 'verified'));
+        return $query->publiclyVisible();
     }
 
     protected function normalizeFilters(): void
@@ -327,8 +322,7 @@ class ProductSearch extends Component
                 $query
                     ->whereHas('products', fn (Builder $productQuery) => $this->applyPublicProductScope($productQuery))
                     ->orWhereHas('umkms', fn (Builder $umkmQuery) => $umkmQuery
-                        ->where('is_active', true)
-                        ->where('status', 'verified')
+                        ->publiclyVisible()
                         ->whereHas('products', fn (Builder $productQuery) => $productQuery
                             ->where('is_active', true)
                             ->where('is_admin_blocked', false)));
@@ -340,8 +334,7 @@ class ProductSearch extends Component
     {
         return Umkm::query()
             ->where('slug', $slug)
-            ->where('is_active', true)
-            ->where('status', 'verified')
+            ->publiclyVisible()
             ->whereHas('products', fn (Builder $query) => $query
                 ->where('is_active', true)
                 ->where('is_admin_blocked', false))

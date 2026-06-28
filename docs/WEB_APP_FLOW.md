@@ -51,7 +51,20 @@
 3. Admin memeriksa profil, kontak, kategori, foto, lokasi, layanan, serta perbandingan perubahan secara read-only.
 4. Admin memilih Verifikasi, Minta revisi, atau Tolak; alasan wajib untuk revisi dan penolakan.
 5. Admin tidak mengubah data owner. Koreksi dilakukan owner melalui pengajuan berikutnya.
-6. Admin tetap mengelola kategori, kurasi UMKM pilihan, dan blokir produk bermasalah melalui action terpisah yang tercatat.
+6. Admin tetap mengelola kategori, kurasi UMKM pilihan, blokir publikasi UMKM, dan blokir produk bermasalah melalui action terpisah yang tercatat.
+7. Admin mengelola akun owner yang sudah mendaftar melalui menu `Akun Owner`; akun admin dan role tidak dapat diubah dari dashboard.
+8. Admin tidak melihat atau menentukan password. Link reset hanya dapat dikirim bila mail production dan `AUTH_PASSWORD_RESET_ENABLED` sudah aktif.
+
+## Flow Administrasi Akun Owner
+
+1. Owner membuat akun sendiri melalui `/admin/register`; admin tidak membuat akun atau password sementara.
+2. Owner dapat memperbarui nama, email, dan password miliknya melalui halaman profil Filament.
+3. Bila akses perlu dihentikan, admin menangguhkan akun dengan alasan wajib; seluruh session dan token reset dicabut tanpa otomatis mengubah publikasi UMKM.
+4. Admin dapat mengaktifkan kembali akun suspended dengan catatan keputusan.
+5. Koreksi nama/email oleh admin hanya dilakukan atas permintaan yang sah dan selalu dicatat dalam log.
+6. Permintaan penghapusan yang telah diverifikasi diproses melalui anonimisasi setelah akun disuspend.
+7. Anonimisasi membersihkan identitas, kontak, media, dan payload data pribadi; keputusan audit minimum tetap read-only.
+8. Jika cleanup media gagal, akun tetap `anonymization_pending` dan proses dapat dicoba ulang tanpa mengaktifkan akses kembali.
 
 ## Flow Pencarian UMKM
 
@@ -167,10 +180,10 @@
 14. Admin meninjau produk secara read-only lalu membuka blokir atau menolak permintaan dengan alasan wajib.
 15. Keputusan membersihkan status permintaan, dicatat dalam audit, dan dikirim kepada owner melalui notification bell.
 
-## Flow Audit Moderasi Admin
+## Flow Audit Administrasi dan Moderasi
 
 1. Admin membuka menu `Log Moderasi` di panel `/admin`.
-2. Log menampilkan kurasi featured, blokir produk, permintaan review owner, penolakan review, dan pembukaan blokir.
+2. Log menampilkan lifecycle akun owner, kurasi featured, blokir publikasi UMKM, blokir produk, permintaan review owner, penolakan review, dan pembukaan blokir.
 3. Admin dapat menyaring log berdasarkan aksi, aktor, jenis konten, dan rentang waktu.
 4. Log bersifat read-only dan tidak dapat dibuat, diubah, atau dihapus dari panel.
 5. Owner tidak dapat membuka resource audit dan tidak dapat mengubah field moderasi secara langsung.

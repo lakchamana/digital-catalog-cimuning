@@ -31,7 +31,7 @@ class PlatformStats extends StatsOverviewWidget
         }
 
         return [
-            Stat::make('UMKM terverifikasi', (clone $umkmQuery)->where('status', 'verified')->count())
+            Stat::make('UMKM terverifikasi', (clone $umkmQuery)->publiclyVisible()->count())
                 ->description('Tampil di direktori publik')
                 ->color('success')
                 ->icon('heroicon-o-check-badge'),
@@ -39,7 +39,7 @@ class PlatformStats extends StatsOverviewWidget
                 ->description('Perlu ditinjau admin')
                 ->color('warning')
                 ->icon('heroicon-o-clock'),
-            Stat::make('Produk aktif', (clone $productQuery)->where('is_active', true)->where('is_admin_blocked', false)->count())
+            Stat::make('Produk aktif', (clone $productQuery)->publiclyVisible()->count())
                 ->description('Masuk katalog produk digital')
                 ->color('info')
                 ->icon('heroicon-o-shopping-bag'),

@@ -14,10 +14,58 @@ use Illuminate\Support\Facades\Validator;
 
 class ContentModeration
 {
+    public static function blockUmkm(Umkm $umkm, User $admin, string $reason): void
+    {
+        abort_unless($admin->isAdmin(), 403);
+        self::validateReason($reason);
+
+        DB::transaction(function () use ($umkm, $admin, $reason): void {
+            $locked = Umkm::query()->lockForUpdate()->findOrFail($umkm->getKey());
+            self::validateState($locked->status === 'verified' && $locked->is_active, 'Hanya UMKM yang sedang tayang dapat dinonaktifkan publikasinya.');
+            self::validateState(! $locked->is_admin_blocked, 'UMKM ini sudah dinonaktifkan admin.');
+
+            $locked->update([
+                'is_admin_blocked' => true,
+                'admin_block_reason' => $reason,
+                'admin_blocked_at' => now(),
+                'admin_blocked_by' => $admin->id,
+                'is_featured' => false,
+            ]);
+            self::record($locked, $admin, 'umkm_blocked', $reason);
+        });
+
+        self::notifyUmkmOwner($umkm->fresh('owner'), 'Profil UMKM dinonaktifkan admin', $reason, 'danger');
+    }
+
+    public static function unblockUmkm(Umkm $umkm, User $admin, string $reason): void
+    {
+        abort_unless($admin->isAdmin(), 403);
+        self::validateReason($reason);
+
+        DB::transaction(function () use ($umkm, $admin, $reason): void {
+            $locked = Umkm::query()->with('owner')->lockForUpdate()->findOrFail($umkm->getKey());
+            self::validateState($locked->is_admin_blocked, 'UMKM ini tidak sedang dinonaktifkan admin.');
+            self::validateState(
+                ! $locked->owner || ! in_array($locked->owner->account_status, ['anonymization_pending', 'anonymized'], true),
+                'Publikasi akun yang sedang atau sudah dianonimkan tidak dapat dipulihkan.',
+            );
+
+            $locked->update([
+                'is_admin_blocked' => false,
+                'admin_block_reason' => null,
+                'admin_blocked_at' => null,
+                'admin_blocked_by' => null,
+            ]);
+            self::record($locked, $admin, 'umkm_unblocked', $reason);
+        });
+
+        self::notifyUmkmOwner($umkm->fresh('owner'), 'Profil UMKM dapat tampil kembali', $reason, 'success');
+    }
+
     public static function setFeatured(Umkm $umkm, User $admin, bool $featured): void
     {
         abort_unless($admin->isAdmin(), 403);
-        abort_unless($umkm->status === 'verified' && $umkm->is_active, 422);
+        abort_unless($umkm->status === 'verified' && $umkm->is_active && ! $umkm->is_admin_blocked, 422);
 
         DB::transaction(function () use ($umkm, $admin, $featured): void {
             $umkm->update(['is_featured' => $featured]);
@@ -160,6 +208,19 @@ class ContentModeration
             ->body("{$product->name}: {$body}")
             ->status($status)
             ->sendToDatabase(collect([$owner]), isEventDispatched: true);
+    }
+
+    private static function notifyUmkmOwner(Umkm $umkm, string $title, string $body, string $status): void
+    {
+        if (! $umkm->owner) {
+            return;
+        }
+
+        Notification::make()
+            ->title($title)
+            ->body("{$umkm->name}: {$body}")
+            ->status($status)
+            ->sendToDatabase(collect([$umkm->owner]), isEventDispatched: true);
     }
 
     private static function notifyAdminsOfProductReview(Product $product, string $note): void

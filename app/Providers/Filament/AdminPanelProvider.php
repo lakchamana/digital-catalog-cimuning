@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\RegisterOwner;
+use App\Http\Middleware\EnsureAccountIsActive;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -23,12 +24,13 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        return $panel
+        $panel = $panel
             ->default()
             ->id('admin')
             ->path('admin')
             ->login()
             ->registration(RegisterOwner::class)
+            ->profile()
             ->brandName('Cimuning Digital Hub')
             ->brandLogo(asset('assets/brand/logo-cimuning.png'))
             ->brandLogoHeight('2.5rem')
@@ -52,6 +54,7 @@ class AdminPanelProvider extends PanelProvider
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
                 StartSession::class,
+                EnsureAccountIsActive::class,
                 AuthenticateSession::class,
                 ShareErrorsFromSession::class,
                 PreventRequestForgery::class,
@@ -62,5 +65,11 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ]);
+
+        if (config('auth.password_reset_enabled')) {
+            $panel->passwordReset();
+        }
+
+        return $panel;
     }
 }

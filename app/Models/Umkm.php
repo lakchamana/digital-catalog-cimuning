@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 #[Fillable([
     'user_id',
@@ -32,6 +33,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
     'status',
     'is_featured',
     'is_active',
+    'is_admin_blocked',
+    'admin_block_reason',
+    'admin_blocked_at',
+    'admin_blocked_by',
     'service_delivery',
     'service_cod',
     'service_custom_order',
@@ -62,6 +67,8 @@ class Umkm extends Model
             'longitude' => 'decimal:7',
             'is_featured' => 'boolean',
             'is_active' => 'boolean',
+            'is_admin_blocked' => 'boolean',
+            'admin_blocked_at' => 'datetime',
             'service_delivery' => 'boolean',
             'service_cod' => 'boolean',
             'service_custom_order' => 'boolean',
@@ -72,6 +79,19 @@ class Umkm extends Model
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function blockedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'admin_blocked_by');
+    }
+
+    public function scopePubliclyVisible(Builder $query): Builder
+    {
+        return $query
+            ->where('is_active', true)
+            ->where('status', 'verified')
+            ->where('is_admin_blocked', false);
     }
 
     public function category(): BelongsTo

@@ -45,6 +45,13 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Admin meninjau submission melalui resource `Verifikasi UMKM` yang read-only; keputusan menyimpan reviewer, catatan, checklist, dan timestamp.
 - Perubahan pada UMKM verified tidak langsung mengubah profil publik. Versi lama tetap tayang sampai submission update disetujui.
 - Admin tidak dapat create/edit/delete profil atau produk owner melalui policy. Kurasi featured dan blokir produk memakai action terpisah yang diaudit.
+- Admin mengelola akun yang sudah mendaftar melalui resource `Akun Owner`; admin tidak dapat membuat akun owner/admin, mengubah role, melihat password, menetapkan password sementara, atau melakukan hard delete.
+- Lifecycle akun owner memakai `active`, `suspended`, `anonymization_pending`, dan `anonymized`. Suspend mencabut session tetapi tidak otomatis menyembunyikan UMKM; publikasi dikelola lewat action moderasi UMKM terpisah.
+- Anonimisasi hanya tersedia setelah suspend, membersihkan identitas/kontak/media/payload submission, dan mempertahankan audit keputusan minimum. Kegagalan cleanup media mempertahankan state `anonymization_pending` agar dapat dicoba ulang.
+- Admin dapat menonaktifkan atau memulihkan publikasi UMKM dengan alasan wajib tanpa mengubah konten owner. UMKM terblokir beserta produknya dikecualikan dari seluruh halaman publik, sitemap, dan QR.
+- `Log Moderasi` bersifat read-only dan mencatat lifecycle akun, kurasi featured, blokir UMKM, serta moderasi produk.
+- Owner dapat memperbarui profil akun dan password sendiri melalui profile page Filament.
+- Reset password email dikendalikan `AUTH_PASSWORD_RESET_ENABLED`. Nilai default/Railway private adalah `false`; hosting publik wajib mengaktifkannya hanya setelah SMTP dan domain pengirim siap.
 - CTA WhatsApp dan Google Maps membuka URL eksternal secara langsung tanpa route tracking atau penyimpanan event.
 - Fitur tracking kontak telah dihapus total: model/controller/recorder/widget analytics dan route perantara tidak lagi tersedia; migration terbaru menghapus tabel `lead_events` dari database deployment.
 - Aplikasi tidak menyimpan IP, user agent, referer, klik kontak, atau scan QR pengunjung.
@@ -221,7 +228,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 
 1. Uji manual alur admin/owner di perangkat nyata: blokir produk, perbaiki sebagai owner, ajukan review, lalu buka blokir atau tolak sebagai admin.
 2. Rotasi secret Cloudinary, perbarui Railway Variables, jalankan `php artisan media:diagnose`, lalu uji upload logo, cover, gambar utama, dan galeri.
-3. Siapkan email operasional dan password reset setelah domain serta konfigurasi mail tersedia.
+3. Pada hosting publik sesungguhnya, siapkan SMTP/domain pengirim, uji email reset, lalu set `AUTH_PASSWORD_RESET_ENABLED=true`; jangan mengaktifkannya di Railway private tanpa mail yang valid.
 4. Tetapkan backup database Railway, domain production, monitoring log/error, dan prosedur rotasi secret.
 5. Pertimbangkan export data UMKM hanya ketika benar-benar dibutuhkan operasional.
 6. Review formal Kebijakan Privasi dengan pihak hukum/pengelola sebelum rilis masyarakat luas, terutama jika nanti ada email marketing, analytics, chat, payment, atau tracking baru.

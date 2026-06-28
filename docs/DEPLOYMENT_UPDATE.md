@@ -207,6 +207,7 @@ Variabel yang harus diset di Railway dashboard (tab Variables pada service Larav
 | `SESSION_DRIVER` | `file` | Pakai `file` untuk testing, `database` untuk production stabil |
 | `CACHE_STORE` | `file` | Sama seperti session |
 | `QUEUE_CONNECTION` | `sync` | |
+| `AUTH_PASSWORD_RESET_ENABLED` | `false` | Railway private tetap nonaktif; aktifkan hanya setelah SMTP hosting publik teruji |
 | `FILESYSTEM_DISK` | `cloudinary` | Mengarahkan upload ke Cloudinary |
 | `LIVEWIRE_TEMPORARY_FILE_UPLOAD_DISK` | `local` | Penyimpanan sementara selama proses upload |
 | `CLOUDINARY_CLOUD_NAME` | *(set langsung di Railway)* | Jangan simpan nilai nyata di repository |
@@ -260,6 +261,10 @@ Gunakan `php artisan media:diagnose` untuk pemeriksaan read-only. Gunakan `php a
 ### Update Moderasi Operasional - 20 Juni 2026
 
 Produk terblokir kini memiliki state permintaan peninjauan ulang. Owner wajib mengirim catatan perbaikan, permintaan ganda ditolak, dan admin menerima antrean serta notifikasi di Filament. Admin dapat membuka blokir atau menolak review dengan alasan wajib; kedua keputusan dicatat pada `moderation_actions` dan dikirim kepada owner. Resource `Log Moderasi` bersifat read-only dan hanya dapat diakses admin. Migration baru menambahkan `moderation_review_requested_at` dan `moderation_review_note` ke tabel `products`; `docker-entrypoint.sh` menjalankannya otomatis saat deployment Railway.
+
+### Update Administrasi Akun Owner - 28 Juni 2026
+
+Migration lifecycle akun dan blokir publikasi UMKM harus dijalankan setelah backup database. Railway private mempertahankan `AUTH_PASSWORD_RESET_ENABLED=false`. Saat pindah ke hosting publik, siapkan SMTP dan domain pengirim, uji email reset end-to-end, lalu ubah nilainya menjadi `true`. Admin tidak pernah melihat atau menetapkan password owner.
 
 1. **Jangan hapus `server.php`** — tanpa file ini, Livewire dan Filament JS tidak bisa load di deployment Railway.
 2. **Jangan tambahkan `php artisan config:cache` di Dockerfile** — env vars Railway tidak tersedia saat build. Semua caching harus di `docker-entrypoint.sh`.

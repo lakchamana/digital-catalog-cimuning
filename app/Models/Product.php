@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -52,5 +53,13 @@ class Product extends Model
     public function moderationActions(): MorphMany
     {
         return $this->morphMany(ModerationAction::class, 'subject')->latest();
+    }
+
+    public function scopePubliclyVisible(Builder $query): Builder
+    {
+        return $query
+            ->where('is_active', true)
+            ->where('is_admin_blocked', false)
+            ->whereHas('umkm', fn (Builder $umkmQuery): Builder => $umkmQuery->publiclyVisible());
     }
 }

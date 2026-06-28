@@ -3,6 +3,11 @@
 ## [Unreleased]
 
 ### Added
+- Admin-only Filament `Akun Owner` resource for viewing registered owners, correcting identity on a documented request, suspending/reactivating access, starting anonymization, and conditionally sending password reset links.
+- Owner account lifecycle states (`active`, `suspended`, `anonymization_pending`, and `anonymized`) with session revocation and immutable administration audit entries.
+- Separate UMKM publication blocking and restoration actions with mandatory reasons, owner notifications, and public-query protection.
+- Authenticated Filament profile page so owners can maintain their own account identity and password.
+- Environment-gated email password reset using `AUTH_PASSWORD_RESET_ENABLED`; disabled by default until real production mail is configured.
 - Public Privacy Policy page at `/kebijakan-privasi`, written for Cimuning Digital Hub data flows and aligned with Indonesia's personal data protection direction.
 - Lightweight first-visit privacy notice using localStorage key `cimuning_privacy_notice_seen_v1`, intentionally separate from the interactive walkthrough.
 - Required owner registration privacy consent with `privacy_accepted_at` and `privacy_version` stored on the user record.
@@ -99,6 +104,9 @@
 - Public product detail pages at `/produk/{slug}` with gallery, full description, UMKM owner information, direct WhatsApp CTA, profile link, SEO metadata, and JSON-LD `Product` schema.
 
 ### Changed
+- `Log Moderasi` now also records account lifecycle actions and UMKM publication moderation.
+- Public UMKM/product queries now share model visibility scopes so an admin-blocked UMKM is excluded consistently from listings, details, sitemap, products, and QR.
+- Category deletion is restricted to unused records; categories referenced by UMKM or products must be deactivated instead.
 - Owner registration now requires explicit agreement to the Privacy Policy before creating an UMKM owner account.
 - Public `/produk` and `/umkm` now use the navbar as the only keyword search entry point; page content focuses on live filters, results, and active filter chips.
 - Navbar search is contextual: `/umkm` and `/kategori/{slug}` search UMKM, while other public pages search products/services by default.

@@ -64,6 +64,10 @@ class OwnerUmkmStatus extends TableWidget
                     ->state(function (Umkm $record): string {
                         $submission = $record->latestSubmission;
 
+                        if ($record->is_admin_blocked) {
+                            return 'Profil dinonaktifkan pengelola. Baca catatan admin sebelum menghubungi pengelola.';
+                        }
+
                         return match ($submission?->status ?? $record->status) {
                             'approved', 'verified' => 'Profil sudah tampil di direktori publik.',
                             'need_revision' => 'Perbaiki profil sesuai catatan admin, lalu kirim kembali.',
@@ -78,8 +82,14 @@ class OwnerUmkmStatus extends TableWidget
                     ->label('Catatan admin')
                     ->placeholder('-')
                     ->wrap(),
-                IconColumn::make('is_active')
+                TextColumn::make('admin_block_reason')
+                    ->label('Catatan penonaktifan')
+                    ->visible(fn (): bool => Umkm::query()->where('user_id', $user?->id)->where('is_admin_blocked', true)->exists())
+                    ->placeholder('-')
+                    ->wrap(),
+                IconColumn::make('public_visibility')
                     ->label('Tampil publik')
+                    ->state(fn (Umkm $record): bool => $record->is_active && $record->status === 'verified' && ! $record->is_admin_blocked)
                     ->boolean(),
                 TextColumn::make('updated_at')
                     ->label('Update')

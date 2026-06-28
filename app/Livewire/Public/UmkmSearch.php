@@ -126,8 +126,7 @@ class UmkmSearch extends Component
     protected function rws(): Collection
     {
         return Umkm::query()
-            ->where('is_active', true)
-            ->where('status', 'verified')
+            ->publiclyVisible()
             ->whereNotNull('rw')
             ->distinct()
             ->orderBy('rw')
@@ -142,8 +141,7 @@ class UmkmSearch extends Component
 
         return Umkm::query()
             ->with('category')
-            ->where('is_active', true)
-            ->where('status', 'verified')
+            ->publiclyVisible()
             ->when($this->category !== '', fn (Builder $query) => $query->whereHas(
                 'category',
                 fn (Builder $categoryQuery) => $categoryQuery->where('slug', $this->category),
@@ -401,16 +399,14 @@ class UmkmSearch extends Component
             ->where('slug', $slug)
             ->where('is_active', true)
             ->whereHas('umkms', fn (Builder $umkmQuery) => $umkmQuery
-                ->where('is_active', true)
-                ->where('status', 'verified'))
+                ->publiclyVisible())
             ->exists();
     }
 
     protected function validRw(string $rw): bool
     {
         return Umkm::query()
-            ->where('is_active', true)
-            ->where('status', 'verified')
+            ->publiclyVisible()
             ->where('rw', $rw)
             ->exists();
     }

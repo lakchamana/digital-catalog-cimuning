@@ -57,7 +57,7 @@ Mayoritas user diasumsikan memakai smartphone. Semua halaman harus nyaman diguna
 
 ## Role User
 
-- Admin: mengelola kategori, meninjau submission UMKM secara read-only, melakukan kurasi featured, dan memblokir produk bermasalah dengan alasan tercatat.
+- Admin: mengelola kategori dan lifecycle akun owner, meninjau submission secara read-only, melakukan kurasi featured, serta memoderasi publikasi UMKM/produk dengan alasan tercatat. Admin tidak melihat password, mengubah role, atau menulis ulang konten owner.
 - UMKM Owner: mengelola profil dan produk miliknya sendiri.
 - Public User/Guest: melihat homepage, mencari UMKM, melihat produk/jasa, dan menghubungi UMKM tanpa login.
 
@@ -65,7 +65,11 @@ Mayoritas user diasumsikan memakai smartphone. Semua halaman harus nyaman diguna
 
 Panel `/admin` memakai Laravel Filament 5. Public pages tetap Blade + Livewire dan tidak dipindahkan ke Filament. Owner mengelola profil serta produknya sendiri. Admin melihat data owner secara read-only dan mengambil keputusan melalui resource `Verifikasi UMKM`; koreksi konten harus dilakukan owner. Perubahan profil verified disimpan sebagai draft submission sehingga versi publik lama tetap tayang sampai perubahan disetujui.
 
-Moderasi produk mengikuti batas tanggung jawab yang sama. Admin dapat memblokir produk dengan alasan, tetapi tidak mengubah konten owner. Setelah memperbaiki produk, owner mengajukan peninjauan ulang dengan catatan; admin kemudian membuka blokir atau menolak permintaan. Produk tetap tidak tampil publik sampai blokir benar-benar dicabut. Seluruh featured dan moderasi produk tercatat pada resource admin read-only `Log Moderasi`.
+Moderasi produk mengikuti batas tanggung jawab yang sama. Admin dapat memblokir produk dengan alasan, tetapi tidak mengubah konten owner. Setelah memperbaiki produk, owner mengajukan peninjauan ulang dengan catatan; admin kemudian membuka blokir atau menolak permintaan. Produk tetap tidak tampil publik sampai blokir benar-benar dicabut. Seluruh lifecycle akun, featured, blokir UMKM, dan moderasi produk tercatat pada resource read-only `Log Moderasi`.
+
+Resource `Akun Owner` hanya menampilkan akun role `umkm_owner`. Admin dapat melakukan koreksi identitas atas permintaan, suspend, reaktivasi, dan anonimisasi terkontrol. Suspend hanya menghentikan akses, sedangkan publikasi UMKM dikendalikan oleh action moderasi terpisah. Owner mendaftar sendiri dan dapat mengelola nama, email, serta password melalui profile page Filament.
+
+Reset password email tersedia secara conditional melalui `AUTH_PASSWORD_RESET_ENABLED`. Railway private/testing mempertahankan nilai `false`; hosting publik wajib menyediakan SMTP/domain pengirim dan menguji delivery sebelum mengaktifkannya.
 
 Form UMKM owner menggunakan wizard dengan bahasa publik yang sederhana. RW wajib dipilih dari `RW 01` sampai `RW 26`; slug dan koordinat mentah ditangani sistem, sedangkan status publik serta featured hanya berubah melalui workflow admin yang terkontrol. Aplikasi tidak menyimpan jumlah kunjungan profil atau menyediakan sort popularitas berbasis tracking.
 

@@ -29,11 +29,13 @@ class CategoryPolicy
 
     public function delete(User $user, Category $category): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin()
+            && ! $category->umkms()->exists()
+            && ! $category->products()->exists();
     }
 
     public function deleteAny(User $user): bool
     {
-        return $user->isAdmin();
+        return false;
     }
 }

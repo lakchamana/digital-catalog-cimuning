@@ -8,11 +8,13 @@ use App\Models\ModerationAction;
 use App\Models\Product;
 use App\Models\Umkm;
 use App\Models\UmkmSubmission;
+use App\Models\User;
 use App\Policies\CategoryPolicy;
 use App\Policies\ModerationActionPolicy;
 use App\Policies\ProductPolicy;
 use App\Policies\UmkmPolicy;
 use App\Policies\UmkmSubmissionPolicy;
+use App\Policies\UserPolicy;
 use App\Support\CloudinaryStorage;
 use Filament\Auth\Http\Responses\Contracts\RegistrationResponse;
 use Illuminate\Support\Facades\Gate;
@@ -47,6 +49,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(UmkmSubmission::class, UmkmSubmissionPolicy::class);
         Gate::policy(Product::class, ProductPolicy::class);
         Gate::policy(ModerationAction::class, ModerationActionPolicy::class);
+        Gate::policy(User::class, UserPolicy::class);
 
         // Daftarkan Cloudinary sebagai custom filesystem disk.
         // Aktif saat FILESYSTEM_DISK=cloudinary di environment production (Railway).

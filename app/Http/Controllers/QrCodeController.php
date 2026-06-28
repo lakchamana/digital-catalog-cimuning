@@ -51,7 +51,7 @@ class QrCodeController extends Controller
 
     private function ensurePublicUmkm(Umkm $umkm): void
     {
-        abort_unless($umkm->is_active && $umkm->status === 'verified', 404);
+        abort_unless($umkm->is_active && $umkm->status === 'verified' && ! $umkm->is_admin_blocked, 404);
     }
 
     private function accessibleSvg(string $svg, Umkm $umkm, string $targetUrl): string

@@ -29,7 +29,7 @@ Route::get('/', function () use ($hasTables) {
     if ($hasTables(['categories', 'umkms'])) {
         $categories = Category::query()
             ->where('is_active', true)
-            ->withCount(['umkms' => fn ($query) => $query->where('is_active', true)->where('status', 'verified')])
+            ->withCount(['umkms' => fn ($query) => $query->publiclyVisible()])
             ->orderBy('sort_order')
             ->orderBy('name')
             ->limit(11)
@@ -37,8 +37,7 @@ Route::get('/', function () use ($hasTables) {
 
         $featuredUmkms = Umkm::query()
             ->with('category')
-            ->where('is_active', true)
-            ->where('status', 'verified')
+            ->publiclyVisible()
             ->where('is_featured', true)
             ->latest()
             ->limit(3)
@@ -52,9 +51,7 @@ Route::get('/', function () use ($hasTables) {
                 'umkm',
                 'images' => fn ($query) => $query->orderBy('sort_order')->orderBy('id'),
             ])
-            ->where('is_active', true)
-            ->where('is_admin_blocked', false)
-            ->whereHas('umkm', fn ($query) => $query->where('is_active', true)->where('status', 'verified'))
+            ->publiclyVisible()
             ->latest()
             ->limit(8)
             ->get();
@@ -89,9 +86,7 @@ Route::get('/produk/{slug}', function (string $slug) use ($hasTables) {
             'umkm.category',
         ])
         ->where('slug', $slug)
-        ->where('is_active', true)
-        ->where('is_admin_blocked', false)
-        ->whereHas('umkm', fn ($query) => $query->where('is_active', true)->where('status', 'verified'))
+        ->publiclyVisible()
         ->firstOrFail();
 
     return view('products.show', compact('product'));
@@ -106,7 +101,7 @@ Route::get('/kategori', function () use ($hasTables) {
 
     $categories = Category::query()
         ->where('is_active', true)
-        ->withCount(['umkms' => fn ($query) => $query->where('is_active', true)->where('status', 'verified')])
+        ->withCount(['umkms' => fn ($query) => $query->publiclyVisible()])
         ->orderBy('sort_order')
         ->orderBy('name')
         ->get();
@@ -146,8 +141,7 @@ Route::get('/umkm/{slug}', function (string $slug) use ($hasTables) {
             'contacts',
             'socialLinks',
         ])
-        ->where('is_active', true)
-        ->where('status', 'verified')
+        ->publiclyVisible()
         ->where('slug', $slug)
         ->firstOrFail();
 
@@ -182,8 +176,7 @@ Route::get('/sitemap.xml', function () use ($hasTables) {
 
     if ($hasTables(['umkms'])) {
         Umkm::query()
-            ->where('is_active', true)
-            ->where('status', 'verified')
+            ->publiclyVisible()
             ->latest('updated_at')
             ->get()
             ->each(fn (Umkm $umkm) => $urls->push([
@@ -196,9 +189,7 @@ Route::get('/sitemap.xml', function () use ($hasTables) {
 
     if ($hasTables(['products', 'umkms'])) {
         Product::query()
-            ->where('is_active', true)
-            ->where('is_admin_blocked', false)
-            ->whereHas('umkm', fn ($query) => $query->where('is_active', true)->where('status', 'verified'))
+            ->publiclyVisible()
             ->latest('updated_at')
             ->get()
             ->each(fn (Product $product) => $urls->push([

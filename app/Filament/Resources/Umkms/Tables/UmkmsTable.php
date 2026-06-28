@@ -2,13 +2,16 @@
 
 namespace App\Filament\Resources\Umkms\Tables;
 
+use App\Filament\Resources\Umkms\UmkmResource;
 use App\Models\Umkm;
-use App\Support\UploadDisk;
 use App\Support\ContentModeration;
+use App\Support\UploadDisk;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\Textarea;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -72,6 +75,10 @@ class UmkmsTable
                 IconColumn::make('is_active')
                     ->label('Aktif')
                     ->boolean(),
+                IconColumn::make('is_admin_blocked')
+                    ->label('Diblokir admin')
+                    ->boolean()
+                    ->color(fn (bool $state): string => $state ? 'danger' : 'gray'),
                 IconColumn::make('service_delivery')
                     ->label('Delivery')
                     ->boolean(),
@@ -117,21 +124,63 @@ class UmkmsTable
                         ->all()),
                 TernaryFilter::make('is_active')
                     ->label('Aktif'),
+                TernaryFilter::make('is_admin_blocked')
+                    ->label('Diblokir admin'),
                 TernaryFilter::make('service_delivery')
                     ->label('Delivery'),
                 TernaryFilter::make('service_cod')
                     ->label('COD'),
             ])
             ->recordUrl(fn (Umkm $record): string => Filament::auth()->user()?->isAdmin()
-                ? \App\Filament\Resources\Umkms\UmkmResource::getUrl('view', ['record' => $record])
-                : \App\Filament\Resources\Umkms\UmkmResource::getUrl('edit', ['record' => $record]))
+                ? UmkmResource::getUrl('view', ['record' => $record])
+                : UmkmResource::getUrl('edit', ['record' => $record]))
             ->recordActions([
+                Action::make('blockPublication')
+                    ->label('Nonaktifkan publikasi')
+                    ->icon('heroicon-o-no-symbol')
+                    ->color('danger')
+                    ->schema([
+                        Textarea::make('reason')->label('Alasan penonaktifan')->required()->minLength(10)->maxLength(2000),
+                    ])
+                    ->visible(fn (Umkm $record): bool => Filament::auth()->user()?->isAdmin()
+                        && $record->status === 'verified'
+                        && $record->is_active
+                        && ! $record->is_admin_blocked)
+                    ->action(function (Umkm $record, array $data): void {
+                        ContentModeration::blockUmkm($record, Filament::auth()->user(), $data['reason']);
+                        Notification::make()
+                            ->title('Publikasi UMKM dinonaktifkan')
+                            ->body('Profil dan seluruh produknya disembunyikan dari halaman publik. Owner telah menerima notifikasi.')
+                            ->success()
+                            ->send();
+                    }),
+                Action::make('restorePublication')
+                    ->label('Pulihkan publikasi')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->schema([
+                        Textarea::make('reason')->label('Catatan pemulihan')->required()->minLength(10)->maxLength(2000),
+                    ])
+                    ->visible(fn (Umkm $record): bool => Filament::auth()->user()?->isAdmin()
+                        && $record->is_admin_blocked
+                        && ! in_array($record->owner?->account_status, ['anonymization_pending', 'anonymized'], true))
+                    ->action(function (Umkm $record, array $data): void {
+                        ContentModeration::unblockUmkm($record, Filament::auth()->user(), $data['reason']);
+                        Notification::make()
+                            ->title('Publikasi UMKM dipulihkan')
+                            ->body('Profil dapat tampil kembali bila statusnya tetap aktif dan terverifikasi.')
+                            ->success()
+                            ->send();
+                    }),
                 Action::make('toggleFeatured')
                     ->label(fn (Umkm $record): string => $record->is_featured ? 'Hapus dari pilihan' : 'Jadikan pilihan')
                     ->icon('heroicon-o-star')
                     ->color('info')
                     ->requiresConfirmation()
-                    ->visible(fn (Umkm $record): bool => Filament::auth()->user()?->isAdmin() && $record->status === 'verified')
+                    ->visible(fn (Umkm $record): bool => Filament::auth()->user()?->isAdmin()
+                        && $record->status === 'verified'
+                        && $record->is_active
+                        && ! $record->is_admin_blocked)
                     ->action(fn (Umkm $record) => ContentModeration::setFeatured(
                         $record,
                         Filament::auth()->user(),

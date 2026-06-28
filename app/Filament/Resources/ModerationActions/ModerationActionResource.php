@@ -7,6 +7,7 @@ use App\Filament\Resources\ModerationActions\Pages\ViewModerationAction;
 use App\Models\ModerationAction;
 use App\Models\Product;
 use App\Models\Umkm;
+use App\Models\User;
 use BackedEnum;
 use Filament\Forms\Components\DatePicker;
 use Filament\Infolists\Components\TextEntry;
@@ -32,7 +33,7 @@ class ModerationActionResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Log Moderasi';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Verifikasi';
+    protected static string|UnitEnum|null $navigationGroup = 'Administrasi';
 
     protected static ?int $navigationSort = 3;
 
@@ -49,12 +50,12 @@ class ModerationActionResource extends Resource
                 TextColumn::make('created_at')->label('Waktu')->dateTime()->sortable(),
                 TextColumn::make('actor.name')->label('Aktor')->placeholder('Sistem')->searchable(),
                 TextColumn::make('subject_type')->label('Jenis konten')->badge()
-                    ->formatStateUsing(fn (string $state): string => $state === Product::class ? 'Produk' : 'UMKM'),
+                    ->formatStateUsing(fn (string $state): string => self::subjectTypeLabel($state)),
                 TextColumn::make('subject_name')->label('Konten')
                     ->state(fn (ModerationAction $record): string => $record->subject?->name ?? 'Data sudah tidak tersedia')
                     ->searchable(query: function (Builder $query, string $search): Builder {
                         return $query->where(function (Builder $nested) use ($search): void {
-                            $nested->whereHasMorph('subject', [Product::class, Umkm::class], fn (Builder $subject) => $subject->where('name', 'like', "%{$search}%"));
+                            $nested->whereHasMorph('subject', [Product::class, Umkm::class, User::class], fn (Builder $subject) => $subject->where('name', 'like', "%{$search}%"));
                         });
                     }),
                 TextColumn::make('action')->label('Aksi')->badge()
@@ -68,6 +69,7 @@ class ModerationActionResource extends Resource
                 SelectFilter::make('subject_type')->label('Jenis konten')->options([
                     Product::class => 'Produk',
                     Umkm::class => 'UMKM',
+                    User::class => 'Akun owner',
                 ]),
                 Filter::make('created_at')
                     ->label('Rentang waktu')
@@ -91,7 +93,7 @@ class ModerationActionResource extends Resource
                     TextEntry::make('created_at')->label('Waktu')->dateTime(),
                     TextEntry::make('actor.name')->label('Aktor')->placeholder('Sistem'),
                     TextEntry::make('subject_type')->label('Jenis konten')
-                        ->formatStateUsing(fn (string $state): string => $state === Product::class ? 'Produk' : 'UMKM'),
+                        ->formatStateUsing(fn (string $state): string => self::subjectTypeLabel($state)),
                     TextEntry::make('subject_name')->label('Konten')
                         ->state(fn (ModerationAction $record): string => $record->subject?->name ?? 'Data sudah tidak tersedia'),
                     TextEntry::make('action')->label('Aksi')->badge()
@@ -119,6 +121,14 @@ class ModerationActionResource extends Resource
             'review_requested' => 'Peninjauan diminta owner',
             'review_rejected' => 'Peninjauan ditolak',
             'unblocked' => 'Blokir produk dibuka',
+            'umkm_blocked' => 'Publikasi UMKM dinonaktifkan',
+            'umkm_unblocked' => 'Publikasi UMKM dipulihkan',
+            'owner_identity_corrected' => 'Identitas owner dikoreksi',
+            'owner_suspended' => 'Akun owner ditangguhkan',
+            'owner_reactivated' => 'Akun owner diaktifkan',
+            'owner_password_reset_sent' => 'Link reset password dikirim',
+            'owner_anonymization_started' => 'Anonimisasi owner dimulai',
+            'owner_anonymized' => 'Akun owner dianonimkan',
         ];
     }
 
@@ -130,10 +140,21 @@ class ModerationActionResource extends Resource
     private static function actionColor(string $action): string
     {
         return match ($action) {
-            'featured', 'unblocked' => 'success',
-            'blocked', 'review_rejected' => 'danger',
-            'review_requested' => 'warning',
+            'featured', 'unblocked', 'umkm_unblocked', 'owner_reactivated' => 'success',
+            'blocked', 'review_rejected', 'umkm_blocked', 'owner_suspended', 'owner_anonymized' => 'danger',
+            'review_requested', 'owner_anonymization_started' => 'warning',
+            'owner_identity_corrected', 'owner_password_reset_sent' => 'info',
             default => 'gray',
+        };
+    }
+
+    private static function subjectTypeLabel(string $type): string
+    {
+        return match ($type) {
+            Product::class => 'Produk',
+            Umkm::class => 'UMKM',
+            User::class => 'Akun owner',
+            default => 'Data',
         };
     }
 }

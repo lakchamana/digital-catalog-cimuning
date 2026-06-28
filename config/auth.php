@@ -4,6 +4,8 @@ use App\Models\User;
 
 return [
 
+    'password_reset_enabled' => (bool) env('AUTH_PASSWORD_RESET_ENABLED', false),
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Defaults
