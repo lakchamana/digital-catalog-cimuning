@@ -13,11 +13,22 @@ use Illuminate\Database\Eloquent\Builder;
 
 class OwnerOverviewStats extends StatsOverviewWidget
 {
+    protected string $view = 'filament.widgets.owner-overview-stats';
+
     protected static ?int $sort = 1;
 
     public static function canView(): bool
     {
         return Filament::auth()->user()?->isUmkmOwner() ?? false;
+    }
+
+    protected function getColumns(): int|array|null
+    {
+        return [
+            'default' => 2,
+            '@xl' => 4,
+            '!@lg' => 4,
+        ];
     }
 
     protected function getStats(): array
@@ -51,7 +62,7 @@ class OwnerOverviewStats extends StatsOverviewWidget
         [$profileStatus, $profileDescription, $profileColor, $profileIcon] = $this->profilePresentation($umkm);
 
         return [
-            Stat::make('Status Profil UMKM', $profileStatus)
+            Stat::make('Status Profil', $profileStatus)
                 ->description($profileDescription)
                 ->color($profileColor)
                 ->icon($profileIcon)

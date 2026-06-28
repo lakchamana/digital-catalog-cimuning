@@ -27,19 +27,50 @@ class OwnerQuickActions extends Widget
         $umkm = Umkm::query()->where('user_id', $user?->id)->first();
         $hasProducts = $umkm?->products()->exists() ?? false;
 
-        return [
-            'profileUrl' => $umkm
+        $actions = [[
+            'label' => $umkm ? 'Kelola Profil UMKM' : 'Lengkapi Profil UMKM',
+            'description' => $umkm ? 'Perbarui informasi usaha Anda' : 'Isi data usaha untuk mulai ditinjau',
+            'url' => $umkm
                 ? UmkmResource::getUrl('edit', ['record' => $umkm])
                 : UmkmResource::getUrl('create'),
-            'profileLabel' => $umkm ? 'Kelola Profil UMKM' : 'Lengkapi Profil UMKM',
-            'productsUrl' => $umkm
-                ? ($hasProducts ? ProductResource::getUrl('index') : ProductResource::getUrl('create'))
-                : null,
-            'productsLabel' => $hasProducts ? 'Kelola Produk/Jasa' : 'Tambah Produk/Jasa',
-            'publicProfileUrl' => $umkm?->is_active && $umkm->status === 'verified' && ! $umkm->is_admin_blocked
-                ? route('umkm.show', $umkm->slug)
-                : null,
-            'securityUrl' => route('filament.admin.auth.profile'),
+            'icon' => 'heroicon-o-building-storefront',
+            'primary' => true,
+            'external' => false,
+        ]];
+
+        if ($umkm) {
+            $actions[] = [
+                'label' => $hasProducts ? 'Kelola Produk/Jasa' : 'Tambah Produk/Jasa',
+                'description' => $hasProducts ? 'Atur katalog yang dimiliki usaha' : 'Tambahkan isi katalog pertama',
+                'url' => $hasProducts ? ProductResource::getUrl('index') : ProductResource::getUrl('create'),
+                'icon' => 'heroicon-o-shopping-bag',
+                'primary' => false,
+                'external' => false,
+            ];
+        }
+
+        if ($umkm?->is_active && $umkm->status === 'verified' && ! $umkm->is_admin_blocked) {
+            $actions[] = [
+                'label' => 'Lihat Profil Publik',
+                'description' => 'Periksa tampilan yang dilihat masyarakat',
+                'url' => route('umkm.show', $umkm->slug),
+                'icon' => 'heroicon-o-arrow-top-right-on-square',
+                'primary' => false,
+                'external' => true,
+            ];
+        }
+
+        $actions[] = [
+            'label' => 'Keamanan Akun',
+            'description' => 'Ubah nama, email, atau password',
+            'url' => route('filament.admin.auth.profile'),
+            'icon' => 'heroicon-o-shield-check',
+            'primary' => false,
+            'external' => false,
+        ];
+
+        return [
+            'actions' => $actions,
         ];
     }
 }

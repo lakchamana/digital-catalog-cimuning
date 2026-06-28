@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+- Compact mobile owner dashboard with a 2x2 statistics grid and scan-friendly quick action rows.
 - Role-specific owner dashboard with actionable profile status, owned product totals, public product count, pending owner actions, and quick links to profile, catalog, public profile, and account security.
 - Structured Filament profile sections for account identity and password security, with the current password required before changing email or password.
 - Read-only Filament `Log Aktivitas Admin` resource for authentication events, denied panel access, admin profile changes, and category CRUD.

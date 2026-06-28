@@ -56,6 +56,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Owner dapat memperbarui profil akun dan password sendiri melalui profile page Filament.
 - Dashboard Filament dibedakan berdasarkan role: admin tetap melihat statistik platform, sedangkan owner melihat status profil UMKM, jumlah produk miliknya, produk yang tampil publik, dan pekerjaan yang perlu diselesaikan. Card global `Kategori aktif` tidak ditampilkan kepada owner.
 - Dashboard owner memiliki aksi cepat untuk melengkapi/mengelola profil UMKM, menambah/mengelola produk, membuka profil publik bila sudah tayang, dan membuka halaman `Keamanan Akun`.
+- Tampilan mobile dashboard owner memakai statistik compact 2x2 tanpa deskripsi panjang serta daftar aksi cepat setinggi minimal 56px dengan ikon, label, penjelasan, dan chevron. Tablet/desktop tetap menampilkan deskripsi statistik dan aksi dalam dua kolom.
 - Pergantian password owner yang masih login tidak membutuhkan email, tetapi wajib memasukkan password saat ini. Pemulihan lupa password tetap tidak tersedia selama SMTP production belum siap.
 - Reset password email dikendalikan `AUTH_PASSWORD_RESET_ENABLED`. Nilai default/Railway private adalah `false`; hosting publik wajib mengaktifkannya hanya setelah SMTP dan domain pengirim siap.
 - CTA WhatsApp dan Google Maps membuka URL eksternal secara langsung tanpa route tracking atau penyimpanan event.

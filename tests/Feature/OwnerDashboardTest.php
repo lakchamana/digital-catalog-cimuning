@@ -47,11 +47,12 @@ class OwnerDashboardTest extends TestCase
 
         Livewire::actingAs($owner)
             ->test(OwnerOverviewStats::class)
-            ->assertSee('Status Profil UMKM')
+            ->assertSee('Status Profil')
             ->assertSee('Belum lengkap')
             ->assertSee('Produk/Jasa')
             ->assertSee('Tampil Publik')
             ->assertSee('Perlu Tindakan')
+            ->assertSeeHtml('data-owner-stats-compact')
             ->assertDontSee('Kategori aktif');
     }
 
@@ -145,6 +146,8 @@ class OwnerDashboardTest extends TestCase
             ->assertSee('Kelola Produk/Jasa')
             ->assertSee('Lihat Profil Publik')
             ->assertSee('Keamanan Akun')
+            ->assertSee('Periksa tampilan yang dilihat masyarakat')
+            ->assertSeeHtml('data-owner-action-list')
             ->assertSee(route('filament.admin.auth.profile'), escape: false)
             ->assertSee(route('umkm.show', $umkm->slug), escape: false);
     }
