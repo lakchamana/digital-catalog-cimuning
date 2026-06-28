@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+- Owner-friendly location assistant with device geolocation, explicit Google Maps link verification, persistent status feedback, and a direct saved-point preview.
 - Compact mobile owner dashboard with a 2x2 statistics grid and scan-friendly quick action rows.
 - Role-specific owner dashboard with actionable profile status, owned product totals, public product count, pending owner actions, and quick links to profile, catalog, public profile, and account security.
 - Structured Filament profile sections for account identity and password security, with the current password required before changing email or password.

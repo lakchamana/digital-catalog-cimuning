@@ -375,6 +375,9 @@ class OwnerOnboardingTest extends TestCase
             'https://www.google.com/maps/place/Cimuning/data=!4d107.0123456!3d-6.3123456',
             '-6.3123456, 107.0123456',
             'https://www.google.com/maps/search/?api=1&query=-6.3123456%2C107.0123456',
+            'https://www.google.com/maps/dir/?api=1&destination=-6.3123456,107.0123456',
+            'https://maps.google.com/maps?daddr=-6.3123456,107.0123456',
+            'https://www.google.com/maps/embed?pb=!2d107.0123456!3d-6.3123456',
         ];
 
         foreach ($samples as $sample) {
@@ -386,6 +389,58 @@ class OwnerOnboardingTest extends TestCase
 
         $this->assertNull(OwnerFormHelper::coordinatesFromMapsText('https://maps.app.goo.gl/contohpendek'));
         $this->assertNotNull(OwnerFormHelper::mapsValidationMessage('https://maps.app.goo.gl/contohpendek'));
+    }
+
+    public function test_owner_can_check_maps_link_before_saving_profile(): void
+    {
+        $owner = User::query()->create([
+            'name' => 'Owner Cek Maps',
+            'email' => 'owner-cek-maps@example.test',
+            'password' => 'password',
+            'role' => 'umkm_owner',
+        ]);
+
+        $this->actingAs($owner);
+
+        Livewire::test(CreateUmkm::class)
+            ->assertFormComponentActionExists('maps_link', 'checkMapsLink')
+            ->fillForm([
+                'maps_link' => 'https://www.google.com/maps/place/Cimuning/@-6.3123456,107.0123456,17z',
+            ])
+            ->callFormComponentAction('maps_link', 'checkMapsLink')
+            ->assertSchemaStateSet([
+                'latitude' => '-6.3123456',
+                'longitude' => '107.0123456',
+            ])
+            ->assertNotified('Titik lokasi berhasil ditemukan')
+            ->assertSeeHtml('data-location-assistant');
+    }
+
+    public function test_maps_link_check_gives_feedback_without_replacing_location_for_unreadable_input(): void
+    {
+        $owner = User::query()->create([
+            'name' => 'Owner Maps Pendek',
+            'email' => 'owner-maps-pendek@example.test',
+            'password' => 'password',
+            'role' => 'umkm_owner',
+        ]);
+
+        $this->actingAs($owner);
+
+        Livewire::test(CreateUmkm::class)
+            ->fillForm([
+                'maps_link' => 'https://maps.app.goo.gl/contohpendek',
+                'latitude' => '-6.3000000',
+                'longitude' => '107.0000000',
+            ])
+            ->callFormComponentAction('maps_link', 'checkMapsLink')
+            ->assertSchemaStateSet([
+                'latitude' => '-6.3000000',
+                'longitude' => '107.0000000',
+            ])
+            ->assertNotified('Titik lokasi belum ditemukan');
+
+        $this->assertNull(OwnerFormHelper::coordinatesFromMapsText('91.0000000, 181.0000000'));
     }
 
     public function test_owner_form_rejects_unreadable_maps_link(): void

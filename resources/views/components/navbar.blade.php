@@ -162,7 +162,7 @@
         x-cloak
         x-show="open"
         x-transition.opacity
-        class="fixed inset-0 z-[60] bg-cimuning-charcoal/40 lg:hidden"
+        class="fixed inset-0 z-60 bg-cimuning-charcoal/40 lg:hidden"
         data-mobile-navigation-backdrop
         x-on:click="closeMenu()"
         aria-hidden="true"
@@ -180,7 +180,7 @@
         role="dialog"
         aria-modal="true"
         aria-labelledby="mobile-menu-title"
-        class="fixed inset-y-0 right-0 z-[70] h-dvh w-[min(86vw,22rem)] overflow-y-auto overscroll-contain bg-white shadow-2xl lg:hidden"
+        class="fixed inset-y-0 right-0 z-70 h-dvh w-[min(86vw,22rem)] overflow-y-auto overscroll-contain bg-white shadow-2xl lg:hidden"
     >
         <div class="flex h-16 items-center justify-between border-b border-cimuning-border px-5">
             <h2 id="mobile-menu-title" x-ref="mobileMenuTitle" tabindex="-1" class="font-semibold text-cimuning-charcoal">Menu</h2>

@@ -99,6 +99,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Pengambilan lokasi owner tidak memakai Google Maps API berbayar: UI menyediakan browser Geolocation, parsing koordinat, tombol cek titik tersimpan, dan tombol membuka Google Maps dari alamat.
 - Link Maps yang ditempel harus berisi koordinat yang bisa dibaca. Link pendek seperti `maps.app.goo.gl` tidak di-resolve server-side; owner perlu membuka link itu dahulu lalu menyalin URL lengkap atau koordinat.
 - Alamat tertulis dan titik Google Maps adalah dua data terpisah. Browser Geolocation hanya mengisi koordinat, bukan memperbaiki field alamat.
+- Step lokasi owner kini mengutamakan alamat tertulis lebih dahulu, menyediakan tombol `Cek link` dengan toast hasil, serta helper responsif untuk lokasi perangkat, pencarian alamat di Google Maps, dan pratinjau titik tersimpan. Link pendek tetap tidak di-resolve server-side.
 - Production Railway memakai Dockerfile, `docker-entrypoint.sh`, dan `server.php`.
 - `server.php` wajib dipertahankan untuk PHP built-in server production karena Livewire/Filament JS adalah route Laravel, bukan file statis biasa.
 - Config cache dan route cache production dijalankan di `docker-entrypoint.sh` saat runtime, bukan di Docker build, karena environment variables Railway tersedia saat container berjalan.

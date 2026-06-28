@@ -6,14 +6,17 @@ use App\Models\Umkm;
 use App\Support\OwnerFormHelper;
 use App\Support\UniqueSlug;
 use App\Support\UploadDisk;
+use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Components\Wizard;
@@ -135,11 +138,60 @@ class UmkmForm
                         ->searchPrompt('Ketik nomor RW')
                         ->noSearchResultsMessage('RW tidak ditemukan')
                         ->required(),
+                    Textarea::make('address')
+                        ->label('Alamat lengkap')
+                        ->placeholder('Contoh: Jl. Raya Cimuning No. 10, dekat Masjid ...')
+                        ->helperText('Tulis alamat dan patokan yang mudah dikenali warga.')
+                        ->required()
+                        ->rows(3)
+                        ->columnSpanFull(),
                     TextInput::make('maps_link')
-                        ->label('Link lokasi Google Maps')
-                        ->placeholder('Tempel link lokasi usaha dari Google Maps')
+                        ->label('Titik lokasi Google Maps')
+                        ->placeholder('Tempel link Google Maps atau koordinat lokasi')
                         ->live(onBlur: true)
-                        ->helperText('Opsional. Tempel URL Maps lengkap atau koordinat lokasi usaha.')
+                        ->helperText('Opsional. Setelah menempel link, tekan Cek link untuk memastikan titiknya terbaca.')
+                        ->suffixAction(
+                            Action::make('checkMapsLink')
+                                ->label('Cek link')
+                                ->icon('heroicon-o-map-pin')
+                                ->button()
+                                ->color('gray')
+                                ->action(function (Get $get, Set $set): void {
+                                    $value = $get('maps_link');
+
+                                    if (blank($value)) {
+                                        Notification::make()
+                                            ->title('Link lokasi belum diisi')
+                                            ->body('Tempel link Google Maps atau gunakan lokasi perangkat terlebih dahulu.')
+                                            ->warning()
+                                            ->send();
+
+                                        return;
+                                    }
+
+                                    $coordinates = OwnerFormHelper::coordinatesFromMapsText((string) $value);
+
+                                    if (! $coordinates) {
+                                        Notification::make()
+                                            ->title('Titik lokasi belum ditemukan')
+                                            ->body(OwnerFormHelper::mapsValidationMessage((string) $value))
+                                            ->warning()
+                                            ->send();
+
+                                        return;
+                                    }
+
+                                    $set('latitude', $coordinates['latitude']);
+                                    $set('longitude', $coordinates['longitude']);
+
+                                    Notification::make()
+                                        ->title('Titik lokasi berhasil ditemukan')
+                                        ->body('Buka titik tersimpan untuk memastikan penandanya berada di lokasi usaha Anda.')
+                                        ->success()
+                                        ->send();
+                                }),
+                        )
+                        ->columnSpanFull()
                         ->rules([
                             function (): \Closure {
                                 return function (string $attribute, mixed $value, \Closure $fail): void {
@@ -163,12 +215,6 @@ class UmkmForm
                         ->columnSpanFull(),
                     Hidden::make('latitude'),
                     Hidden::make('longitude'),
-                    Textarea::make('address')
-                        ->label('Alamat lengkap')
-                        ->placeholder('Tulis nama jalan, nomor, dan patokan yang mudah ditemukan.')
-                        ->required()
-                        ->rows(4)
-                        ->columnSpanFull(),
                 ])
                 ->columns(2),
         ];
