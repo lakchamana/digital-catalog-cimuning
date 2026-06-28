@@ -69,9 +69,11 @@ Moderasi produk mengikuti batas tanggung jawab yang sama. Admin dapat memblokir 
 
 Resource `Akun Owner` hanya menampilkan akun role `umkm_owner`. Admin dapat melakukan koreksi identitas atas permintaan, suspend, reaktivasi, dan anonimisasi terkontrol. Suspend hanya menghentikan akses, sedangkan publikasi UMKM dikendalikan oleh action moderasi terpisah. Owner mendaftar sendiri dan dapat mengelola nama, email, serta password melalui profile page Filament.
 
+Dashboard owner tidak memakai statistik global admin. Ringkasannya berfokus pada status profil UMKM, seluruh produk milik owner, produk yang benar-benar tampil publik, dan pekerjaan yang perlu ditindaklanjuti. Aksi cepat mengarah ke pengelolaan profil, katalog, profil publik, serta halaman keamanan akun. Admin tetap melihat statistik platform termasuk kategori aktif.
+
 Audit admin dibagi menjadi dua: `Log Moderasi` untuk keputusan konten/lifecycle owner dan `Log Aktivitas Admin` untuk autentikasi admin, akses sensitif yang ditolak, perubahan profil admin, serta CRUD kategori. Log aktivitas menggunakan request ID dan safe before/after diff tanpa password, token, secret, IP mentah, query string, atau binary media. Percobaan login memakai hash identitas, bukan email mentah.
 
-Reset password email tersedia secara conditional melalui `AUTH_PASSWORD_RESET_ENABLED`. Railway private/testing mempertahankan nilai `false`; hosting publik wajib menyediakan SMTP/domain pengirim dan menguji delivery sebelum mengaktifkannya.
+Owner yang masih login dapat mengganti password melalui halaman `Profil & Keamanan Akun` dengan memasukkan password saat ini. Reset password email tersedia secara conditional melalui `AUTH_PASSWORD_RESET_ENABLED`. Railway private/testing mempertahankan nilai `false`; hosting publik wajib menyediakan SMTP/domain pengirim dan menguji delivery sebelum mengaktifkannya.
 
 Form UMKM owner menggunakan wizard dengan bahasa publik yang sederhana. RW wajib dipilih dari `RW 01` sampai `RW 26`; slug dan koordinat mentah ditangani sistem, sedangkan status publik serta featured hanya berubah melalui workflow admin yang terkontrol. Aplikasi tidak menyimpan jumlah kunjungan profil atau menyediakan sort popularitas berbasis tracking.
 

@@ -59,13 +59,23 @@
 ## Flow Administrasi Akun Owner
 
 1. Owner membuat akun sendiri melalui `/admin/register`; admin tidak membuat akun atau password sementara.
-2. Owner dapat memperbarui nama, email, dan password miliknya melalui halaman profil Filament.
-3. Bila akses perlu dihentikan, admin menangguhkan akun dengan alasan wajib; seluruh session dan token reset dicabut tanpa otomatis mengubah publikasi UMKM.
-4. Admin dapat mengaktifkan kembali akun suspended dengan catatan keputusan.
-5. Koreksi nama/email oleh admin hanya dilakukan atas permintaan yang sah dan selalu dicatat dalam log.
-6. Permintaan penghapusan yang telah diverifikasi diproses melalui anonimisasi setelah akun disuspend.
-7. Anonimisasi membersihkan identitas, kontak, media, dan payload data pribadi; keputusan audit minimum tetap read-only.
-8. Jika cleanup media gagal, akun tetap `anonymization_pending` dan proses dapat dicoba ulang tanpa mengaktifkan akses kembali.
+2. Owner dapat memperbarui nama, email, dan password miliknya melalui halaman `Profil & Keamanan Akun` Filament.
+3. Perubahan email atau password mewajibkan password saat ini. Pemulihan lupa password baru diaktifkan setelah SMTP production tersedia.
+4. Bila akses perlu dihentikan, admin menangguhkan akun dengan alasan wajib; seluruh session dan token reset dicabut tanpa otomatis mengubah publikasi UMKM.
+5. Admin dapat mengaktifkan kembali akun suspended dengan catatan keputusan.
+6. Koreksi nama/email oleh admin hanya dilakukan atas permintaan yang sah dan selalu dicatat dalam log.
+7. Permintaan penghapusan yang telah diverifikasi diproses melalui anonimisasi setelah akun disuspend.
+8. Anonimisasi membersihkan identitas, kontak, media, dan payload data pribadi; keputusan audit minimum tetap read-only.
+9. Jika cleanup media gagal, akun tetap `anonymization_pending` dan proses dapat dicoba ulang tanpa mengaktifkan akses kembali.
+
+## Flow Dashboard Owner
+
+1. Owner login ke `/admin` dan melihat ringkasan yang hanya mengambil UMKM serta produk miliknya.
+2. Card `Status Profil UMKM` menunjukkan apakah profil belum lengkap, menunggu review, perlu revisi, terverifikasi, atau dinonaktifkan.
+3. Card `Produk/Jasa` dan `Tampil Publik` membedakan seluruh isi katalog owner dari produk yang benar-benar dapat ditemukan masyarakat.
+4. Card `Perlu Tindakan` hanya menghitung pekerjaan yang dapat dilakukan owner, seperti revisi profil atau perbaikan produk terblokir yang belum diajukan ulang.
+5. Aksi cepat mengarah ke profil UMKM, katalog produk, profil publik bila sudah tayang, dan keamanan akun.
+6. Statistik global platform seperti jumlah kategori aktif hanya ditampilkan kepada admin.
 
 ## Flow Pencarian UMKM
 

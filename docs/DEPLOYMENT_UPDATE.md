@@ -218,6 +218,14 @@ Variabel yang harus diset di Railway dashboard (tab Variables pada service Larav
 
 ---
 
+## Dashboard Owner dan Keamanan Akun
+
+Dashboard Filament sekarang memisahkan statistik berdasarkan role. Admin melihat statistik platform, sedangkan owner hanya melihat status profilnya, katalog miliknya, produk yang tampil publik, dan pekerjaan yang perlu ditindaklanjuti. Aksi cepat owner menyediakan akses ke profil UMKM, produk/jasa, profil publik, dan halaman keamanan akun.
+
+Owner yang masih login dapat mengganti password tanpa email melalui `/admin/profile`, dengan password saat ini sebagai verifikasi wajib. Pertahankan `AUTH_PASSWORD_RESET_ENABLED=false` selama SMTP dan domain pengirim belum siap. Setelah layanan email production tersedia, uji pengiriman reset end-to-end sebelum mengubah flag menjadi `true`; admin tidak pernah melihat atau menetapkan password owner.
+
+---
+
 ## Masalah yang Ditemukan dan Diselesaikan
 
 ### 0. Upload media gagal sebelum form tersimpan

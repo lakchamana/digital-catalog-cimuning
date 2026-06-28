@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Added
+- Role-specific owner dashboard with actionable profile status, owned product totals, public product count, pending owner actions, and quick links to profile, catalog, public profile, and account security.
+- Structured Filament profile sections for account identity and password security, with the current password required before changing email or password.
 - Read-only Filament `Log Aktivitas Admin` resource for authentication events, denied panel access, admin profile changes, and category CRUD.
 - Sanitized admin audit records with request IDs, safe before/after diffs, actor/target context, and no passwords, tokens, secrets, raw IP addresses, queries, or media payloads.
 - Category observer and panel authentication listeners so security-sensitive administration is recorded outside the content moderation log.

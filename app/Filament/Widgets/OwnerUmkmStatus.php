@@ -16,7 +16,7 @@ class OwnerUmkmStatus extends TableWidget
 {
     protected int|string|array $columnSpan = 'full';
 
-    protected static ?int $sort = 3;
+    protected static ?int $sort = 4;
 
     public static function canView(): bool
     {
@@ -98,7 +98,7 @@ class OwnerUmkmStatus extends TableWidget
             ])
             ->recordUrl(fn (Umkm $record): string => UmkmResource::getUrl('edit', ['record' => $record]))
             ->emptyStateHeading('Belum ada UMKM yang terhubung')
-            ->emptyStateDescription('Daftarkan profil usaha agar dapat diperiksa dan ditampilkan di direktori UMKM Cimuning.')
+            ->emptyStateDescription('Lengkapi profil usaha agar dapat diperiksa dan ditampilkan di direktori UMKM Cimuning.')
             ->emptyStateActions([
                 Action::make('createUmkm')
                     ->label('Lengkapi Profil UMKM')

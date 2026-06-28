@@ -9,26 +9,21 @@ use App\Models\UmkmSubmission;
 use Filament\Facades\Filament;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Database\Eloquent\Builder;
 
 class PlatformStats extends StatsOverviewWidget
 {
+    protected static ?int $sort = 1;
+
+    public static function canView(): bool
+    {
+        return Filament::auth()->user()?->isAdmin() ?? false;
+    }
+
     protected function getStats(): array
     {
-        $user = Filament::auth()->user();
         $umkmQuery = Umkm::query();
         $productQuery = Product::query();
-
-        if ($user?->isUmkmOwner()) {
-            $umkmQuery->where('user_id', $user->id);
-            $productQuery->whereHas('umkm', fn (Builder $query) => $query->where('user_id', $user->id));
-        }
-
         $pendingSubmissions = UmkmSubmission::query()->where('status', 'pending');
-
-        if ($user?->isUmkmOwner()) {
-            $pendingSubmissions->whereHas('umkm', fn (Builder $query) => $query->where('user_id', $user->id));
-        }
 
         return [
             Stat::make('UMKM terverifikasi', (clone $umkmQuery)->publiclyVisible()->count())
