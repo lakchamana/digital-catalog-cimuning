@@ -43,7 +43,7 @@ class PrivacyPolicyTest extends TestCase
             ->assertSee('Komunikasi dan transaksi langsung')
             ->assertSee('Keamanan akun')
             ->assertSee('Penangguhan, penonaktifan, dan penghapusan')
-            ->assertSee('Hukum Indonesia')
+            ->assertSee('hukum Republik Indonesia')
             ->assertSee('cimuningppk@gmail.com')
             ->assertSee('0878-0405-4071');
     }
@@ -62,6 +62,8 @@ class PrivacyPolicyTest extends TestCase
 
         $this->get(route('home'))
             ->assertSee('data-support-whatsapp', false)
+            ->assertSee('cimuning_support_hidden_session_v1')
+            ->assertSee('aria-label="Tutup tombol bantuan WhatsApp"', false)
             ->assertSee('href="'.$supportUrl.'"', false)
             ->assertSee('target="_blank"', false)
             ->assertSee('rel="noopener noreferrer"', false)

@@ -121,6 +121,7 @@
 - Public product detail pages at `/produk/{slug}` with gallery, full description, UMKM owner information, direct WhatsApp CTA, profile link, SEO metadata, and JSON-LD `Product` schema.
 
 ### Changed
+- Floating WhatsApp help can now be dismissed for the active browser session with an accessible close control.
 - Updated `guzzlehttp/guzzle` to 7.12.3 and `guzzlehttp/psr7` to 2.12.3 to resolve locked dependency security advisories.
 - Redesigned the admin `Backup Data` page with a clear health summary, compact mobile history cards, simplified Indonesian copy, guided storage steps, and a collapsed recovery checker for infrequent use.
 - Hosting-provider and media backup instructions are treated as optional during Railway team testing and should be finalized after the production hosting provider is selected.

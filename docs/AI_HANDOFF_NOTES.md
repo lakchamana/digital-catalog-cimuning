@@ -93,7 +93,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Owner baru wajib menyetujui Kebijakan Privasi dan Syarat Penggunaan secara terpisah. Timestamp dan versi disimpan pada user; akun lama tidak dipaksa menyetujui ulang.
 - Versi persetujuan saat ini `2026-06-29`, didefinisikan melalui `RegisterOwner::PRIVACY_VERSION` dan `RegisterOwner::TERMS_VERSION`.
 - Kontak resmi sementara dipusatkan lewat `config/support.php`: `cimuningppk@gmail.com` dan WhatsApp `0878-0405-4071` (`6287804054071` untuk URL).
-- Public layout menampilkan tombol bantuan WhatsApp tanpa tracking internal; pada detail UMKM/produk tombol dinaikkan di mobile agar tidak bertabrakan dengan sticky CTA.
+- Public layout menampilkan tombol bantuan WhatsApp tanpa tracking internal; tombol dapat ditutup selama sesi browser memakai `sessionStorage`, dan pada detail UMKM/produk posisinya dinaikkan agar tidak bertabrakan dengan sticky CTA mobile.
 - Registrasi owner `/admin/register` memakai CAPTCHA matematika lokal berbasis session dan honeypot tersembunyi, tanpa layanan eksternal.
 - CAPTCHA owner registration memakai token per form render yang disimpan di session agar beberapa tab register tidak saling membatalkan jawaban.
 - Form UMKM Filament sekarang memakai wizard bertahap agar owner awam tidak melihat seluruh field teknis sekaligus.
