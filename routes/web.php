@@ -164,6 +164,7 @@ Route::get('/sitemap.xml', function () use ($hasTables) {
         ['loc' => route('about'), 'priority' => '0.4', 'changefreq' => 'monthly'],
         ['loc' => route('contact'), 'priority' => '0.4', 'changefreq' => 'monthly'],
         ['loc' => route('privacy'), 'priority' => '0.4', 'changefreq' => 'monthly'],
+        ['loc' => route('terms'), 'priority' => '0.4', 'changefreq' => 'monthly'],
     ]);
 
     if ($hasTables(['categories'])) {
@@ -220,3 +221,5 @@ Route::view('/tentang', 'pages.about')->name('about');
 Route::view('/kontak', 'pages.contact')->name('contact');
 
 Route::view('/kebijakan-privasi', 'pages.privacy')->name('privacy');
+
+Route::view('/syarat-penggunaan', 'pages.terms')->name('terms');

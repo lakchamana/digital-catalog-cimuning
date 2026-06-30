@@ -36,6 +36,8 @@ class ProductDetailTest extends TestCase
             ->assertSee('https://wa.me/6281234567890', false)
             ->assertSee(asset('storage/products/detail/nasi-detail.jpg'), false)
             ->assertSee(asset('storage/products/gallery/nasi-detail-1.jpg'), false)
+            ->assertSee('data-support-whatsapp', false)
+            ->assertSee('bottom-24 lg:bottom-6', false)
             ->assertDontSee('Tambah ke keranjang')
             ->assertDontSee('Bayar sekarang');
     }

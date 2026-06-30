@@ -14,11 +14,13 @@ CTA WhatsApp dan Google Maps mengarah langsung ke layanan eksternal, sedangkan Q
 
 Kebijakan Privasi publik tersedia di `/kebijakan-privasi` dan ditulis agar mudah dipahami oleh visitor, owner UMKM, dan pengelola. Substansinya mengikuti prinsip transparansi UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi: jelaskan data yang dikumpulkan, tujuan pemrosesan, data yang tampil publik, pihak ketiga, hak pengguna, keamanan, retensi, dan kanal bantuan.
 
+Syarat Penggunaan tersedia di `/syarat-penggunaan` untuk mengatur kebenaran data owner, hak atas konten, produk terlarang, keamanan akun, moderasi, penangguhan, layanan pihak ketiga, dan transaksi langsung di luar platform.
+
 Visitor publik melihat pemberitahuan privasi first-visit yang ringan, bukan banner "accept cookies", karena aplikasi tidak memakai analytics/tracking cookies. Status pemberitahuan disimpan di browser memakai localStorage key `cimuning_privacy_notice_seen_v1`.
 
-Owner wajib menyetujui Kebijakan Privasi ketika membuat akun di `/admin/register`. Persetujuan dicatat pada `users.privacy_accepted_at` dan `users.privacy_version`. Data owner yang dapat tampil publik meliputi profil UMKM verified, produk aktif, kontak usaha, alamat/RW, titik Maps, media sosial, QR profil, serta foto/logo/cover/galeri yang owner unggah.
+Owner baru wajib menyetujui Kebijakan Privasi dan Syarat Penggunaan secara terpisah ketika membuat akun di `/admin/register`. Persetujuan versi `2026-06-29` dicatat pada kolom privacy/terms user. Owner lama tetap dapat login tanpa persetujuan paksa. Data owner yang dapat tampil publik meliputi profil UMKM verified, produk aktif, kontak usaha, alamat/RW, titik Maps, media sosial, QR profil, serta foto/logo/cover/galeri yang owner unggah.
 
-Kebijakan Privasi harus direview ulang sebelum menambah analytics, email marketing, payment, checkout, chat, tracking pengunjung, atau pemrosesan data baru yang lebih sensitif. Kontak resmi pengelola belum final, sehingga kebijakan dan halaman bantuan sementara mengarahkan user ke `/kontak` tanpa nomor/email dummy.
+Kebijakan Privasi dan Syarat Penggunaan perlu review hukum formal sebelum peluncuran luas serta harus diperbarui jika model layanan atau pemrosesan data berubah. Kontak resmi sementara adalah `cimuningppk@gmail.com` dan WhatsApp `0878-0405-4071`, dipusatkan di `config/support.php`.
 
 ## Target User
 

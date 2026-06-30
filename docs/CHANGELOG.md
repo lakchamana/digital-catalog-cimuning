@@ -3,6 +3,11 @@
 ## [Unreleased]
 
 ### Added
+- Public Syarat Penggunaan page at `/syarat-penggunaan`, linked from navigation, footer, contact/help, owner registration, and sitemap.
+- Separate required owner consent for Privacy Policy and Terms of Use version `2026-06-29`, with acceptance timestamps and versions visible to admins.
+- Central official support configuration for `cimuningppk@gmail.com` and WhatsApp `0878-0405-4071`.
+- Accessible floating WhatsApp help button on every public page, with extra mobile clearance above detail-page sticky CTAs and no internal tracking.
+- Owner dashboard quick action for contacting official support through WhatsApp or email.
 - Admin-only `Backup & Pemulihan` page for AES-256 database backups, safe history metadata, 48/72-hour health warnings, encrypted archive validation, and restore requests that never execute SQL.
 - `backup_runs` and `restore_requests` audit metadata, `backup:inspect`, `backup:cleanup`, MySQL dump credential isolation, global locking, per-admin throttling, and guaranteed plaintext cleanup.
 - Operational backup and staging-only restore runbook covering Railway volume backups, Cloudinary automatic backups, retention, recovery kit separation, and quarterly restore drills.
@@ -116,6 +121,7 @@
 - Public product detail pages at `/produk/{slug}` with gallery, full description, UMKM owner information, direct WhatsApp CTA, profile link, SEO metadata, and JSON-LD `Product` schema.
 
 ### Changed
+- Updated `guzzlehttp/guzzle` to 7.12.3 and `guzzlehttp/psr7` to 2.12.3 to resolve locked dependency security advisories.
 - Redesigned the admin `Backup Data` page with a clear health summary, compact mobile history cards, simplified Indonesian copy, guided storage steps, and a collapsed recovery checker for infrequent use.
 - Hosting-provider and media backup instructions are treated as optional during Railway team testing and should be finalized after the production hosting provider is selected.
 - `Log Moderasi` now also records account lifecycle actions and UMKM publication moderation.

@@ -19,6 +19,7 @@ use Illuminate\Notifications\Notifiable;
     'name', 'email', 'password', 'role', 'account_status', 'suspended_at',
     'suspension_reason', 'suspended_by', 'anonymization_requested_at',
     'anonymized_at', 'privacy_accepted_at', 'privacy_version',
+    'terms_accepted_at', 'terms_version',
 ])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements FilamentUser
@@ -40,6 +41,7 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'privacy_accepted_at' => 'datetime',
+            'terms_accepted_at' => 'datetime',
             'suspended_at' => 'datetime',
             'anonymization_requested_at' => 'datetime',
             'anonymized_at' => 'datetime',

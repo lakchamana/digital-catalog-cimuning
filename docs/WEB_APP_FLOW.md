@@ -15,25 +15,26 @@
 ## Flow Informasi Publik
 
 1. User membuka `/tentang` untuk memahami tujuan Cimuning Digital Hub, cara kerja direktori, status verified, QR profil, Maps, dan prinsip kontak langsung.
-2. User membuka `/kontak` atau link “Bantuan” untuk memilih jalur bantuan: cari produk/jasa, lihat UMKM, daftar owner, login owner, verifikasi, atau revisi data.
+2. User membuka `/kontak`, tombol bantuan mengambang, atau link Bantuan untuk memilih jalur bantuan dan menghubungi pengelola melalui email/WhatsApp resmi.
 3. User membuka `/kebijakan-privasi` untuk memahami data yang dikelola, data yang tampil publik, layanan pihak ketiga, hak pengguna, dan kanal bantuan.
-4. Halaman kontak v1 tidak menampilkan nomor/email dummy dan tidak menyimpan pesan ke database.
-5. Kontak resmi pengelola dapat ditambahkan setelah kanal resmi final.
+4. Halaman kontak tidak menyimpan pesan ke database; WhatsApp dan email dibuka melalui layanan eksternal.
+5. Kontak resmi sementara adalah `cimuningppk@gmail.com` dan WhatsApp `0878-0405-4071`; percakapan tidak dilacak oleh aplikasi.
+6. User dapat membaca `/syarat-penggunaan` untuk memahami kewajiban owner, konten terlarang, moderasi, keamanan akun, dan transaksi langsung.
 
 ## Flow Privasi dan Persetujuan
 
 1. Visitor publik melihat pemberitahuan privasi first-visit yang tidak menghalangi akses website.
 2. Sistem menyimpan status pemberitahuan di browser dengan localStorage key `cimuning_privacy_notice_seen_v1`.
 3. Visitor dapat membaca `/kebijakan-privasi` kapan saja dari navbar/drawer, footer, atau halaman kontak.
-4. Calon owner wajib menyetujui Kebijakan Privasi saat membuat akun di `/admin/register`.
-5. Setelah register berhasil, sistem menyimpan `privacy_accepted_at` dan `privacy_version` pada akun owner.
-6. Permintaan akses, koreksi, pembaruan, nonaktif, atau penghapusan data diarahkan melalui `/kontak` sampai kanal resmi pengelola final.
+4. Calon owner wajib menyetujui Kebijakan Privasi dan Syarat Penggunaan melalui checkbox terpisah saat membuat akun di `/admin/register`.
+5. Sistem menyimpan timestamp dan versi `2026-06-29` untuk kedua persetujuan; owner lama tidak dipaksa menyetujui ulang.
+6. Permintaan akses, koreksi, pembaruan, nonaktif, atau penghapusan data diarahkan ke kontak resmi pada `/kontak`.
 7. Kebijakan perlu diperbarui jika nanti aplikasi menambah analytics, email marketing, chat, payment, checkout, atau tracking baru.
 
 ## Flow UMKM Owner
 
 1. Calon owner membuka `/daftar-umkm`.
-2. Owner membuat akun melalui `/admin/register`, menyetujui Kebijakan Privasi, dan menjawab CAPTCHA lokal sederhana.
+2. Owner membuat akun melalui `/admin/register`, menyetujui Kebijakan Privasi serta Syarat Penggunaan, dan menjawab CAPTCHA lokal sederhana.
 3. Sistem membuat akun dengan role `umkm_owner` dan mengarahkan owner ke dashboard.
 4. Owner mengisi atau memperbarui profil UMKM melalui wizard Informasi usaha, Kontak, Lokasi, Media sosial, Foto & layanan, dan Konfirmasi.
 5. Owner tidak perlu memahami slug/URL teknis karena sistem membuat slug otomatis.
@@ -74,7 +75,7 @@
 2. Card `Status Profil UMKM` menunjukkan apakah profil belum lengkap, menunggu review, perlu revisi, terverifikasi, atau dinonaktifkan.
 3. Card `Produk/Jasa` dan `Tampil Publik` membedakan seluruh isi katalog owner dari produk yang benar-benar dapat ditemukan masyarakat.
 4. Card `Perlu Tindakan` hanya menghitung pekerjaan yang dapat dilakukan owner, seperti revisi profil atau perbaikan produk terblokir yang belum diajukan ulang.
-5. Aksi cepat mengarah ke profil UMKM, katalog produk, profil publik bila sudah tayang, dan keamanan akun.
+5. Aksi cepat mengarah ke profil UMKM, katalog produk, profil publik bila sudah tayang, keamanan akun, dan bantuan resmi.
 6. Statistik global platform seperti jumlah kategori aktif hanya ditampilkan kepada admin.
 
 ## Flow Pencarian UMKM
@@ -93,7 +94,7 @@
 
 1. User membuka `/daftar-umkm`.
 2. User membaca manfaat dan langkah pendaftaran account-first.
-3. User membuat akun owner dari `/admin/register` dengan persetujuan Kebijakan Privasi, CAPTCHA matematika lokal tokenized, dan honeypot anti-spam.
+3. User membuat akun owner dari `/admin/register` dengan persetujuan Kebijakan Privasi dan Syarat Penggunaan secara terpisah, CAPTCHA matematika lokal tokenized, dan honeypot anti-spam.
 4. Setelah login, owner melengkapi data usaha, kategori, kontak, lokasi, media sosial, layanan, dan foto dari dashboard.
 5. Sistem membantu lokasi tanpa API berbayar: browser Geolocation, parsing koordinat/teks Maps, tombol cek titik tersimpan, dan tombol buka Google Maps.
 6. Jika link Maps tidak berisi koordinat yang bisa dibaca, sistem meminta owner menempel URL Maps lengkap atau koordinat; link pendek tidak di-resolve server-side.
@@ -221,7 +222,7 @@
 1. Search engine atau user membuka halaman public.
 2. Layout public menyediakan canonical URL, meta description, Open Graph, dan Twitter card.
 3. Detail UMKM verified menyediakan JSON-LD `LocalBusiness` dari data usaha, lokasi, kontak, dan katalog produk.
-4. `/sitemap.xml` memuat halaman public, Kebijakan Privasi, kategori aktif, UMKM aktif + verified, dan produk public.
+4. `/sitemap.xml` memuat halaman public, Kebijakan Privasi, Syarat Penggunaan, kategori aktif, UMKM aktif + verified, dan produk public.
 5. `/admin`, UMKM pending/rejected/inactive, dan fitur transaksi tidak masuk sitemap.
 
 ## Flow QR Profil UMKM

@@ -12,7 +12,7 @@
                     Kebijakan ini menjelaskan bagaimana Cimuning Digital Hub mengelola data pengunjung, owner UMKM, dan admin. Platform ini adalah direktori dan katalog digital UMKM, bukan marketplace transaksi.
                 </p>
                 <p class="mt-4 text-sm leading-6 text-cimuning-slate">
-                    Terakhir diperbarui: 24 Juni 2026. Kebijakan ini disusun dengan memperhatikan prinsip pelindungan data pribadi dalam UU No. 27 Tahun 2022.
+                    Terakhir diperbarui: 29 Juni 2026. Kebijakan ini disusun dengan memperhatikan prinsip pelindungan data pribadi dalam UU No. 27 Tahun 2022.
                 </p>
             </div>
         </div>
@@ -98,7 +98,7 @@
                 <article id="pihak-ketiga" class="rounded-card border border-cimuning-border bg-white p-6 shadow-card scroll-mt-24">
                     <h2 class="text-2xl font-bold text-cimuning-charcoal">5. Pihak ketiga dan layanan eksternal</h2>
                     <p class="mt-4 text-base leading-8 text-cimuning-slate">
-                        Website dapat menggunakan Railway untuk hosting dan database, Cloudinary untuk penyimpanan media, serta link eksternal menuju WhatsApp, Google Maps, website, Instagram, atau TikTok. Saat pengguna membuka layanan eksternal, kebijakan privasi layanan tersebut berlaku di luar kendali Cimuning Digital Hub.
+                        Website dapat menggunakan penyedia hosting dan database seperti Railway serta penyimpanan media seperti Cloudinary. Website juga menyediakan link eksternal menuju WhatsApp, Google Maps, website, Instagram, atau TikTok. Saat pengguna membuka layanan eksternal, kebijakan privasi layanan tersebut berlaku di luar kendali Cimuning Digital Hub.
                     </p>
                     <p class="mt-3 text-base leading-8 text-cimuning-slate">
                         Cimuning Digital Hub tidak menyimpan tracking klik WhatsApp/Maps, scan QR, IP hash pengunjung, user agent, referer, atau analytics kontak di database.
@@ -131,12 +131,15 @@
                 <article id="kontak" class="rounded-card border border-cimuning-border bg-white p-6 shadow-card scroll-mt-24">
                     <h2 class="text-2xl font-bold text-cimuning-charcoal">8. Kontak dan pembaruan kebijakan</h2>
                     <p class="mt-4 text-base leading-8 text-cimuning-slate">
-                        Kontak resmi pengelola akan diumumkan oleh tim Cimuning Digital Hub setelah kanal resmi ditetapkan. Untuk saat ini, gunakan halaman Kontak & Bantuan agar tidak ada nomor atau email sementara yang membingungkan pengguna.
+                        Permintaan akses, koreksi, penonaktifan, penghapusan data, atau pertanyaan privasi dapat disampaikan melalui email <a href="mailto:{{ config('support.email') }}" class="font-semibold text-cimuning-red underline">{{ config('support.email') }}</a> atau WhatsApp <a href="https://wa.me/{{ config('support.whatsapp') }}" target="_blank" rel="noopener noreferrer" class="font-semibold text-cimuning-red underline">{{ config('support.whatsapp_display') }}</a>. Jangan mengirim password atau kode login.
                     </p>
                     <p class="mt-3 text-base leading-8 text-cimuning-slate">
                         Kebijakan ini dapat diperbarui jika ada perubahan fitur, layanan pihak ketiga, atau kebutuhan hukum. Jika nanti website menambahkan analytics, email marketing, payment, chat, atau tracking baru, kebijakan dan mekanisme persetujuan harus ditinjau ulang.
                     </p>
-                    <x-secondary-button href="{{ route('contact') }}" class="mt-5">Buka Kontak & Bantuan</x-secondary-button>
+                    <div class="mt-5 flex flex-wrap gap-3">
+                        <x-secondary-button href="{{ route('contact') }}">Buka Kontak & Bantuan</x-secondary-button>
+                        <x-secondary-button href="{{ route('terms') }}">Baca Syarat Penggunaan</x-secondary-button>
+                    </div>
                 </article>
 
                 <div class="rounded-card border border-cimuning-border bg-cimuning-section p-5 text-sm leading-6 text-cimuning-slate">

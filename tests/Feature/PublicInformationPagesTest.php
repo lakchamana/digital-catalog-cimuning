@@ -23,7 +23,7 @@ class PublicInformationPagesTest extends TestCase
             ->assertDontSee('Tahap MVP');
     }
 
-    public function test_contact_page_renders_help_ctas_without_fake_contact_details(): void
+    public function test_contact_page_renders_help_ctas_and_official_contact_details(): void
     {
         $this->get(route('contact'))
             ->assertOk()
@@ -33,8 +33,10 @@ class PublicInformationPagesTest extends TestCase
             ->assertSee('Masuk Owner')
             ->assertSee('Cari Produk/Jasa')
             ->assertSee('Lihat Direktori UMKM')
-            ->assertSee('Kontak pengelola akan diumumkan oleh tim Cimuning Digital Hub')
-            ->assertDontSee('Informasi kontak pengelola akan ditambahkan')
+            ->assertSee('cimuningppk@gmail.com')
+            ->assertSee('0878-0405-4071')
+            ->assertSee('Syarat Penggunaan')
+            ->assertDontSee('Kontak pengelola akan diumumkan')
             ->assertDontSee('Tahap MVP');
     }
 
@@ -45,6 +47,9 @@ class PublicInformationPagesTest extends TestCase
             ->assertSee('href="'.route('about').'"', false)
             ->assertSee('Tentang Kami')
             ->assertSee('href="'.route('contact').'"', false)
-            ->assertSee('Kontak/Bantuan');
+            ->assertSee('Kontak/Bantuan')
+            ->assertSee('href="'.route('terms').'"', false)
+            ->assertSee('Syarat Penggunaan')
+            ->assertSee('cimuningppk@gmail.com');
     }
 }

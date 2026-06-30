@@ -57,6 +57,7 @@
         </main>
 
         <x-footer />
+        <x-support-whatsapp />
         @unless (request()->routeIs('privacy'))
             <x-privacy-notice />
         @endunless

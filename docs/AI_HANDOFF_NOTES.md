@@ -58,7 +58,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Login panel gagal hanya menyimpan hash HMAC identitas login untuk korelasi keamanan, bukan email percobaan dalam bentuk teks terbuka.
 - Owner dapat memperbarui profil akun dan password sendiri melalui profile page Filament.
 - Dashboard Filament dibedakan berdasarkan role: admin tetap melihat statistik platform, sedangkan owner melihat status profil UMKM, jumlah produk miliknya, produk yang tampil publik, dan pekerjaan yang perlu diselesaikan. Card global `Kategori aktif` tidak ditampilkan kepada owner.
-- Dashboard owner memiliki aksi cepat untuk melengkapi/mengelola profil UMKM, menambah/mengelola produk, membuka profil publik bila sudah tayang, dan membuka halaman `Keamanan Akun`.
+- Dashboard owner memiliki aksi cepat untuk melengkapi/mengelola profil UMKM, menambah/mengelola produk, membuka profil publik bila sudah tayang, membuka halaman `Keamanan Akun`, dan menghubungi bantuan resmi.
 - Tampilan mobile dashboard owner memakai statistik compact 2x2 tanpa deskripsi panjang serta daftar aksi cepat setinggi minimal 56px dengan ikon, label, penjelasan, dan chevron. Tablet/desktop tetap menampilkan deskripsi statistik dan aksi dalam dua kolom.
 - Pergantian password owner yang masih login tidak membutuhkan email, tetapi wajib memasukkan password saat ini. Pemulihan lupa password tetap tidak tersedia selama SMTP production belum siap.
 - Reset password email dikendalikan `AUTH_PASSWORD_RESET_ENABLED`. Nilai default/Railway private adalah `false`; hosting publik wajib mengaktifkannya hanya setelah SMTP dan domain pengirim siap.
@@ -89,8 +89,11 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - `robots.txt` menolak `/admin` dan mereferensikan sitemap.
 - Kebijakan Privasi publik tersedia di `/kebijakan-privasi` dan masuk sitemap, footer, navbar/drawer, halaman kontak, serta form register owner.
 - Public layout menampilkan pemberitahuan privasi ringan dengan localStorage key `cimuning_privacy_notice_seen_v1`. Ini bukan banner "accept cookies" karena aplikasi tidak memakai analytics/tracking cookies.
-- Owner wajib menyetujui Kebijakan Privasi saat membuat akun di `/admin/register`; timestamp disimpan di `users.privacy_accepted_at` dan versi di `users.privacy_version`.
-- Versi kebijakan owner registration saat ini didefinisikan di `App\Filament\Pages\Auth\RegisterOwner::PRIVACY_VERSION`.
+- Syarat Penggunaan publik tersedia di `/syarat-penggunaan` dan masuk sitemap, navbar/drawer, footer, halaman kontak, serta form register owner.
+- Owner baru wajib menyetujui Kebijakan Privasi dan Syarat Penggunaan secara terpisah. Timestamp dan versi disimpan pada user; akun lama tidak dipaksa menyetujui ulang.
+- Versi persetujuan saat ini `2026-06-29`, didefinisikan melalui `RegisterOwner::PRIVACY_VERSION` dan `RegisterOwner::TERMS_VERSION`.
+- Kontak resmi sementara dipusatkan lewat `config/support.php`: `cimuningppk@gmail.com` dan WhatsApp `0878-0405-4071` (`6287804054071` untuk URL).
+- Public layout menampilkan tombol bantuan WhatsApp tanpa tracking internal; pada detail UMKM/produk tombol dinaikkan di mobile agar tidak bertabrakan dengan sticky CTA.
 - Registrasi owner `/admin/register` memakai CAPTCHA matematika lokal berbasis session dan honeypot tersembunyi, tanpa layanan eksternal.
 - CAPTCHA owner registration memakai token per form render yang disimpan di session agar beberapa tab register tidak saling membatalkan jawaban.
 - Form UMKM Filament sekarang memakai wizard bertahap agar owner awam tidak melihat seluruh field teknis sekaligus.
@@ -117,7 +120,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - QR hanya tersedia untuk UMKM `is_active = true` dan `status = verified`.
 - Scan QR tidak dicatat ke database.
 - Halaman `/tentang` dan `/kontak` sudah memakai view khusus, bukan placeholder MVP.
-- Kontak v1 tidak menampilkan nomor/email dummy dan tidak menyimpan pesan ke database; halaman mengarahkan user ke pencarian, direktori, daftar owner, dan login owner.
+- Halaman kontak menampilkan email dan WhatsApp resmi, tidak menyimpan pesan ke database, dan tetap mengarahkan user ke pencarian, direktori, daftar owner, serta login owner.
 
 ## Keputusan Desain
 
@@ -145,7 +148,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Jangan mengubah QR menjadi langsung WhatsApp untuk v1; target default adalah profil UMKM agar katalog, lokasi, dan kontak tetap terlihat.
 - Jangan menambahkan kembali tracking klik WhatsApp/Maps, scan QR, atau analytics kontak tanpa keputusan produk baru.
 - Jangan mengubah privacy notice publik menjadi cookie consent yang menyesatkan kecuali aplikasi benar-benar menambah cookies/analytics yang membutuhkan persetujuan eksplisit.
-- Jangan menaruh nomor telepon/email dummy di Kebijakan Privasi; sampai kontak resmi final, arahkan user ke halaman `/kontak`.
+- Jangan menaruh kontak dummy atau hardcode kontak baru di view. Gunakan `SUPPORT_EMAIL` dan `SUPPORT_WHATSAPP` melalui `config/support.php`.
 
 ## Status Pekerjaan Terakhir
 
@@ -240,6 +243,8 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 1. Uji manual alur admin/owner di perangkat nyata: blokir produk, perbaiki sebagai owner, ajukan review, lalu buka blokir atau tolak sebagai admin.
 2. Rotasi secret Cloudinary, perbarui Railway Variables, jalankan `php artisan media:diagnose`, lalu uji upload logo, cover, gambar utama, dan galeri.
 3. Pada hosting publik sesungguhnya, siapkan SMTP/domain pengirim, uji email reset, lalu set `AUTH_PASSWORD_RESET_ENABLED=true`; jangan mengaktifkannya di Railway private tanpa mail yang valid.
-4. Tetapkan backup database Railway, domain production, monitoring log/error, dan prosedur rotasi secret.
+4. Saat penyedia hosting final dipilih, tetapkan backup database/media, domain production, monitoring log/error, dan prosedur rotasi secret. Railway saat ini hanya untuk testing tim.
 5. Pertimbangkan export data UMKM hanya ketika benar-benar dibutuhkan operasional.
-6. Review formal Kebijakan Privasi dengan pihak hukum/pengelola sebelum rilis masyarakat luas, terutama jika nanti ada email marketing, analytics, chat, payment, atau tracking baru.
+6. Review formal Kebijakan Privasi dan Syarat Penggunaan dengan pihak hukum/pengelola sebelum rilis masyarakat luas, terutama jika nanti ada email marketing, analytics, chat, payment, atau tracking baru.
+7. Bersihkan data demo setelah seluruh fungsi dan checklist hosting final selesai.
+8. Lakukan final security hardening dalam sesi khusus sebelum peluncuran publik.

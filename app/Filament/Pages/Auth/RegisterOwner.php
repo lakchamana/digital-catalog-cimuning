@@ -17,7 +17,9 @@ use SensitiveParameter;
 
 class RegisterOwner extends Register
 {
-    public const PRIVACY_VERSION = '2026-06-28';
+    public const PRIVACY_VERSION = '2026-06-29';
+
+    public const TERMS_VERSION = '2026-06-29';
 
     private const CAPTCHA_SESSION_KEY = 'owner_register_captchas';
 
@@ -58,6 +60,12 @@ class RegisterOwner extends Register
             ]);
         }
 
+        if (! in_array($data['terms_accepted'] ?? false, [true, 1, '1', 'on'], true)) {
+            throw ValidationException::withMessages([
+                'data.terms_accepted' => 'Anda perlu menyetujui Syarat Penggunaan sebelum membuat akun UMKM.',
+            ]);
+        }
+
         if (filled($data['profile_confirmation'] ?? null)) {
             $this->refreshCaptchaState();
 
@@ -77,7 +85,9 @@ class RegisterOwner extends Register
         $data['role'] = 'umkm_owner';
         $data['privacy_accepted_at'] = now();
         $data['privacy_version'] = self::PRIVACY_VERSION;
-        unset($data['captcha_answer'], $data['captcha_token'], $data['profile_confirmation'], $data['privacy_accepted']);
+        $data['terms_accepted_at'] = now();
+        $data['terms_version'] = self::TERMS_VERSION;
+        unset($data['captcha_answer'], $data['captcha_token'], $data['profile_confirmation'], $data['privacy_accepted'], $data['terms_accepted']);
 
         $this->forgetCaptcha($token);
 
@@ -97,6 +107,7 @@ class RegisterOwner extends Register
                 $this->getPasswordConfirmationFormComponent()
                     ->label('Ulangi password'),
                 $this->getPrivacyAcceptanceFormComponent(),
+                $this->getTermsAcceptanceFormComponent(),
                 $this->getCaptchaTokenFormComponent(),
                 $this->getCaptchaFormComponent(),
                 $this->getHoneypotFormComponent(),
@@ -128,6 +139,14 @@ class RegisterOwner extends Register
     {
         return Checkbox::make('privacy_accepted')
             ->label(new HtmlString('Saya telah membaca dan menyetujui <a href="'.route('privacy').'" target="_blank" rel="noopener" class="font-semibold text-primary-600 underline">Kebijakan Privasi Cimuning Digital Hub</a>.'))
+            ->accepted()
+            ->required();
+    }
+
+    protected function getTermsAcceptanceFormComponent(): Component
+    {
+        return Checkbox::make('terms_accepted')
+            ->label(new HtmlString('Saya telah membaca dan menyetujui <a href="'.route('terms').'" target="_blank" rel="noopener" class="font-semibold text-primary-600 underline">Syarat Penggunaan Cimuning Digital Hub</a>.'))
             ->accepted()
             ->required();
     }

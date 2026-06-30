@@ -69,6 +69,18 @@ class OwnerQuickActions extends Widget
             'external' => false,
         ];
 
+        $supportPhone = preg_replace('/\D+/', '', (string) config('support.whatsapp'));
+        $supportMessage = rawurlencode((string) config('support.whatsapp_message'));
+
+        $actions[] = [
+            'label' => 'Hubungi Bantuan',
+            'description' => 'WhatsApp admin atau '.config('support.email'),
+            'url' => "https://wa.me/{$supportPhone}?text={$supportMessage}",
+            'icon' => 'heroicon-o-chat-bubble-left-right',
+            'primary' => false,
+            'external' => true,
+        ];
+
         return [
             'actions' => $actions,
         ];

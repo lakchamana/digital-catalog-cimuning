@@ -10,7 +10,7 @@
         ['label' => 'Tentang Kami', 'route' => 'about'],
         ['label' => 'Kontak', 'route' => 'contact'],
         ['label' => 'Privasi', 'route' => 'privacy'],
-        ['label' => 'Bantuan', 'route' => 'contact'],
+        ['label' => 'Syarat', 'route' => 'terms'],
     ];
 
     $ownerLoginUrl = \Illuminate\Support\Facades\Route::has('filament.admin.auth.login')

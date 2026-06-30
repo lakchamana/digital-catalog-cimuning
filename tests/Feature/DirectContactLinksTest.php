@@ -31,6 +31,8 @@ class DirectContactLinksTest extends TestCase
             ->assertSee('https://www.google.com/maps/search/?api=1&amp;query=', false)
             ->assertSee('Alamat tertulis')
             ->assertSee('Titik Google Maps')
+            ->assertSee('data-support-whatsapp', false)
+            ->assertSee('bottom-24 lg:bottom-6', false)
             ->assertDontSee('/leads/', false);
     }
 

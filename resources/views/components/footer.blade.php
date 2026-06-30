@@ -29,7 +29,7 @@
                 <a class="block hover:text-cimuning-red" href="{{ route('about') }}">Tentang Kami</a>
                 <a class="block hover:text-cimuning-red" href="{{ route('contact') }}">Kontak/Bantuan</a>
                 <a class="block hover:text-cimuning-red" href="{{ route('privacy') }}">Kebijakan Privasi</a>
-                <a class="block hover:text-cimuning-red" href="{{ route('contact') }}">Bantuan Owner</a>
+                <a class="block hover:text-cimuning-red" href="{{ route('terms') }}">Syarat Penggunaan</a>
             </div>
         </div>
 
@@ -38,6 +38,7 @@
             <p class="mt-3 text-sm leading-6 text-cimuning-slate">
                 Website ini bukan e-commerce. Transaksi dilakukan langsung antara pembeli dan pemilik UMKM.
             </p>
+            <a href="mailto:{{ config('support.email') }}" class="mt-3 block break-all text-sm font-semibold text-cimuning-red hover:underline">{{ config('support.email') }}</a>
         </div>
     </div>
 </footer>

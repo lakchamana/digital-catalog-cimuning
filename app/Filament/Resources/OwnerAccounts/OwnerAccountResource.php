@@ -60,6 +60,10 @@ class OwnerAccountResource extends Resource
                     ->toggleable(),
                 TextColumn::make('privacy_version')->label('Versi privasi')->placeholder('-')
                     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('terms_accepted_at')->label('Persetujuan syarat')->dateTime()->placeholder('Belum tercatat')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('terms_version')->label('Versi syarat')->placeholder('-')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')->label('Terdaftar')->dateTime()->sortable(),
             ])
             ->filters([
@@ -95,6 +99,8 @@ class OwnerAccountResource extends Resource
                     TextEntry::make('created_at')->label('Waktu registrasi')->dateTime(),
                     TextEntry::make('privacy_accepted_at')->label('Persetujuan privasi')->dateTime()->placeholder('Belum tercatat'),
                     TextEntry::make('privacy_version')->label('Versi kebijakan')->placeholder('-'),
+                    TextEntry::make('terms_accepted_at')->label('Persetujuan syarat')->dateTime()->placeholder('Belum tercatat'),
+                    TextEntry::make('terms_version')->label('Versi syarat')->placeholder('-'),
                 ])->columns(2),
             Section::make('Status operasional')
                 ->schema([

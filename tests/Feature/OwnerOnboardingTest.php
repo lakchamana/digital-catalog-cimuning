@@ -28,11 +28,13 @@ class OwnerOnboardingTest extends TestCase
             ->assertSee('Buat akun UMKM')
             ->assertSee('Verifikasi keamanan')
             ->assertSee('Kebijakan Privasi')
+            ->assertSee('Syarat Penggunaan')
             ->assertSee('Masukkan hasil perhitungan di atas.')
             ->assertDontSee('id="form.profile_confirmation" type="text"', false);
 
         Livewire::test(RegisterOwner::class)
             ->assertFormFieldExists('privacy_accepted', fn ($field): bool => $field instanceof Checkbox)
+            ->assertFormFieldExists('terms_accepted', fn ($field): bool => $field instanceof Checkbox)
             ->assertFormFieldExists('profile_confirmation', fn ($field): bool => $field instanceof Hidden);
     }
 
@@ -49,6 +51,7 @@ class OwnerOnboardingTest extends TestCase
                 'password' => 'password',
                 'passwordConfirmation' => 'password',
                 'privacy_accepted' => true,
+                'terms_accepted' => true,
                 'captcha_token' => $captchaToken,
                 'captcha_answer' => " {$captchaAnswer} ",
             ])
@@ -61,6 +64,8 @@ class OwnerOnboardingTest extends TestCase
         $this->assertSame('umkm_owner', $owner->role);
         $this->assertNotNull($owner->privacy_accepted_at);
         $this->assertSame(RegisterOwner::PRIVACY_VERSION, $owner->privacy_version);
+        $this->assertNotNull($owner->terms_accepted_at);
+        $this->assertSame(RegisterOwner::TERMS_VERSION, $owner->terms_version);
         $this->assertAuthenticatedAs($owner);
     }
 
@@ -76,6 +81,7 @@ class OwnerOnboardingTest extends TestCase
                 'email' => 'owner-privasi@example.test',
                 'password' => 'password',
                 'passwordConfirmation' => 'password',
+                'terms_accepted' => true,
                 'captcha_token' => $captchaToken,
                 'captcha_answer' => $captchaAnswer,
             ])
@@ -100,6 +106,7 @@ class OwnerOnboardingTest extends TestCase
                 'password' => 'password',
                 'passwordConfirmation' => 'password',
                 'privacy_accepted' => true,
+                'terms_accepted' => true,
                 'captcha_token' => $firstToken,
                 'captcha_answer' => $firstAnswer,
             ])
@@ -125,6 +132,7 @@ class OwnerOnboardingTest extends TestCase
                 'password' => 'password',
                 'passwordConfirmation' => 'password',
                 'privacy_accepted' => true,
+                'terms_accepted' => true,
                 'captcha_token' => $wrongToken,
                 'captcha_answer' => '999',
             ])
@@ -144,6 +152,7 @@ class OwnerOnboardingTest extends TestCase
                 'password' => 'password',
                 'passwordConfirmation' => 'password',
                 'privacy_accepted' => true,
+                'terms_accepted' => true,
                 'captcha_token' => $captchaToken,
                 'captcha_answer' => $captchaAnswer,
                 'profile_confirmation' => 'filled-by-bot',
@@ -166,6 +175,7 @@ class OwnerOnboardingTest extends TestCase
                 'password' => 'password',
                 'passwordConfirmation' => 'password',
                 'privacy_accepted' => true,
+                'terms_accepted' => true,
                 'captcha_token' => 'token-tidak-ada',
                 'captcha_answer' => $captchaAnswer,
             ])
@@ -182,6 +192,8 @@ class OwnerOnboardingTest extends TestCase
             'email' => 'owner-cimuning@example.test',
             'password' => 'password',
             'role' => 'umkm_owner',
+            'terms_accepted_at' => null,
+            'terms_version' => null,
         ]);
 
         $this->actingAs($owner)

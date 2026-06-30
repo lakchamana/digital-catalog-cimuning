@@ -8,6 +8,14 @@
 
 ## Ringkasan Perubahan
 
+### Update Kontak dan Persetujuan - 29 Juni 2026
+
+- Kontak resmi aplikasi dipusatkan melalui `SUPPORT_EMAIL`, `SUPPORT_WHATSAPP`, `SUPPORT_WHATSAPP_DISPLAY`, dan `SUPPORT_WHATSAPP_MESSAGE`.
+- Nilai saat ini: `cimuningppk@gmail.com` dan WhatsApp URL `6287804054071`; tombol bantuan publik tidak memakai tracking internal.
+- Migration baru menambahkan `terms_accepted_at` dan `terms_version`. Owner baru wajib menyetujui privasi dan syarat versi `2026-06-29`; owner lama tidak dipaksa menyetujui ulang.
+- Guzzle dan PSR-7 diperbarui untuk menutup advisory dependency. Jalankan `composer audit --locked` pada setiap release.
+- SMTP, pembersihan data demo, dan final security hardening tetap ditunda sampai hosting production final siap.
+
 Project Cimuning Digital Hub (Laravel 13, PHP 8.3, Filament 5, Livewire 4, Tailwind v4) berhasil dikonfigurasi untuk deployment di Railway dengan Cloudinary sebagai penyimpanan file. Sebelumnya project hanya berjalan di XAMPP lokal. Perubahan ini **tidak mengubah fitur atau logika bisnis** — hanya menambahkan infrastruktur deployment.
 
 ---
@@ -208,6 +216,10 @@ Variabel yang harus diset di Railway dashboard (tab Variables pada service Larav
 | `CACHE_STORE` | `file` | Sama seperti session |
 | `QUEUE_CONNECTION` | `sync` | |
 | `AUTH_PASSWORD_RESET_ENABLED` | `false` | Railway private tetap nonaktif; aktifkan hanya setelah SMTP hosting publik teruji |
+| `SUPPORT_EMAIL` | `cimuningppk@gmail.com` | Kontak bantuan yang tampil publik |
+| `SUPPORT_WHATSAPP` | `6287804054071` | Nomor format internasional tanpa `+`, spasi, atau tanda baca |
+| `SUPPORT_WHATSAPP_DISPLAY` | `0878-0405-4071` | Format nomor yang ditampilkan kepada user |
+| `SUPPORT_WHATSAPP_MESSAGE` | `Halo Admin Cimuning Digital Hub, saya membutuhkan bantuan.` | Pesan awal tombol bantuan publik |
 | `BACKUP_ENABLED` | `true` | Mengaktifkan backup database terenkripsi untuk admin |
 | `BACKUP_MYSQLDUMP_PATH` | *(kosong)* | Container memakai `mysqldump` dari PATH; lokal otomatis mendeteksi XAMPP |
 | `BACKUP_TIMEOUT_SECONDS` | `120` | Batas proses dump database |
