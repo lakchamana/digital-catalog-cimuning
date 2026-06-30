@@ -30,6 +30,9 @@ use Filament\Auth\Http\Responses\Contracts\RegistrationResponse;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
+use Illuminate\Foundation\Events\DiagnosingHealth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
@@ -55,7 +58,7 @@ class AppServiceProvider extends ServiceProvider
         // Force HTTPS di production — Railway proxy terminates SSL,
         // jadi PHP built-in server hanya melihat HTTP.
         // Tanpa ini, semua URL generate http:// → Mixed Content error.
-        if ($this->app->environment('production')) {
+        if ($this->app->environment('production') && config('production.force_https')) {
             URL::forceScheme('https');
         }
 
@@ -93,6 +96,19 @@ class AppServiceProvider extends ServiceProvider
             AdminActivityLogger::authentication('admin_login_failed', $target, $event->guard, [
                 'identity_hash' => AdminActivityLogger::failedIdentityHash($event->credentials['email'] ?? null),
             ]);
+        });
+
+        Event::listen(DiagnosingHealth::class, function (): void {
+            DB::select('select 1');
+
+            $key = 'cimuning:health:'.bin2hex(random_bytes(8));
+            Cache::put($key, 'ok', now()->addMinute());
+
+            if (Cache::get($key) !== 'ok') {
+                throw new \RuntimeException('Cache health check failed.');
+            }
+
+            Cache::forget($key);
         });
 
         // Daftarkan Cloudinary sebagai custom filesystem disk.

@@ -106,8 +106,10 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Link Maps yang ditempel harus berisi koordinat yang bisa dibaca. Link pendek seperti `maps.app.goo.gl` tidak di-resolve server-side; owner perlu membuka link itu dahulu lalu menyalin URL lengkap atau koordinat.
 - Alamat tertulis dan titik Google Maps adalah dua data terpisah. Browser Geolocation hanya mengisi koordinat, bukan memperbaiki field alamat.
 - Step lokasi owner kini mengutamakan alamat tertulis lebih dahulu, menyediakan tombol `Cek link` dengan toast hasil, serta helper responsif untuk lokasi perangkat, pencarian alamat di Google Maps, dan pratinjau titik tersimpan. Link pendek tetap tidak di-resolve server-side.
-- Production Railway memakai Dockerfile, `docker-entrypoint.sh`, dan `server.php`.
-- `server.php` wajib dipertahankan untuk PHP built-in server production karena Livewire/Filament JS adalah route Laravel, bukan file statis biasa.
+- Deployment Docker memakai FrankenPHP/Caddy melalui `Caddyfile` dengan document root `/app/public`; PHP built-in server dan `server.php` sudah dihapus dari jalur production.
+- Entrypoint menjalankan migration dan optimize, sedangkan seeder hanya berjalan bila `RUN_DATABASE_SEEDERS=true`. Hosting publik wajib memakai `false`.
+- `app:production-check --with-external --require-scheduler` memvalidasi environment, database, migration, cache/session, Cloudinary, backup, asset, dan heartbeat tanpa mencetak secret.
+- Security headers production tidak memakai CSP agar Filament/Livewire/Alpine tetap kompatibel. HSTS, nosniff, frame denial, referrer policy, dan permissions policy diterapkan middleware.
 - Config cache dan route cache production dijalankan di `docker-entrypoint.sh` saat runtime, bukan di Docker build, karena environment variables Railway tersedia saat container berjalan.
 - `AppServiceProvider` memaksa HTTPS pada production dan `bootstrap/app.php` mempercayai proxy Railway agar URL asset tidak menjadi mixed content.
 - Upload production memakai custom disk `cloudinary` melalui `App\Support\CloudinaryStorage`; local development tetap bisa memakai public/local disk sesuai `.env`.
@@ -143,7 +145,7 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Jangan mengubah platform menjadi marketplace transaksi.
 - Jangan mewajibkan login untuk public user yang hanya ingin mencari UMKM.
 - Jangan menjalankan `php artisan config:cache` di Dockerfile build phase.
-- Jangan menghapus `server.php` selama production masih memakai PHP built-in server/router ini.
+- Jangan mengembalikan `php -S` atau menempatkan source project sebagai document root. Web root wajib `public/`.
 - Jangan mengganti production upload ke `public`/`local` disk di Railway karena file upload akan hilang saat redeploy.
 - Jangan mengubah QR menjadi langsung WhatsApp untuk v1; target default adalah profil UMKM agar katalog, lokasi, dan kontak tetap terlihat.
 - Jangan menambahkan kembali tracking klik WhatsApp/Maps, scan QR, atau analytics kontak tanpa keputusan produk baru.
@@ -226,8 +228,8 @@ Project ini adalah Cimuning Digital Hub, sebuah katalog online UMKM Cimuning, Ko
 - Polish onboarding dan penghapusan `view_count` sudah aktif di Railway sejak 19 Juni 2026 melalui commit `a89103b`; `/produk`, register CAPTCHA, dan fallback query `sort=popular` sudah diverifikasi di production.
 - Test owner onboarding sudah diperluas untuk CAPTCHA, honeypot, slug otomatis, koordinat Maps, dan normalisasi Instagram/TikTok.
 - Deployment Railway + Cloudinary sudah ditambahkan oleh AI agent lain dan didokumentasikan di `docs/DEPLOYMENT_UPDATE.md`.
-- File deployment yang sudah ada: `Dockerfile`, `docker-entrypoint.sh`, `server.php`, `config/cloudinary.php`, dan `App\Support\CloudinaryStorage`.
-- Railway MySQL digunakan untuk production testing; migration dan seeder dijalankan otomatis saat container start dengan `--force`.
+- File deployment utama: `Dockerfile`, `Caddyfile`, `docker-entrypoint.sh`, `.env.production.example`, `config/cloudinary.php`, dan `App\Support\CloudinaryStorage`.
+- Railway MySQL digunakan untuk testing deployment; migration berjalan otomatis, tetapi seeder kini opt-in agar tidak memasukkan ulang data demo pada hosting publik.
 - `nixpacks.toml` disebut di deployment update sebagai alternatif lama, tetapi file tersebut tidak ada di workspace saat catatan ini diperbarui; Railway memprioritaskan Dockerfile.
 - QR profil UMKM sudah ditambahkan untuk UMKM verified + active, termasuk public QR card di detail UMKM dan action download QR di Filament.
 - QR profil langsung memuat URL profil UMKM tanpa route tracking.

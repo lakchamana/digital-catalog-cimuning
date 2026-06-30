@@ -75,7 +75,7 @@ class MySqlDatabaseDumper implements DatabaseDumper
         return $command;
     }
 
-    private function binary(): string
+    public function binary(): string
     {
         if (filled($configured = config('backup.mysqldump_path'))) {
             return (string) $configured;

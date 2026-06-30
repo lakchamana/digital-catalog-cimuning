@@ -3,6 +3,11 @@
 ## [Unreleased]
 
 ### Added
+- Production readiness command, database/cache health diagnosis, scheduler heartbeat, safe security headers, trusted-host configuration, and Asia/Jakarta timezone.
+- GitHub Actions for PHP/frontend validation and a Docker container smoke test.
+- Provider-neutral production environment template and cPanel/VPS deployment runbook with mandatory backup prerequisites.
+- FrankenPHP/Caddy production web server with `/public` as the only web root and container healthcheck.
+- Dynamic `robots.txt` generation so the sitemap URL always follows the active production domain.
 - Public Syarat Penggunaan page at `/syarat-penggunaan`, linked from navigation, footer, contact/help, owner registration, and sitemap.
 - Separate required owner consent for Privacy Policy and Terms of Use version `2026-06-29`, with acceptance timestamps and versions visible to admins.
 - Central official support configuration for `cimuningppk@gmail.com` and WhatsApp `0878-0405-4071`.
@@ -121,6 +126,7 @@
 - Public product detail pages at `/produk/{slug}` with gallery, full description, UMKM owner information, direct WhatsApp CTA, profile link, SEO metadata, and JSON-LD `Product` schema.
 
 ### Changed
+- Docker now uses a multi-stage frontend build, production PHP settings, no development Composer packages, structured stdout logs, and opt-in seeders.
 - Floating WhatsApp help can now be dismissed for the active browser session with an accessible close control.
 - Updated `guzzlehttp/guzzle` to 7.12.3 and `guzzlehttp/psr7` to 2.12.3 to resolve locked dependency security advisories.
 - Redesigned the admin `Backup Data` page with a clear health summary, compact mobile history cards, simplified Indonesian copy, guided storage steps, and a collapsed recovery checker for infrequent use.
@@ -202,6 +208,7 @@
 - Dynamic sitemap now includes public product detail URLs while excluding inactive, blocked, or non-public products.
 
 ### Removed
+- PHP built-in production server and the obsolete `server.php` router.
 - Quick verification actions and destructive admin actions from owner UMKM/product tables.
 - Obsolete guest UMKM registration Livewire component and the legacy direct verification workflow.
 - Contact and QR tracking feature, including the `LeadEvent` model, event recorder, redirect controller, intermediary routes, model relations, Filament analytics widgets, and tracking-specific tests.
@@ -247,7 +254,7 @@
 - Browser Geolocation works on localhost during development and requires HTTPS in production.
 - Railway production testing URL: `https://digital-catalog-cimuning-production.up.railway.app/`.
 - Do not run `php artisan config:cache` during Docker build because Railway environment variables are runtime-only.
-- Do not remove `server.php` while production uses the PHP built-in server; Livewire and Filament asset routes depend on this fallback.
+- Docker production now requires FrankenPHP/Caddy and `/public` as web root; the historical `server.php` fallback must not be restored.
 - Do not switch production `FILESYSTEM_DISK` back to `local` or `public` on Railway because uploaded files would be lost on redeploy.
 - QR v1 intentionally renders SVG only; PNG/poster templates can follow after image extension support or print design requirements are finalized.
 - Contact page v1 intentionally does not show fake phone/email details or collect messages in a database; official contact channels can be added after they are finalized.

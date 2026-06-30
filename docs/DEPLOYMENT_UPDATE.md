@@ -8,6 +8,15 @@
 
 ## Ringkasan Perubahan
 
+### Production Readiness - 30 Juni 2026
+
+- Runtime Docker berpindah dari PHP built-in server ke FrankenPHP/Caddy dengan web root `/app/public`.
+- Image memakai multi-stage frontend build, Composer `--no-dev`, PHP production settings, OPcache, dan container healthcheck.
+- Seeder tidak lagi otomatis; `RUN_DATABASE_SEEDERS=false` adalah default hosting publik.
+- Trusted host/proxy, secure session, security headers, health database/cache, scheduler heartbeat, dan `app:production-check` telah ditambahkan.
+- `robots.txt` sekarang mengikuti `APP_URL` secara dinamis agar tidak membawa URL lokal ke domain hosting.
+- Panduan hosting final berada di `docs/PRODUCTION_DEPLOYMENT.md`. Bagian lama di dokumen ini dipertahankan sebagai riwayat, bukan instruksi runtime terkini.
+
 ### Update Kontak dan Persetujuan - 29 Juni 2026
 
 - Kontak resmi aplikasi dipusatkan melalui `SUPPORT_EMAIL`, `SUPPORT_WHATSAPP`, `SUPPORT_WHATSAPP_DISPLAY`, dan `SUPPORT_WHATSAPP_MESSAGE`.
@@ -28,17 +37,17 @@ GitHub (main branch)
     ▼
 Railway Web Service (Docker container)
     ├── PHP 8.3 + FrankenPHP base image
-    ├── Node.js 22 (Vite build)
+    ├── Asset Vite dari stage build Node.js 22
     ├── Laravel 13 app
     │
     ├──► Railway MySQL Plugin (Database)
-    │    └── Migrate + Seed otomatis saat container start
+    │    └── Migrate otomatis; seed hanya dengan flag eksplisit
     │
     └──► Cloudinary (File Storage)
          └── Pengganti disk "public" untuk upload foto UMKM/produk
 ```
 
-Railway menyediakan reverse proxy HTTPS di depan PHP built-in server (HTTP). Semua request masuk melalui: `Browser ──HTTPS──► Railway Proxy ──HTTP──► PHP Server (port 8080)`.
+Railway menyediakan reverse proxy HTTPS di depan FrankenPHP/Caddy. Semua request masuk melalui: `Browser ──HTTPS──► Railway Proxy ──HTTP──► Caddy/FrankenPHP (port 8080)`.
 
 ---
 
@@ -52,32 +61,18 @@ Konfigurasi Docker untuk build di Railway.
 - Menginstall system dependencies: `git`, `unzip`, `zip`, `curl`, `libicu-dev`, `libzip-dev`, `libpng-dev`, `libjpeg-dev`, `libfreetype6-dev`.
 - PHP extensions: `intl`, `zip`, `pdo_mysql`, `bcmath`, `gd`, `opcache`.
 - Composer dependencies diinstall dengan `--no-dev --optimize-autoloader`.
-- Node.js 22 diinstall untuk build Vite frontend (`npm ci` lalu `npm run build`).
+- Node.js 22 hanya digunakan pada frontend build stage dan tidak ikut image runtime.
 - Storage directories dibuat dan diberi permission writable.
 - **PENTING**: Tidak ada `php artisan config:cache` atau `route:cache` di Dockerfile. Env vars Railway belum tersedia saat build — caching dilakukan di `docker-entrypoint.sh` saat runtime.
 - Menggunakan `docker-entrypoint.sh` sebagai ENTRYPOINT.
 
 ### 2. `docker-entrypoint.sh`
 
-Script yang dijalankan saat container start (runtime). Urutan eksekusi:
+Script yang dijalankan saat container start: clear bootstrap cache, storage link, migrate, optional seeder, `artisan optimize`, lalu `frankenphp run`.
 
-1. `php artisan config:clear` — hapus cache config lama (mungkin di-bake saat build dengan nilai kosong).
-2. `php artisan cache:clear` — hapus cache aplikasi.
-3. `php artisan config:cache` — buat cache config baru dengan env vars Railway yang sudah tersedia.
-4. `php artisan route:cache` — cache route untuk performa.
-5. `php artisan storage:link` — buat symlink storage (idempotent).
-6. `php artisan migrate --force` — jalankan migrasi (idempotent, aman diulang).
-7. `php artisan db:seed --class=DatabaseSeeder --force` — jalankan seeder (idempotent, pakai `firstOrCreate`).
-8. `php -S 0.0.0.0:${PORT} server.php` — start PHP server dengan router script.
+### 3. `Caddyfile`
 
-### 3. `server.php`
-
-Router script untuk PHP built-in server. Dibuat karena PHP built-in server punya quirk: path dengan ekstensi file (`.js`, `.css`) yang tidak ada sebagai file statis langsung di-404 tanpa diteruskan ke `index.php`. Ini menyebabkan Livewire JS (`/livewire-xxx/livewire.js`) dan asset Filament gagal load (404).
-
-Logika router:
-- Jika file statis ada di `public/` → serve langsung dengan MIME type yang benar.
-- Jika file tidak ada → forward request ke `public/index.php` (Laravel router).
-- Mendukung MIME types: CSS, JS, JSON, PNG, JPG, GIF, SVG, WEBP, ICO, WOFF/WOFF2, TTF, EOT, MAP.
+Caddy menyajikan `/app/public`, mengaktifkan kompresi, meneruskan PHP/Livewire/Filament ke Laravel, dan menulis access log JSON ke stdout. `server.php` lama telah dihapus.
 
 ### 4. `config/cloudinary.php`
 
@@ -141,7 +136,7 @@ if ($this->app->environment('production')) {
     URL::forceScheme('https');
 }
 ```
-Railway proxy terminates SSL, jadi PHP built-in server hanya melihat HTTP. Tanpa ini, semua URL yang di-generate Laravel pakai `http://` → browser blokir semua asset sebagai Mixed Content.
+Railway proxy terminates SSL, jadi aplikasi di belakang FrankenPHP menerima koneksi internal HTTP. Force HTTPS dan trusted proxy membuat URL publik tetap memakai HTTPS.
 
 **b. Registrasi Cloudinary filesystem disk:**
 ```php
@@ -156,13 +151,7 @@ Mendaftarkan driver `cloudinary` agar bisa dipakai saat `FILESYSTEM_DISK=cloudin
 
 ### 2. `bootstrap/app.php`
 
-Ditambahkan trusted proxy configuration:
-```php
-->withMiddleware(function (Middleware $middleware): void {
-    $middleware->trustProxies(at: '*');
-})
-```
-Agar Laravel membaca header `X-Forwarded-Proto: https` dari Railway reverse proxy. Bekerja bersama `URL::forceScheme('https')` untuk memastikan semua URL HTTPS.
+Trusted host berasal dari `TRUSTED_HOSTS`. Trusted proxy hanya aktif sesuai `TRUSTED_PROXIES`; nilai `*` digunakan khusus deployment yang tidak dapat dilewati di luar reverse proxy.
 
 ### 3. `config/filesystems.php`
 
@@ -266,12 +255,12 @@ Gunakan `php artisan media:diagnose` untuk pemeriksaan read-only. Gunakan `php a
 ### 3. Mixed Content (HTTP vs HTTPS)
 
 **Masalah**: Railway proxy terminates SSL dan meneruskan request via HTTP ke PHP server. Laravel generate semua URL pakai `http://`. Browser memblokir asset `http://` karena halaman diakses via `https://` → CSS, JS, Livewire tidak load.
-**Solusi**: Tambahkan `URL::forceScheme('https')` di `AppServiceProvider::boot()` dan `trustProxies(at: '*')` di `bootstrap/app.php`.
+**Solusi terkini**: `URL::forceScheme('https')` dikendalikan `FORCE_HTTPS`, sedangkan host/proxy harus dikonfigurasi eksplisit sesuai deployment.
 
 ### 4. Livewire dan Filament JS gagal load (404)
 
 **Masalah**: PHP built-in server langsung return 404 untuk path dengan ekstensi file (`.js`, `.css`) yang tidak ada sebagai file statis di `public/`. Livewire serve JS-nya lewat route Laravel (`/livewire-xxx/livewire.js`), bukan file statis.
-**Solusi**: Buat `server.php` sebagai router script. Router memeriksa apakah file statis ada — jika tidak, forward ke `public/index.php` (Laravel).
+**Solusi terkini**: FrankenPHP/Caddy memakai `/public` sebagai web root dan `php_server` meneruskan route Laravel. Router PHP built-in lama sudah dihapus.
 
 ### 5. Railway tidak auto-redeploy
 
@@ -298,11 +287,11 @@ Migration `admin_activity_logs` menambahkan log read-only untuk autentikasi admi
 
 Docker memasang MySQL client untuk `mysqldump`. Halaman admin `Backup Data` membuat ZIP AES-256 database dengan credential file sementara, checksum, global lock, throttle 15 menit, dan cleanup arsip server. Tambahkan variabel `BACKUP_ENABLED=true`; path `mysqldump` boleh kosong di Railway dan otomatis memakai binary container. Backup penyedia hosting dan media bersifat opsional selama Railway hanya dipakai untuk testing internal; aktifkan kebijakan backup sesuai penyedia hosting final. Restore langsung dari dashboard tidak tersedia; ikuti `docs/BACKUP_RESTORE_RUNBOOK.md`.
 
-1. **Jangan hapus `server.php`** — tanpa file ini, Livewire dan Filament JS tidak bisa load di deployment Railway.
-2. **Jangan tambahkan `php artisan config:cache` di Dockerfile** — env vars Railway tidak tersedia saat build. Semua caching harus di `docker-entrypoint.sh`.
+1. **Jangan kembalikan PHP built-in server** — Docker production memakai FrankenPHP/Caddy dan web root `/public`.
+2. **Jangan men-cache konfigurasi di Docker build** — env vars tersedia saat runtime. `artisan optimize` dijalankan entrypoint setelah migration.
 3. **Jangan ubah `FILESYSTEM_DISK` kembali ke `local` atau `public` di production** — filesystem Railway ephemeral, file upload akan hilang saat redeploy.
 4. **Deployment lokal tetap pakai XAMPP** seperti biasa. Perubahan deployment hanya aktif saat `APP_ENV=production`.
-5. **Seeder aman dijalankan berulang** — semua seeder pakai `firstOrCreate` / idempotent.
+5. **Seeder wajib opt-in** — hosting publik memakai `RUN_DATABASE_SEEDERS=false`; data demo dibersihkan pada tahap terakhir.
 6. **Error `contentscript.js` di browser console** bukan dari project — itu dari extension browser (MetaMask atau sejenisnya). Abaikan.
 7. **Branch `railway/fix-deploy-*`** di remote dibuat otomatis oleh Railway saat mencoba auto-fix deployment. Branch ini bisa dihapus, tidak dipakai lagi.
 8. **`nixpacks.toml` ada di local tapi mungkin tidak di remote** — Railway pernah menghapusnya lewat auto-fix branch. Tidak masalah karena Railway memprioritaskan `Dockerfile` jika ada.

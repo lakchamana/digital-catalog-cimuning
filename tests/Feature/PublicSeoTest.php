@@ -96,10 +96,11 @@ class PublicSeoTest extends TestCase
 
     public function test_robots_file_references_sitemap_and_disallows_admin(): void
     {
-        $robots = file_get_contents(public_path('robots.txt'));
-
-        $this->assertStringContainsString('Disallow: /admin', $robots);
-        $this->assertStringContainsString('Sitemap: '.config('app.url').'/sitemap.xml', $robots);
+        $this->get(route('robots'))
+            ->assertOk()
+            ->assertHeader('Content-Type', 'text/plain; charset=UTF-8')
+            ->assertSeeText('Disallow: /admin')
+            ->assertSeeText('Sitemap: '.route('sitemap'));
     }
 
     private function seedVerifiedUmkm(array $attributes = []): Umkm

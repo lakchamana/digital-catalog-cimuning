@@ -36,6 +36,7 @@
 - Dashboard owner berbasis tindakan dengan status profil, ringkasan katalog milik sendiri, produk publik, pekerjaan tertunda, dan akses cepat keamanan akun.
 - Backup database AES-256, validasi arsip tanpa eksekusi SQL, audit metadata, Railway/Cloudinary backup checklist, dan restore runbook staging-first.
 - Kontak resmi terpusat, bantuan WhatsApp publik tanpa tracking, Syarat Penggunaan, dan persetujuan owner terpisah versi `2026-06-29`.
+- Production readiness untuk cPanel dan Docker: security headers, trusted hosts/proxies, health DB/cache, scheduler heartbeat, preflight command, FrankenPHP/Caddy, CI, serta hosting runbook.
 
 ## Phase 3
 

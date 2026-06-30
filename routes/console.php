@@ -3,6 +3,7 @@
 use App\Support\CloudinaryStorage;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\Facades\Storage;
@@ -132,4 +133,19 @@ Artisan::command('media:diagnose {--upload : Upload, verify, and remove a tempor
 })->purpose('Check media disk configuration and Cloudinary authentication without exposing secrets');
 
 // Effective when a scheduler worker/cron is configured. Admin actions also run cleanup defensively.
-Schedule::command('backup:cleanup')->hourly()->withoutOverlapping();
+Schedule::call(function (): void {
+    Cache::put(
+        config('production.scheduler_heartbeat_key'),
+        now()->toIso8601String(),
+        now()->addMinutes(10),
+    );
+})
+    ->name('production:scheduler-heartbeat')
+    ->everyMinute()
+    ->withoutOverlapping()
+    ->onOneServer();
+
+Schedule::command('backup:cleanup')
+    ->hourly()
+    ->withoutOverlapping()
+    ->onOneServer();

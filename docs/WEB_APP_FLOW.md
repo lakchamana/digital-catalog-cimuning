@@ -238,8 +238,10 @@
 1. Perubahan project dipush ke GitHub branch yang dipantau Railway.
 2. Railway membangun container dari `Dockerfile`.
 3. Build menginstall dependency PHP, dependency Node, dan menjalankan build Vite.
-4. Saat container start, `docker-entrypoint.sh` membersihkan cache lama, membuat config/route cache baru dari environment variables Railway, membuat storage link, menjalankan migration, menjalankan seeder idempotent, lalu menyalakan PHP server.
-5. `server.php` menjadi router PHP built-in server: file statis yang ada diserve langsung, sedangkan request asset/route Livewire dan Filament yang bukan file fisik diteruskan ke Laravel.
+4. Saat container start, `docker-entrypoint.sh` membersihkan bootstrap cache, membuat storage link, menjalankan migration, melewati seeder kecuali diaktifkan eksplisit, mengoptimalkan Laravel, lalu menyalakan FrankenPHP.
+5. FrankenPHP/Caddy hanya menyajikan folder `/public`; request Livewire dan Filament diteruskan ke Laravel melalui `php_server`.
+6. Scheduler hosting menjalankan `schedule:run` setiap menit untuk heartbeat dan cleanup backup.
+7. Operator menjalankan `app:production-check --with-external --require-scheduler` sebelum membuka akses masyarakat.
 6. Railway reverse proxy menerima HTTPS dari browser dan meneruskan ke container; Laravel memaksa URL HTTPS dan mempercayai proxy agar asset tidak mixed content.
 7. Database production testing memakai Railway MySQL.
 8. Upload logo, cover, dan foto produk memakai temporary disk lokal lalu Cloudinary sebagai storage permanen saat `FILESYSTEM_DISK=cloudinary`.

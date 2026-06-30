@@ -3,31 +3,29 @@ set -e
 
 echo "=== Cimuning Digital Hub: Container Startup ==="
 
-# Bersihkan config cache yang mungkin di-bake dengan nilai kosong saat build
-echo "[1/5] Clearing config cache..."
+echo "[1/6] Clearing bootstrap cache..."
 php artisan config:clear
-php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
 
-# Build config cache baru dengan env vars Railway yang sudah tersedia
-echo "[2/5] Caching config with production env vars..."
-php artisan config:cache
-php artisan route:cache
-
-# Buat symlink storage (idempotent)
-echo "[3/5] Linking storage..."
+echo "[2/6] Linking storage..."
 php artisan storage:link 2>/dev/null || true
 
-# Jalankan migrasi (idempotent - aman dijalankan berulang)
-echo "[4/5] Running migrations..."
+echo "[3/6] Running migrations..."
 php artisan migrate --force
 
-# Jalankan seeder (idempotent - seeder pakai firstOrCreate)
-echo "[5/5] Running seeders..."
-php artisan db:seed --class=DatabaseSeeder --force
+echo "[4/6] Checking optional seeders..."
+case "${RUN_DATABASE_SEEDERS:-false}" in
+    true|TRUE|1|yes|YES)
+        php artisan db:seed --class=DatabaseSeeder --force
+        ;;
+    *)
+        echo "Seeders skipped."
+        ;;
+esac
 
-echo "=== Startup complete. Starting PHP server on port ${PORT:-8080} ==="
+echo "[5/6] Optimizing Laravel..."
+php artisan optimize
 
-# Jalankan PHP built-in server DENGAN router script.
-# Tanpa router, PHP server langsung 404 untuk path .js/.css yang tidak ada
-# sebagai file statis — ini membuat Livewire dan Filament gagal load.
-exec php -S "0.0.0.0:${PORT:-8080}" server.php
+echo "[6/6] Starting FrankenPHP on port ${PORT:-8080}..."
+exec frankenphp run --config /etc/frankenphp/Caddyfile

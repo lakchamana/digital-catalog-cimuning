@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\ProductionSecurityHeaders;
 use App\Models\User;
 use App\Support\AdminActivityLogger;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -16,11 +17,30 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Trust Railway reverse proxy agar Laravel baca X-Forwarded-Proto: https
-        $middleware->trustProxies(at: '*');
+        $middleware->trustHosts(
+            fn (): array => app()->environment('production')
+                ? (array) config('production.trusted_hosts', [])
+                : ['.*'],
+            subdomains: false,
+        );
+
+        $middleware->append(ProductionSecurityHeaders::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->dontFlash(['current_password', 'passphrase', 'passphrase_confirmation']);
+        $exceptions->dontFlash([
+            'password',
+            'password_confirmation',
+            'passwordConfirmation',
+            'current_password',
+            'captcha_answer',
+            'captcha_token',
+            'profile_confirmation',
+            'passphrase',
+            'passphrase_confirmation',
+            'token',
+            'api_key',
+            'api_secret',
+        ]);
 
         $exceptions->render(function (Throwable $exception, Request $request) {
             $status = match (true) {

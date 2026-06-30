@@ -94,11 +94,13 @@ Project sudah disiapkan untuk testing internal di Railway pada URL production `h
 File deployment penting:
 
 - `Dockerfile` untuk build container Railway.
-- `docker-entrypoint.sh` untuk runtime cache, storage link, migrate, seed, dan start server.
-- `server.php` sebagai router PHP built-in server agar route Livewire/Filament JS tetap diteruskan ke Laravel.
+- `Caddyfile` dan FrankenPHP untuk web server Docker production dengan root `/app/public`.
+- `docker-entrypoint.sh` untuk storage link, migration, optional development seeder, optimize, dan start FrankenPHP.
 - `config/cloudinary.php` dan `App\Support\CloudinaryStorage` untuk filesystem disk Cloudinary.
 
 Cache config/route dilakukan saat runtime di `docker-entrypoint.sh`, bukan saat Docker build, karena environment variables Railway baru tersedia saat container berjalan.
+
+Hosting production dapat memakai cPanel atau VPS/Docker selama memenuhi `docs/PRODUCTION_DEPLOYMENT.md`. Timezone aplikasi adalah Asia/Jakarta, scheduler wajib berjalan setiap menit, dan command production check harus hijau sebelum publikasi.
 
 ## Fitur MVP
 

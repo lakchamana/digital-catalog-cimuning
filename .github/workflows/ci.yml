@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  application:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: intl, pdo_sqlite, zip
+          coverage: none
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install PHP dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Audit dependencies
+        run: |
+          composer audit --locked
+          npm audit --audit-level=high
+
+      - name: Check PHP formatting
+        run: vendor/bin/pint --test
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Run tests
+        run: php artisan test
+
+      - name: Check diff whitespace
+        run: git diff --check
+
+  docker-smoke:
+    needs: application
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build production image
+        run: docker build --tag cimuning-digital-hub:ci .
+
+      - name: Start production container
+        run: |
+          docker run --detach --name cimuning-ci --publish 8080:8080 \
+            --env APP_ENV=production \
+            --env APP_DEBUG=false \
+            --env APP_KEY=base64:dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHQ= \
+            --env APP_URL=http://localhost:8080 \
+            --env FORCE_HTTPS=false \
+            --env TRUSTED_HOSTS=localhost,127.0.0.1 \
+            --env DB_CONNECTION=sqlite \
+            --env DB_DATABASE=:memory: \
+            --env CACHE_STORE=array \
+            --env SESSION_DRIVER=array \
+            --env FILESYSTEM_DISK=local \
+            --env BACKUP_ENABLED=false \
+            --env RUN_DATABASE_SEEDERS=false \
+            cimuning-digital-hub:ci
+
+      - name: Smoke test container
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8080/up > /dev/null; then
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              docker logs cimuning-ci
+              exit 1
+            fi
+            sleep 2
+          done
+
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:8080/composer.json)" = "404"
+          test "$(docker inspect --format='{{.Config.Healthcheck.Test}}' cimuning-ci)" != "<no value>"
+
+      - name: Show container logs on failure
+        if: failure()
+        run: docker logs cimuning-ci || true
+
+      - name: Stop container
+        if: always()
+        run: docker rm --force cimuning-ci || true

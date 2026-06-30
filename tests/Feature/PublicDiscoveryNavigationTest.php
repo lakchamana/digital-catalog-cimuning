@@ -48,7 +48,7 @@ class PublicDiscoveryNavigationTest extends TestCase
     public function test_mobile_navigation_drawer_is_outside_the_sticky_header(): void
     {
         $html = $this->get('/')->assertOk()->getContent();
-        $document = new \DOMDocument();
+        $document = new \DOMDocument;
 
         libxml_use_internal_errors(true);
         $document->loadHTML($html);

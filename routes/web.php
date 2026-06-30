@@ -212,6 +212,16 @@ Route::get('/sitemap.xml', function () use ($hasTables) {
         ->header('Content-Type', 'application/xml');
 })->name('sitemap');
 
+Route::get('/robots.txt', function () {
+    return response(implode("\n", [
+        'User-agent: *',
+        'Disallow: /admin',
+        '',
+        'Sitemap: '.route('sitemap'),
+        '',
+    ]))->header('Content-Type', 'text/plain; charset=UTF-8');
+})->name('robots');
+
 Route::get('/daftar-umkm', function () {
     return view('umkm.register');
 })->name('umkm.register');
